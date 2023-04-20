@@ -20,7 +20,6 @@ export class AuthService {
 
     async validateUser(loginInfo: loginUserDto): Promise<any> {
         const { email, password } = loginInfo;
-        console.log(email, password, "WE DEY HERE");
 
 
         if (!email || !password) {
