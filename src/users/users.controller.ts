@@ -140,5 +140,6 @@ export class UsersController {
         return this.userService.createBankAccount(email, bvn);
     }
 
+    
 
 }
