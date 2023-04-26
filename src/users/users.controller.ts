@@ -14,8 +14,10 @@ import { createUserDto } from './dto/create-user.dto';
 import { createAccountDto } from './dto/create-bank.dto'
 import { verifyAccount } from './dto/verify-account.dto'
 import { createPin } from './dto/create-pin.dto'
-import { ApiBody, ApiProperty, ApiHeader, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiBody, ApiProperty, ApiHeader } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateAddressDto } from './dto/update-address.dto';
+import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
 
 interface createAccount {
     email: string,
@@ -46,6 +48,20 @@ export class UsersController {
             description: "Bearer <token>"
         }
     )
+    @ApiBody({type: UpdateTransactionPinDto})
+    @Post('update-pin')
+    updatePin(@Body() {id, new_pin, current_pin}: UpdateTransactionPinDto) {
+        return this.userService.updateTransactionPin({id, new_pin, current_pin});
+    }
+
+
+    @UseGuards(JwtAuthGuard)
+    @ApiHeader(
+        {
+            name: 'Authorization',
+            description: "Bearer <token>"
+        }
+    )
     @Post('create-pin')
     createPin(@Body() createPin: createPin) {
         return this.userService.createUserPin(createPin.id, createPin.pin);
@@ -58,10 +74,35 @@ export class UsersController {
             description: "Bearer <token>"
         }
     )
-
     @Post("verify-pin")
     verifyPin(@Body() createPin: createPin) {
         return this.userService.verifyTransactionPin(createPin.id, createPin.pin);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiHeader(
+        {
+            name: 'Authorization',
+            description: "Bearer <token>"
+        }
+    )
+    @Patch('update-address/:id')
+    @ApiBody({ type: UpdateAddressDto })
+    updateAddress(@Param('id') id: string, @Body() {address, city,  state, lga}: any) {
+        return this.userService.updateAddress({id, address, city, state, lga});
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiHeader(
+        {
+            name: 'Authorization',
+            description: "Bearer <token>"
+        }
+    )
+    // @ApiBody()
+    @Patch('update-password/:id')
+    updatePassword(@Param('id') id: string, @Body() {password, new_password}: any) {
+        return this.userService.updatePassword({id, password, new_password});
     }
 
     @UseGuards(JwtAuthGuard)
@@ -98,4 +139,6 @@ export class UsersController {
     createBankAccount(@Body() email: string, bvn: number) {
         return this.userService.createBankAccount(email, bvn);
     }
+
+
 }

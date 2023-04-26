@@ -16,10 +16,28 @@ import { AdminController } from './admin/admin.controller';
 import { AdminService } from './admin/admin.service';
 import { ConfigModule } from '@nestjs/config';
 
-
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, }), PrismaModule, UsersModule, AuthModule, MailModule, TransactionModule,],
-  controllers: [AppController, AuthController, TransactionController, AdminController],
-  providers: [AppService, AuthService, JwtService, UsersService, TransactionService, AdminService],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    UsersModule,
+    AuthModule,
+    MailModule,
+    TransactionModule,
+  ],
+  controllers: [
+    AppController,
+    AuthController,
+    TransactionController,
+    AdminController,
+  ],
+  providers: [
+    AppService,
+    AuthService,
+    JwtService,
+    UsersService,
+    TransactionService,
+    AdminService,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

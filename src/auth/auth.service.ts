@@ -5,149 +5,177 @@ import { JwtService } from '@nestjs/jwt';
 import { loginUserDto } from './dto/login-user.dto';
 import { MailService } from 'src/mail/mail.service';
 import { User } from '@prisma/client';
-import randomize from 'randomatic'
-import { hash, compare } from 'bcrypt'
-
-
+import randomize from 'randomatic';
+import { hash, compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-    constructor(private prisma: PrismaService,
-        private jwtService: JwtService,
-        private usersService: UsersService,
-        private mailService: MailService
-    ) { }
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private usersService: UsersService,
+    private mailService: MailService,
+  ) {}
 
-    async validateUser(loginInfo: loginUserDto): Promise<any> {
-        const { email, password } = loginInfo;
+  async validateUser(loginInfo: loginUserDto): Promise<any> {
+    const { email, password } = loginInfo;
 
-
-        if (!email || !password) {
-            throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
-        }
-
-
-        const user = await this.usersService.findUserByEmail(email);
-        if (!user) {
-            throw new HttpException('Invalid Login Credentials', HttpStatus.UNAUTHORIZED)
-        }
-
-        const isPasswordValid = await compare(password, user.password)
-
-        if (!isPasswordValid) {
-            throw new HttpException('Invalid Login Credentials Password', HttpStatus.UNAUTHORIZED)
-        }
-
-        await this.mailService.sendVerificationMail("enegxi@gmail.com", "Joshua", "8080",)
-
-        return user;
-
+    if (!email || !password) {
+      throw new HttpException(
+        'All fields are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-
-    async loginWithCredentials(user: any) {
-        //remove password from the userInfo 
-        const { password: _, ...result } = user;
-        return {
-            access_token: this.jwtService.sign(user.id, {
-                secret: `${process.env.JWT_SECRET}`,
-            }),
-            ...result,
-        }
+    const user = await this.usersService.findUserByEmail(email);
+    if (!user) {
+      throw new HttpException(
+        'Invalid Login Credentials',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
+    const isPasswordValid = await compare(password, user.password);
 
-    async forgotPassword(email: string) {
-        const user = await this.usersService.findUserByEmail(email);
-
-        if (!user) {
-            throw new HttpException('Invalid Login Credentials', HttpStatus.UNAUTHORIZED)
-        }
-
-        // Generate OTP
-        const otp = randomize('0', 6)
-
-        // Update the user with the new OTP
-        await this.prisma.user.update({
-            where: {
-                email
-            },
-            data: {
-                otp: Number(otp)
-            }
-        })
-
-        // Send the OTP to the user's email
-        await this.mailService.sendPasswordResetMail(email, user.firstName, otp)
-
-        return {
-            status: 'success',
-            message: 'We have sent a verification code to your email.'
-        }
+    if (!isPasswordValid) {
+      throw new HttpException(
+        'Invalid Login Credentials Password',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-    async verifyForgetOTP(otp: number) {
+    await this.mailService.sendVerificationMail(
+      'enegxi@gmail.com',
+      'Joshua',
+      '8080',
+    );
 
-        const user = await this.prisma.user.findUnique({
-            where: <any>{
-                otp
-            }
-        })
+    return user;
+  }
 
-        if (!user) {
-            throw new HttpException('Invalid Verification Code', HttpStatus.UNAUTHORIZED)
-        }
+  async loginWithCredentials(user: any) {
+    //remove password from the userInfo
+    const { password: _, ...result } = user;
+    return {
+      access_token: this.jwtService.sign(user.id, {
+        secret: `${process.env.JWT_SECRET}`,
+      }),
+      ...result,
+    };
+  }
 
-        await this.prisma.user.update({
-            where: {
-                id: user.id
-            },
-            data: {
-                otp: null
-            }
-        })
+  async forgotPassword(email: string) {
+    const user = await this.usersService.findUserByEmail(email);
 
-        return {
-            status: 'success',
-            message: 'Verification Successful',
-            data: {
-                id: user.id
-            }
-        }
+    if (!user) {
+      throw new HttpException(
+        'Invalid Login Credentials',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-    async resetPassword(id: string, otp: number, password: string) {
+    // Generate OTP
+    const otp = randomize('0', 6);
 
-        if (!id || !otp || !password) {
-            throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
-        }
+    // Update the user with the new OTP
+    await this.prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        otp: Number(otp),
+      },
+    });
 
-        const user = await this.usersService.findUserById(id);
+    // Send the OTP to the user's email
+    await this.mailService.sendPasswordResetMail(email, user.firstName, otp);
 
-        if (!user) {
-            throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED)
-        }
+    return {
+      status: 'success',
+      message: 'We have sent a verification code to your email.',
+    };
+  }
 
-        if (user.otp !== otp) {
-            throw new HttpException('Invalid Verification Code', HttpStatus.UNAUTHORIZED)
-        }
+  async verifyForgetOTP(otp: number) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        otp
+      },
+    });
 
-        // hash password if user doesn't exist
-        const hashedPassword = await hash(password, 10)
-        // Update the user with the new password
-        await this.prisma.user.update({
-            where: {
-                id: user.id
-            },
-            data: {
-                password: hashedPassword
-            }
-        })
-
-        return {
-            status: 'success',
-            message: 'Password Reset Successfully. Login To Continue Using Payyng'
-        }
+    if (!user) {
+      throw new HttpException(
+        'Invalid Verification Code',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
+
+    if (!user) {
+        throw new HttpException(
+            'Invalid Verification Code',
+            HttpStatus.UNAUTHORIZED,
+        );
+    }
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        otp: null,
+      },
+    });
+
+    //Sign the User Login Authentication 
+
+    return {
+      status: 'success',
+      message: 'Verification Successful',
+      user: {
+        id: user.id,
+        access_token: this.jwtService.sign(user.id, {
+            secret: `${process.env.JWT_SECRET}`,
+          }),
+      },
+    };
+  }
+
+  async resetPassword(id: string, otp: number, password: string) {
+    if (!id || !otp || !password) {
+      throw new HttpException(
+        'All fields are required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const user = await this.usersService.findUserById(id);
+
+    if (!user) {
+      throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
+    }
+
+    if (user.otp !== otp) {
+      throw new HttpException(
+        'Invalid Verification Code',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    // hash password if user doesn't exist
+    const hashedPassword = await hash(password, 10);
+    // Update the user with the new password
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Password Reset Successfully. Login To Continue Using Payyng',
+    };
+  }
 }
-
