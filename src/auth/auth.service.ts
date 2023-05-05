@@ -7,7 +7,6 @@ import { MailService } from 'src/mail/mail.service';
 import { User } from '@prisma/client';
 import randomize from 'randomatic';
 import { hash, compare } from 'bcrypt';
-
 @Injectable()
 export class AuthService {
   constructor(
