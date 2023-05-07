@@ -21,5 +21,5 @@ export class createBillDto {
     @IsNotEmpty() readonly biller_name: string;
 
     @ApiProperty()
-    @IsNotEmpty() readonly customer: any;
+    @IsNotEmpty() readonly customer: string;
 }

@@ -6,11 +6,10 @@ import {
     IsString,
 } from 'class-validator';
 
-export class createAccountDto {
+export class BVNverificationDto {
 
     @ApiProperty()
-    @IsNotEmpty() readonly email: string;
-
+    @IsNotEmpty() readonly id: string;
 
     @ApiProperty()
     @IsNotEmpty()

@@ -44,8 +44,8 @@ export class AuthService {
     }
 
     await this.mailService.sendVerificationMail(
-      'enegxi@gmail.com',
-      'Joshua',
+      user.email,
+      user.firstName,
       '8080',
     );
 
@@ -131,10 +131,10 @@ export class AuthService {
       status: 'success',
       message: 'Verification Successful',
       user: {
-        id: user.id,
         access_token: this.jwtService.sign(user.id, {
             secret: `${process.env.JWT_SECRET}`,
           }),
+        ...user,
       },
     };
   }

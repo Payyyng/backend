@@ -6,8 +6,20 @@ import {
     IsString,
 } from 'class-validator';
 
-export class updateUserDto {
+export class UpdateUserDto {
 
-    // @ApiProperty()
+    @ApiProperty()
+    @IsNotEmpty() readonly id: string;
 
+    @ApiProperty()
+    @IsNotEmpty() readonly firstName: string;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly lastName: string;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly bvn: number;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly phone: number;
 }

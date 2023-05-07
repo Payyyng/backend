@@ -6,14 +6,14 @@ import {
     IsString,
 } from 'class-validator';
 
-export class createAccountDto {
+export class ValidateBillDto {
 
     @ApiProperty()
-    @IsNotEmpty() readonly email: string;
-
+    @IsNotEmpty() readonly code: string;
 
     @ApiProperty()
-    @IsNotEmpty()
-    readonly bvn: number;
+    @IsNotEmpty() readonly customer: string;
 
+    @ApiProperty()
+    @IsNotEmpty() readonly item_code: string;
 }

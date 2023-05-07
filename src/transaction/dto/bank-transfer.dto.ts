@@ -6,7 +6,7 @@ import {
     IsString,
 } from 'class-validator';
 
-export class bankTransferDto {
+export class BankTransferDto {
 
     @ApiProperty()
     @IsNotEmpty() readonly id: string;

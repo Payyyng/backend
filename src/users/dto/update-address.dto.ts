@@ -7,9 +7,6 @@ import {
 export class UpdateAddressDto {
 
     @ApiProperty()
-    @IsNotEmpty() readonly id: string;
-
-    @ApiProperty()
     @IsNotEmpty()
     readonly city: string;
 

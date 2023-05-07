@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 
 import { ApiBody,} from '@nestjs/swagger';
 import { LocalAuthGuard } from './local-auth.guard';
-import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import { ResetPasswordDto } from './dto/reset-password-dto';
 
 
 @Controller('auth')
@@ -22,7 +22,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  // @ApiBody({ type: loginUserDto })
+  @ApiBody({ type: loginUserDto })
   async loginUser(@Request() req) {
     return this.authService.loginWithCredentials(req.user);
   }
@@ -50,6 +50,7 @@ export class AuthController {
   }
 
   @Post('reset-password')
+  @ApiBody({type: ResetPasswordDto})
   async resetPassword(@Body() email: string, otp: number, password: string) {
     return this.authService.resetPassword(email, otp, password);
   }

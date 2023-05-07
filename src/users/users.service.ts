@@ -8,9 +8,10 @@ import { hash, compare } from 'bcrypt';
 import randomize from 'randomatic';
 import axios from 'axios';
 import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
+import { Console } from 'console';
 
 const BASE_API_URL = process.env.FLW_API_URL
-const SECRET_KEY = process.env.FLW_SECRET_KEY 
+const SECRET_KEY = process.env.FLW_SECRET_KEY
 
 console.log(BASE_API_URL, SECRET_KEY, "flw details")
 
@@ -26,7 +27,7 @@ export class UsersService {
     private prisma: PrismaService,
     private mailService: MailService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async createUser(userInfo: createUserDto): Promise<RegistrationStatus> {
     const { email, password, firstName, lastName, phone } = userInfo;
@@ -240,88 +241,87 @@ export class UsersService {
     };
   }
 
-  async updateAddress ({state, city, lga, address, id}: any) {
-     if (!state || !city || !lga || !address) {
-        throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
-     }
+  async updateAddress({ state, city, lga, address, id }: any) {
+    if (!state || !city || !lga || !address) {
+      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+    }
 
-     try {
-        const updatedUser = await this.prisma.user.update({
-           where: {
-              id: id
-           },
-           data:  <any> {
-                 create:{
-                    state,
-                    city,
-                    lga,
-                    address
-                 }
-              
-           }
-        })
-
-        if (!updatedUser) {
-           throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: {
+         id
+        },
+        data: <any> {
+          state,
+          lga,
+          city,
+          address
         }
+      })
 
-        return {
-           status: 'success',
-           message: 'Address Updated Successfully'
-        }
+      console.log("entered, after")
 
-     } catch(err) {
-        throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
-     }
+      if (!updatedUser) {
+        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+      }
+
+      return {
+        status: 'success',
+        message: 'Address Updated Successfully'
+      }
+
+    } catch (err) {
+      throw new HttpException("Something went wrong. Please Try Again", HttpStatus.GATEWAY_TIMEOUT);
+    }
   }
 
-  async updateTransactionPin ({id, current_pin, new_pin}: UpdateTransactionPinDto){
+  async updateTransactionPin({ id, current_pin, new_pin }: UpdateTransactionPinDto) {
 
-        if (!current_pin || !new_pin || !id ) {
-            throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+    if (!current_pin || !new_pin || !id) {
+      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id
         }
-    
-        try {
-            const user = await this.prisma.user.findUnique({
-            where: {
-                id
-            }
-            })
-    
-            if (!user) {
-            throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
-            }
-    
-            const isMatch = await compare(current_pin.toString(), user.pin);
-    
-            if (!isMatch) {
-            throw new HttpException('Invalid Transaction Pin', HttpStatus.BAD_REQUEST);
-            }
-    
-            const convert = new_pin.toString();
-            const hashedPin = await hash(convert, 10);
-    
-            const updatedUser = await this.prisma.user.update({
-            where: {
-                id
-            },
-            data:  <any> {
-                pin: hashedPin
-            }
-            })
-    
-            if (!updatedUser) {
-            throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
-            }
-    
-            return {
-            status: 'success',
-            message: 'Transaction Pin Updated Successfully'
-            }
-    
-        } catch(err) {
-            throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+      })
+
+      if (!user) {
+        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+      }
+
+      const isMatch = await compare(current_pin.toString(), user.pin);
+
+      if (!isMatch) {
+        throw new HttpException('Invalid Transaction Pin', HttpStatus.BAD_REQUEST);
+      }
+
+      const convert = new_pin.toString();
+      const hashedPin = await hash(convert, 10);
+
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          id
+        },
+        data: <any>{
+          pin: hashedPin
         }
+      })
+
+      if (!updatedUser) {
+        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+      }
+
+      return {
+        status: 'success',
+        message: 'Transaction Pin Updated Successfully'
+      }
+
+    } catch (err) {
+      throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+    }
   }
 
 
@@ -336,7 +336,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('User with the ID not found', HttpStatus.NOT_FOUND);
     }
 
     const updatedUser = await this.prisma.user.update({
@@ -372,6 +372,7 @@ export class UsersService {
   }
 
   async findUserById(id: string): Promise<any> {
+    
     try {
       return await this.prisma.user.findUnique({
         where: {
@@ -383,6 +384,8 @@ export class UsersService {
     }
   }
 
+  // async getUserDetails(id:)
+
   /**
    * @param data
    * @access PUBLIC
@@ -390,6 +393,7 @@ export class UsersService {
    * @returns
    */
   async createBankAccount(email: string, bvn: number) {
+
     if (!email || !bvn) {
       throw new HttpException(
         'All fields are required',
@@ -417,126 +421,106 @@ export class UsersService {
 
     if (response.data.status !== 'success') {
       throw new HttpException(
-        'Something went wrong. Please try again',
+        response.data,
         HttpStatus.GATEWAY_TIMEOUT,
       );
     }
 
     // Save The Account Number in DataBase
-
+    console.log (response.data, "THE RESSSS")
     return response.data;
   }
 
-  async updatePassword ( {id, current_password, new_password}: any) {
-    
-        if (!current_password || !new_password || !id ) {
-            throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+  async updatePassword({ id, current_password, new_password }: any) {
+
+    if (!current_password || !new_password || !id) {
+      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id
         }
-    
-        try {
-            const user = await this.prisma.user.findUnique({
-            where: {
-                id
-            }
-            })
-    
-            if (!user) {
-            throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
-            }
-    
-            const isMatch = await compare(current_password, user.password);
-    
-            if (!isMatch) {
-            throw new HttpException('Invalid Password', HttpStatus.BAD_REQUEST);
-            }
-    
-            const convert = new_password.toString();
-            const hashedPassword = await hash(convert, 10);
-    
-            const updatedUser = await this.prisma.user.update({
-            where: {
-                id
-            },
-            data:  <any> {
-                password: hashedPassword
-            }
-            })
-    
-            if (!updatedUser) {
-            throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
-            }
-    
-            return {
-            status: 'success',
-            message: 'Password Updated Successfully'
-            }
-    
-        } catch(err) {
-            throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+      })
+
+      if (!user) {
+        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+      }
+
+      const isMatch = await compare(current_password, user.password);
+
+      if (!isMatch) {
+        throw new HttpException('Invalid Password', HttpStatus.BAD_REQUEST);
+      }
+
+      const convert = new_password.toString();
+      const hashedPassword = await hash(convert, 10);
+
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          id
+        },
+        data: <any>{
+          password: hashedPassword
         }
+      })
+
+      if (!updatedUser) {
+        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+      }
+
+      return {
+        status: 'success',
+        message: 'Password Updated Successfully'
+      }
+
+    } catch (err) {
+      throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+    }
   }
 
-  async verifyUserBvn ({id, bvn}: any){
+  async verifyUserBvn(id:string, bvn:number ) {
     
-            if (!bvn || !id ) {
-                throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
-            }
-        
-            try {
-                const user = await this.prisma.user.findUnique({
-                where: {
-                    id
-                }
-                })
-        
-                if (!user) {
-                throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
-                }
+    console.log(bvn, id, "ENTEREEE")
 
-                const config = {
-                method: 'GET',
-                url: `${BASE_API_URL}/bvn/verifications`,
-                headers: {
-                    Authorization: `Bearer ${SECRET_KEY}`,
-                    'Content-Type': 'application/json',
-                },
-                body:{
-                    bvn: bvn,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                }
-                };
-        
-                const {data} = await axios(config);
-        
-                if (data.status !== 'success') {
-                throw new HttpException(
-                    'Invalid BVN Number Provided',
-                    HttpStatus.GATEWAY_TIMEOUT,
-                );
-                }
-        
-                const updatedUser = await this.prisma.user.update({
-                where: {
-                    id
-                },
-                data:  <any> {
-                    bvn_verified: true
-                }
-                })
-        
-                if (!updatedUser) {
-                throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
-                }
-        
-                return {
-                status: 'success',
-                message: 'BVN Verified Successfully'
-                }
-        
-            } catch(err) {
-                throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
-            }
+    if (!bvn || !id) {
+      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+    }
+
+    console.log("before")
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id
+        }
+      })
+
+      console.log("AFTER")
+      console.log(user, "THE USER")
+
+      if (!user) {
+        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+      }
+
+
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          id
+        },
+        data: <any>{
+          bvn: bvn
+        }
+      })
+
+      return {
+        status: 'success',
+        message: 'BVN Verified Successfully'
+      }
+
+    } catch (err) {
+      new HttpException("message", 400, { cause: new Error(err) })
+    }
   }
 
 

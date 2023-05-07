@@ -30,16 +30,17 @@ export class MailService {
         });
     }
 
-    async sendTransactionNotificationEmail(email: string, firstName: string, status: string, amount: number, trx_type: string) {
+    async sendTransactionNotificationEmail(email: string, reference:string, type:string, customer: any, firstName: string, status: string, amount: number, biller_name: string) {
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Transaction Notification',
+            subject: 'Payyng Transaction Notification',
             template: './transaction',
             context: {
                 firstName,
                 status,
                 amount,
-                trx_type
+                biller_name,
+                reference, customer, type
             },
         });
     }
