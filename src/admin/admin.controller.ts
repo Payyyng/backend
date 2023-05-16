@@ -14,4 +14,25 @@ export class AdminController {
     async disableUserAccount(@Body('id') id: string) {
         return this.adminService.disableUserAccount(id);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('enable-user-account')
+    @ApiBody({ type: String })
+    async enableUserAccount(@Body('id') id: string) {
+        return this.adminService.enableUserAccount(id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('get-all-users')
+    async getAllUsers() {
+        return this.adminService.getAllUsers();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('get-all-transactions')
+    async getAllTransactions() {
+        return this.adminService.getAllTransactions();
+    }
+    
+
 }

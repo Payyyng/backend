@@ -63,6 +63,8 @@ export class AuthService {
     };
   }
 
+  
+
   async forgotPassword(email: string) {
     const user = await this.usersService.findUserByEmail(email);
 

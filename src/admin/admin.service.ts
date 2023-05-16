@@ -45,6 +45,36 @@ export class AdminService {
         }
     }
 
+    async enableUserAccount(id: string): Promise<any> {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        })
+        if (!user) {
+            throw new HttpException("User not found", HttpStatus.NOT_FOUND)
+        }
+
+        const updatedUser = await this.prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                isActive: true
+            }
+        })
+
+        if (!updatedUser) {
+            throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
+        }
+
+        return {
+            status: 'success',
+            message: 'Account Enabled Successfully'
+        }
+
+    }
+
 
     //Get All Users Details 
 

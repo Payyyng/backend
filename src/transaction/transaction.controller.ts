@@ -48,4 +48,7 @@ export class TransactionController {
     verifyBill(@Body() {item_code, customer, code}: ValidateBillDto) {
         return this.transactionService.validateBill(customer, item_code, code);
     }
+    
+
+
 }
