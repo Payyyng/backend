@@ -6,8 +6,8 @@
 
     "assets": [
       {
-        "include": "mail/templates/**/*.hbs",
-        "outDir": "dist/src"
+        "include": "./src/mail/templates/**/*.hbs",        
+        "outDir": "./dist/mail/"
       }
     ],
     "watchAssets": true
