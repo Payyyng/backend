@@ -63,7 +63,7 @@ console.log(email, password, "DETAILS ENTERED")
 
     //Send Verification Email To The User
 
-    await this.mailService.sendVerificationMail(email, firstName, otp);
+    // await this.mailService.sendVerificationMail(email, firstName, otp);
 
     // hash password if user doesn't exist
     const hashedPassword = await hash(password, 10);
