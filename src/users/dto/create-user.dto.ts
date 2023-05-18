@@ -9,14 +9,13 @@ import {
 export class createUserDto {
 
     @ApiProperty()
-    @IsNotEmpty() readonly firstName: string;
+    @IsNotEmpty() firstName: string;
 
     @ApiProperty()
-    @IsNotEmpty()
-    readonly lastName: string;
+    @IsNotEmpty() lastName: string;
 
     @ApiProperty()
-    @IsEmail() readonly email: string;
+    @IsEmail() email: string;
 
     @ApiProperty()
     @IsNotEmpty()
@@ -25,5 +24,5 @@ export class createUserDto {
     password: string;
 
     @ApiProperty()
-    readonly phone: string;
+    phone: string;
 }

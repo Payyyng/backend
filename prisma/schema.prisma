@@ -13,7 +13,7 @@ model User {
   firstName     String
   lastName      String
   password      String
-  phone         Int
+  phone         String
   address       String?
   city          String?
   state         String?

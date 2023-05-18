@@ -33,8 +33,8 @@ export class UsersController {
 
     @Post('register')
     @ApiBody({ type: createUserDto })
-    createUser(@Body() userInfo: createUserDto) {
-        return this.userService.createUser(userInfo);
+    createUser(@Body() {firstName, lastName, email, phone, password}: createUserDto) {
+        return this.userService.createUser({firstName, lastName, email, phone, password});
     }
 
     @Post('verify')

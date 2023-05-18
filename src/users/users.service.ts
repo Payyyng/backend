@@ -18,7 +18,7 @@ console.log(BASE_API_URL, SECRET_KEY, "flw details")
 export interface RegistrationStatus {
   status: string;
   message: string;
-  userId: any;
+  id: any;
 }
 
 @Injectable()
@@ -29,8 +29,9 @@ export class UsersService {
     private jwtService: JwtService,
   ) { }
 
-  async createUser(userInfo: createUserDto): Promise<RegistrationStatus> {
-    const { email, password, firstName, lastName, phone } = userInfo;
+  async createUser({firstName, lastName, email, phone, password}: createUserDto): Promise<RegistrationStatus> {
+    
+console.log(email, password, "DETAILS ENTERED")
 
     //check if any of the userinfo is not provided
     if (!email || !password || !firstName || !lastName || !phone) {
@@ -42,7 +43,7 @@ export class UsersService {
 
     // check if email already exists
     const userExists = await this.prisma.user.findUnique({
-      where: {
+      where: <any> {
         email: email,
       },
     });
@@ -70,7 +71,10 @@ export class UsersService {
 
     const newUser = await this.prisma.user.create({
       data: <any>{
-        ...userInfo,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
         password: hashedPassword,
         otp: Number(otp),
         promoCode: promoCode,
@@ -87,7 +91,7 @@ export class UsersService {
     const status: RegistrationStatus = {
       status: 'success',
       message: 'Account Registered Sucessfully',
-      userId: newUser.id,
+      id: newUser.id,
     };
 
     return status;
