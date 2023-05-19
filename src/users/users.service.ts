@@ -59,7 +59,7 @@ console.log(email, password, "DETAILS ENTERED")
     }
 
     //Generate Otp Code
-    const otp = randomize('0', 4);
+    const otp = randomize('0', 6);
     //Generate Promo Code
 
     const promoCode = randomize('A', 8);
