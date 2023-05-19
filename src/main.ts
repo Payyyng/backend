@@ -33,6 +33,20 @@ bootstrap();
 
 
 
-
+// {
+  //   "$schema": "https://json.schemastore.org/nest-cli",
+  //   "collection": "@nestjs/schematics",
+  //   "sourceRoot": "src",
+  //   "compilerOptions": {
+  
+  //     "assets": [
+  //       {
+  //         "include": "./src/mail/templates/**/*.hbs",        
+  //         "outDir": "./dist/mail"
+  //       }
+  //     ],
+  //     "watchAssets": true
+  //   }
+  // }
 
 
