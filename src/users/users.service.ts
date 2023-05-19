@@ -49,10 +49,13 @@ console.log(email, password, "DETAILS ENTERED")
     });
 
     if (userExists) {
-      throw new HttpException(
-        `Account already exist. Please login to continue`,
-        HttpStatus.CONFLICT,
-      );
+
+      const status: RegistrationStatus = {
+        status: `${HttpStatus.CONFLICT}`,
+        message: 'Account Already Exist. Please login to continue using payyng',
+        id: null
+      };
+      return status
     }
 
     //Generate Otp Code
@@ -82,10 +85,12 @@ console.log(email, password, "DETAILS ENTERED")
     });
 
     if (!newUser) {
-      throw new HttpException(
-        'Something went wrong. Please try again',
-        HttpStatus.SERVICE_UNAVAILABLE,
-      );
+      const status: RegistrationStatus = {
+        status: `${HttpStatus.SERVICE_UNAVAILABLE}`,
+        message: 'Something Went Wrong. Please Try Again ',
+        id: newUser.id,
+      }
+      return status
     }
 
     const status: RegistrationStatus = {
