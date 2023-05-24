@@ -329,7 +329,7 @@ console.log(email, password, "DETAILS ENTERED")
       }
 
     } catch (err) {
-      throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+      throw new HttpException(err, HttpStatus.GATEWAY_TIMEOUT);
     }
   }
 
@@ -497,7 +497,7 @@ console.log(email, password, "DETAILS ENTERED")
       throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
     }
 
-    console.log("before")
+
     try {
       const user = await this.prisma.user.findUnique({
         where: {
@@ -528,7 +528,7 @@ console.log(email, password, "DETAILS ENTERED")
       }
 
     } catch (err) {
-      new HttpException("message", 400, { cause: new Error(err) })
+      throw new HttpException(err, HttpStatus.SERVICE_UNAVAILABLE);
     }
   }
 

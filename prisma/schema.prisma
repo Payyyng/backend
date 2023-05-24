@@ -63,9 +63,10 @@ model Balance {
 
 model Bank {
   id               String       @id @default(auto()) @map("_id") @db.ObjectId
-  account_bank     Int
-  account_number   Int
+  account_bank     String
+  account_number   String
   beneficiary_name String
+  bank_name        String?
   amount           Int
   reference        String
   currency         String       @default("NGN")

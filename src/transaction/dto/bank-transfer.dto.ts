@@ -15,14 +15,17 @@ export class BankTransferDto {
     @IsNotEmpty() readonly account_bank: string;
 
     @ApiProperty()
-    @IsNotEmpty() readonly account_number: number;
+    @IsNotEmpty() readonly account_number: string;
 
     @ApiProperty()
-    @IsNotEmpty() readonly amount: any;
+    @IsNotEmpty() readonly bank_name: string;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly amount: number;
 
     @ApiProperty()
     @IsNotEmpty() readonly narration: string;
 
     @ApiProperty()
-    @IsNotEmpty() readonly beneficiary_namey: string;
+    @IsNotEmpty() readonly beneficiary_name: string;
 }

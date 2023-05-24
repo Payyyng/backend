@@ -1,7 +1,6 @@
-import { Controller, Post, Get, Body, Param, Patch, UseGuards, Request} from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, UseGuards} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ApiBody } from '@nestjs/swagger';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('admin')
 export class AdminController {
