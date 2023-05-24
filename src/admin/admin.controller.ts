@@ -23,16 +23,14 @@ export class AdminController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('get-all-users')
+    @Get('users')
     async getAllUsers() {
         return this.adminService.getAllUsers();
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('get-all-transactions')
+    @Get('transactions')
     async getAllTransactions() {
         return this.adminService.getAllTransactions();
     }
-    
-
 }

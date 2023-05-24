@@ -66,16 +66,26 @@ export class AuthService {
   
 
   async forgotPassword(email: string) {
-    const user = await this.usersService.findUserByEmail(email);
+    console.log(email, "ENTERED")
 
-    if (!user) {
-      throw new HttpException(
-        'Invalid Login Credentials',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
+    if (!email) {
+      return new HttpException(
+          'Email is Required',
+          HttpStatus.UNAUTHORIZED,
+      )
+  }
 
-    // Generate OTP
+    try {
+      const user = await this.usersService.findUserByEmail(email);
+
+      if (!user) {
+        throw new HttpException(
+          'Invalid Credentials',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      // Generate OTP
     const otp = randomize('0', 6);
 
     // Update the user with the new OTP
@@ -93,8 +103,16 @@ export class AuthService {
 
     return {
       status: 'success',
-      message: 'We have sent a verification code to your email.',
+      message: 'We have sent a verification code to your email. You will received a verification email shortly if the account exist.',
     };
+
+    } catch (err) {
+return err
+    }
+
+
+
+    
   }
 
   async verifyForgetOTP(otp: number) {

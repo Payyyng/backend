@@ -106,10 +106,10 @@ console.log(email, password, "DETAILS ENTERED")
     //check if there's no otp
 
     if (!otp || !id) {
-      throw new HttpException(
-        'Otp and Id  is required',
-        HttpStatus.BAD_REQUEST,
-      );
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message:'Otp and Id  is required',
+      }
     }
 
     const user = await this.prisma.user.findFirst({
