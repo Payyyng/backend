@@ -13,7 +13,7 @@ import { Console } from 'console';
 const BASE_API_URL = process.env.FLW_API_URL
 const SECRET_KEY = process.env.FLW_SECRET_KEY
 
-console.log(BASE_API_URL, SECRET_KEY, "flw details")
+// console.log(BASE_API_URL, SECRET_KEY, "flw details")
 
 export interface RegistrationStatus {
   status: string;
@@ -159,7 +159,7 @@ console.log(email, password, "DETAILS ENTERED")
 
   async createUserPin(id: string, pin: number): Promise<any> {
     console.log(id, 'THE ID');
-    console.log(BASE_API_URL, SECRET_KEY, "flw details")
+    // console.log(BASE_API_URL, SECRET_KEY, "flw details")
 
     if (!pin || !id) {
       throw new HttpException('Pin and ID is required', HttpStatus.BAD_REQUEST);

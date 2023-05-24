@@ -71,7 +71,7 @@ export class AuthService {
     if (!email) {
       throw new HttpException(
           'Email is Required',
-          HttpStatus.UNAUTHORIZED,
+          HttpStatus.UNPROCESSABLE_ENTITY
       )
   }
 
@@ -80,8 +80,8 @@ export class AuthService {
 
       if (!user) {
         throw new HttpException(
-          'Invalid Credentials',
-          HttpStatus.UNAUTHORIZED,
+          "User Doesn't Exist",
+          HttpStatus.UNPROCESSABLE_ENTITY
         );
       }
 
@@ -107,10 +107,7 @@ export class AuthService {
     };
 
     } catch (err) {
-      throw new HttpException(
-        'Invalid Credentials',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw err
     }
 
 
