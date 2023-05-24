@@ -123,24 +123,25 @@ export class TransactionService {
     * @returns 
     */
 
-    async verifyTransaction(reference) {
-        console.log(reference, "ENTERED")
+    async verifyTransaction(ref) {
+        console.log(ref, "ENTERED")
+        const {reference} = ref
+        
+        console.log(reference, "THE REFERENCE")
 
         if (!reference) {
             throw new HttpException('Transaction Reference is required', HttpStatus.UNPROCESSABLE_ENTITY)
         }
 
         try {
-            const payload = {
-                reference: reference,
-            }
+            const payload = ref
+            
             const response = await flw.Bills.fetch_status(payload)
 
             console.log(response, "THE RESPONSE HERE")
             return {
                 status: "success",
                 message: response.message
-
             }
         } catch (error) {
             throw new HttpException('Something went wrong verifying this transaction', HttpStatus.SERVICE_UNAVAILABLE)

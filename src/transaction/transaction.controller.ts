@@ -29,10 +29,10 @@ export class TransactionController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('verify-trasanction')
+    @Get('verify/:reference')
     @ApiBody({   type: VerifyBillDTO }
     )
-    verifyTransaction(@Body() reference: string) {
+    verifyTransaction(@Param() reference: string) {
         return this.transactionService.verifyTransaction(reference);
     }
 
