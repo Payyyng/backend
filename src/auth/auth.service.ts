@@ -69,7 +69,7 @@ export class AuthService {
     console.log(email, "ENTERED")
 
     if (!email) {
-      return new HttpException(
+      throw new HttpException(
           'Email is Required',
           HttpStatus.UNAUTHORIZED,
       )
@@ -107,7 +107,10 @@ export class AuthService {
     };
 
     } catch (err) {
-return err
+      throw new HttpException(
+        'Invalid Credentials',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
 
