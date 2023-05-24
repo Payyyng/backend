@@ -21,7 +21,7 @@ import { join } from 'path';
           },
         },
         defaults: {
-          from: `"Payyng Support" <${config.get('MAIL_FROM')}>`,
+          from: `"Payyng" <${config.get('MAIL_FROM')}>`,
         },
         template: {
           dir: join(__dirname, 'templates'),

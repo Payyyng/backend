@@ -45,5 +45,17 @@ export class MailService {
         });
     }
 
+    async sendBankTransferNotificationEmail(email: string, firstName: string, amount:number) {
+        await this.mailerService.sendMail({
+            to: email,
+            subject: 'Payyng Bank Transfer Notification',
+            template: './bankTransfer',
+            context: {
+                firstName,
+                amount,
+            },
+        });
+    }
+
 }
 

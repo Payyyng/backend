@@ -73,43 +73,43 @@ export class TransactionService {
             }
 
             const response = await flw.Bills.create_bill(payload);
-  
+
             if (response.status === "success") {
-              // Save the transaction in the database
-              const transaction = await this.prisma.transaction.create({
-                data: {
-                  amount: amount,
-                  type: type,
-                  billerName: biller_name,
-                  currency: 'NG',
-                  customer: customer,
-                  reference: reference,
-                  status: "Completed",
-                  user: {
-                    connect: { id: id },
-                  },
-                },
-              });
-          
-              // Send transaction notification email
-              this.mailService.sendTransactionNotificationEmail(
-                user.email,
-                reference,
-                type,
-                customer,
-                user?.firstName,
-                "success",
-                amount,
-                biller_name
-              );
-          
-              return {
-                status: "success",
-                message: "Transaction Successful",
-                data: transaction,
-              };
+                // Save the transaction in the database
+                const transaction = await this.prisma.transaction.create({
+                    data: {
+                        amount: amount,
+                        type: type,
+                        billerName: biller_name,
+                        currency: 'NG',
+                        customer: customer,
+                        reference: reference,
+                        status: "Completed",
+                        user: {
+                            connect: { id: id },
+                        },
+                    },
+                });
+
+                // Send transaction notification email
+                this.mailService.sendTransactionNotificationEmail(
+                    user.email,
+                    reference,
+                    type,
+                    customer,
+                    user?.firstName,
+                    "success",
+                    amount,
+                    biller_name
+                );
+
+                return {
+                    status: "success",
+                    message: "Transaction Successful",
+                    data: transaction,
+                };
             } else {
-              throw new HttpException(response, HttpStatus.EXPECTATION_FAILED);
+                throw new HttpException(response, HttpStatus.EXPECTATION_FAILED);
             }
 
         } catch (error) {
@@ -123,7 +123,8 @@ export class TransactionService {
     * @returns 
     */
 
-    async verifyTransaction(reference: string) {
+    async verifyTransaction(reference) {
+        console.log(reference, "ENTERED")
 
         if (!reference) {
             throw new HttpException('Transaction Reference is required', HttpStatus.UNPROCESSABLE_ENTITY)
@@ -134,6 +135,8 @@ export class TransactionService {
                 reference: reference,
             }
             const response = await flw.Bills.fetch_status(payload)
+
+            console.log(response, "THE RESPONSE HERE")
             return {
                 status: "success",
                 message: response.message
@@ -157,7 +160,7 @@ export class TransactionService {
             throw new HttpException('Ensure all transfer information are provided.', HttpStatus.BAD_REQUEST)
         }
 
-        if (amount < 100 ){
+        if (amount < 100) {
             throw new HttpException('Ensure amount is greater than 100', HttpStatus.BAD_REQUEST)
         }
 
@@ -178,16 +181,14 @@ export class TransactionService {
                 reference: reference,
                 narration: narration,
             }
-    
-            // const response = await axios(config)
-    
+
             const response = await flw.Transfer.initiate(payload)
-    
+
             if (response.status !== "success") {
                 throw new HttpException(response, HttpStatus.BAD_REQUEST)
             }
 
-             try {
+            try {
                 const bankTransfer = await this.prisma.bank.create({
                     data: <any>{
                         beneficiary_name: beneficiary_name,
@@ -202,21 +203,29 @@ export class TransactionService {
                         userId: id
                     }
                 })
+
+                //Send Notification Email
+                await this.mailService.sendBankTransferNotificationEmail(
+                    user.email,
+                    user.firstName,
+                    amount
+                )
+
                 return {
                     status: "success",
                     transfer: bankTransfer
                 }
-             } catch (err){
-                    throw new HttpException(err, HttpStatus.BAD_REQUEST)
-             }
-                          // Send transaction notification email
+            } catch (err) {
+                throw new HttpException(err, HttpStatus.BAD_REQUEST)
+            }
+            // Send transaction notification email
 
-        }catch (err) {
+
+
+        } catch (err) {
             console.log(err, "THE ERROR")
-            throw new HttpException(err, HttpStatus.BAD_REQUEST)
+            throw new HttpException("Something Went Wrong. Please try again", HttpStatus.BAD_REQUEST)
         }
-
-     
     }
 
 

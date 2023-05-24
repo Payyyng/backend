@@ -7,5 +7,5 @@ import {
 export class VerifyBillDTO {
     
     @ApiProperty()
-    @IsNotEmpty() readonly id: string;
+    @IsNotEmpty() readonly reference: string;
 }
