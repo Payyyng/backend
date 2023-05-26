@@ -7,7 +7,7 @@ import {
     Patch,
     Put,
     Request,
-    UseGuards, Req
+    UseGuards, Req, HttpException
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { createUserDto } from './dto/create-user.dto';
@@ -21,7 +21,6 @@ import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { isArray } from 'class-validator';
 import { BVNverificationDto } from './dto/bvn-verification-dto';
-import { HttpExceptionFilter } from 'src/http-exception.filter';
 
 interface createAccount {
     email: string,
@@ -38,7 +37,7 @@ export class UsersController {
         try {
             return this.userService.createUser({firstName, lastName, email, phone, password});
         } catch{
-            throw new HttpExceptionFilter
+            throw new HttpException("User with this email already exists", 409);
         }
     }
 
