@@ -35,6 +35,7 @@ export class CardService {
         }
 
         try {
+            
 
         } catch (err) {
             console.log(err)

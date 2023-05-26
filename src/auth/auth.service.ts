@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -69,9 +69,8 @@ export class AuthService {
     console.log(email, "ENTERED")
 
     if (!email) {
-      throw new HttpException(
-          'Email is Required',
-          HttpStatus.UNPROCESSABLE_ENTITY
+      throw new BadRequestException(
+        'Please provide an email address',
       )
   }
 
@@ -107,7 +106,9 @@ export class AuthService {
     };
 
     } catch (err) {
-      throw err
+      throw new BadRequestException(
+        err,
+      )
     }
 
 
