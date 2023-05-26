@@ -13,9 +13,9 @@ async function bootstrap() {
     .setDescription('Backend API INTEGRATION FOR PAYYNG APPLICATION')
     .setVersion('0.1')
     .addTag('payyng')
-    .setContact('Payyng', 'https://payyng.com', 'dev@payyng.com')
+    .setContact('Payyng', 'https://payyng.com', 'support@payyng.com')
     .addBearerAuth()
-    .addServer('http://localhost:3000')
+    .addServer('https://latest-h0i1.onrender.com')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
