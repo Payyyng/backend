@@ -34,11 +34,7 @@ export class UsersController {
     @Post('register')
     @ApiBody({ type: createUserDto })
     createUser(@Body() {firstName, lastName, email, phone, password}: createUserDto) {
-        try {
             return this.userService.createUser({firstName, lastName, email, phone, password});
-        } catch{
-            throw new HttpException("User with this email already exists", 409);
-        }
     }
 
     @Post('verify')
