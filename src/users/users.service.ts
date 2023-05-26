@@ -9,6 +9,7 @@ import randomize from 'randomatic';
 import axios from 'axios';
 import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
 import { Console } from 'console';
+import { response } from 'express';
 
 const BASE_API_URL = process.env.FLW_API_URL
 const SECRET_KEY = process.env.FLW_SECRET_KEY
@@ -49,13 +50,7 @@ console.log(email, password, "DETAILS ENTERED")
     });
 
     if (userExists) {
-
-      const status: RegistrationStatus = {
-        status: `${HttpStatus.CONFLICT}`,
-        message: 'Account Already Exist. Please login to continue using payyng',
-        id: null
-      };
-      return status
+      throw new Error ('Account Already Exist. Please login to continue using payyng')
     }
 
     //Generate Otp Code
@@ -85,12 +80,7 @@ console.log(email, password, "DETAILS ENTERED")
     });
 
     if (!newUser) {
-      const status: RegistrationStatus = {
-        status: `${HttpStatus.SERVICE_UNAVAILABLE}`,
-        message: 'Something Went Wrong. Please Try Again ',
-        id: newUser.id,
-      }
-      return status
+      throw new Error('Something Went Wrong. Please Try Again ')
     }
 
     const status: RegistrationStatus = {
@@ -98,7 +88,6 @@ console.log(email, password, "DETAILS ENTERED")
       message: 'Account Registered Sucessfully',
       id: newUser.id,
     };
-
     return status;
   }
 
@@ -280,7 +269,8 @@ console.log(email, password, "DETAILS ENTERED")
       }
 
     } catch (err) {
-      throw new HttpException("Something went wrong. Please Try Again", HttpStatus.GATEWAY_TIMEOUT);
+      throw new HttpException("Something went wrong. Please Try Again",
+       HttpStatus.GATEWAY_TIMEOUT);
     }
   }
 

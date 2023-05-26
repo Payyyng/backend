@@ -21,6 +21,7 @@ import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { isArray } from 'class-validator';
 import { BVNverificationDto } from './dto/bvn-verification-dto';
+import { HttpExceptionFilter } from 'src/http-exception.filter';
 
 interface createAccount {
     email: string,
@@ -34,7 +35,11 @@ export class UsersController {
     @Post('register')
     @ApiBody({ type: createUserDto })
     createUser(@Body() {firstName, lastName, email, phone, password}: createUserDto) {
-        return this.userService.createUser({firstName, lastName, email, phone, password});
+        try {
+            return this.userService.createUser({firstName, lastName, email, phone, password});
+        } catch{
+            throw new HttpExceptionFilter
+        }
     }
 
     @Post('verify')
