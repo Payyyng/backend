@@ -16,8 +16,6 @@ import { AdminController } from './admin/admin.controller';
 import { AdminService } from './admin/admin.service';
 import { ConfigModule } from '@nestjs/config';
 import { CardModule } from './card/card.module';
-// import { APP_FILTER } from '@nestjs/core';
-// import { HttpExceptionFilter } from './http-exception.filter';
 
 
 @Module({
@@ -44,10 +42,6 @@ import { CardModule } from './card/card.module';
     UsersService,
     TransactionService,
     AdminService,
-    // {
-    //   provide: APP_FILTER,
-    //   useClass: HttpExceptionFilter,
-    // },
   ],
 
 
