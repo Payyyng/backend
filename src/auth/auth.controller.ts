@@ -55,6 +55,12 @@ export class AuthController {
     return this.authService.resetPassword(email, otp, password);
   }
 
+  @Post('send-otp')
+  @ApiBody({ type: String })
+  async sendOtp (@Body() {id}: any) {
+    return this.authService.sendOTP(id);
+  }
+
   @Post('logout')
   logout(@Body() userInfo: loginUserDto) {
     /* TODO document why this method 'logout' is empty */

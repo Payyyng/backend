@@ -4,9 +4,12 @@ import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { loginUserDto } from './dto/login-user.dto';
 import { MailService } from 'src/mail/mail.service';
-import { User } from '@prisma/client';
 import randomize from 'randomatic';
 import { hash, compare } from 'bcrypt';
+
+import { Headers} from '@nestjs/common';
+import DeviceDetector, { DeviceDetectorResult, DeviceDetectorOptions } from "device-detector-js";
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,7 +29,7 @@ export class AuthService {
       );
     }
 
-    const user = await this.usersService.findUserByEmail(email);
+    const user = await this.usersService.findUserByEmail(email.toLowerCase());
     if (!user) {
       throw new HttpException(
         'Invalid Login Credentials',
@@ -42,6 +45,14 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
+
+    //Detect The User Login Device
+
+
+    // const deviceDetector = new DeviceDetector();
+    // const userAgent = @Headers()['user-agent'];
+    // const device = deviceDetector.parse(userAgent);
+    // console.log(device, "THE USERAGENT")
 
     await this.mailService.sendVerificationMail(
       user.email,
@@ -197,5 +208,53 @@ export class AuthService {
       status: 'success',
       message: 'Password Reset Successfully. Login To Continue Using Payyng',
     };
+  }
+
+  async sendOTP (id:string) {
+    console.log(id, "ID ENTERED")
+    
+    if (!id) {
+      throw new HttpException(
+        'Account ID is required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
+      const user = await this.usersService.findUserById(id);
+
+      if (!user) {
+        throw new HttpException(
+          "User Doesn't Exist",
+          HttpStatus.UNPROCESSABLE_ENTITY
+        );
+      }
+
+      // Generate OTP
+
+      const otp = randomize('0', 6);
+
+      // Update the user with the new OTP
+
+      await this.prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          otp: Number(otp),
+        },
+      });
+  
+      // Send the OTP to the user's email
+      await this.mailService.sendVerificationMail(user.email, user.firstName, otp);
+  
+      return {
+        status: 'success',
+        message: 'We have sent a verification code to your email. You will received a verification email shortly if the account exist.',
+      };
+    } catch (err) {
+      throw err
+    }
+
   }
 }

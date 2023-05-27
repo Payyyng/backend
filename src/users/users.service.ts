@@ -31,7 +31,6 @@ export class UsersService {
 
   async createUser({firstName, lastName, email, phone, password}: createUserDto): Promise<RegistrationStatus> {
     
-console.log(email, password, "DETAILS ENTERED")
 
     //check if any of the userinfo is not provided
     if (!email || !password || !firstName || !lastName || !phone) {
@@ -76,7 +75,7 @@ console.log(email, password, "DETAILS ENTERED")
       data: <any>{
         firstName: firstName,
         lastName: lastName,
-        email: email,
+        email: email.toLowerCase(),
         phone: phone,
         password: hashedPassword,
         otp: Number(otp),
@@ -383,13 +382,18 @@ console.log(email, password, "DETAILS ENTERED")
   async findUserById(id: string): Promise<any> {
     
     try {
-      return await this.prisma.user.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: {
           id: id,
         },
       });
+      if (!user) {
+        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+      }
+      return user;
+
     } catch (err) {
-      return 'Something went wrong. Please try again';
+      throw err
     }
   }
 

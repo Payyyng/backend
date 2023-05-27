@@ -3,6 +3,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { AuthGuard, PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-local'
 import { AuthService } from './auth.module'
+import { Headers} from '@nestjs/common';
 
 
 @Injectable()

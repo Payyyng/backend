@@ -48,6 +48,14 @@ export class TransactionController {
     verifyBill(@Body() {item_code, customer, code}: ValidateBillDto) {
         return this.transactionService.validateBill(customer, item_code, code);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get(':id')
+    getTransaction(@Param('id') id: string) {
+        return this.transactionService.getTransaction(id);
+    }
+
+
     
 
 

@@ -295,4 +295,33 @@ export class TransactionService {
         }
     }
 
+        /**
+* @param id
+* @access PUBLIC
+* @description This function is used to Get A Single Transaction From Database
+* @returns 
+*/
+
+async getTransaction (id: string) {
+
+    if (!id) {
+        throw new HttpException('Transaction Id is required', HttpStatus.BAD_REQUEST)
+    }
+
+    try {
+        const transaction = await this.prisma.transaction.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if (!transaction) {
+            throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
+        }
+
+        return transaction
+    } catch (err){
+        throw err
+    }
+}
 }
