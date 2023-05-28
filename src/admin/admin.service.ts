@@ -113,6 +113,7 @@ export class AdminService {
                     status: true,
                     customer: true,
                     Bank: true,
+                    type: true,
                     user: {
                         select: {
                             firstName: true,

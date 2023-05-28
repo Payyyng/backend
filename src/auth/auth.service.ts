@@ -7,9 +7,6 @@ import { MailService } from 'src/mail/mail.service';
 import randomize from 'randomatic';
 import { hash, compare } from 'bcrypt';
 
-import { Headers} from '@nestjs/common';
-import DeviceDetector, { DeviceDetectorResult, DeviceDetectorOptions } from "device-detector-js";
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -52,7 +49,10 @@ export class AuthService {
       '8080',
     );
 
-    return user;
+    //Add the transaction and Bank details of user to the response 
+    return {
+      ...user,
+    }
   }
 
   async loginWithCredentials(user: any) {

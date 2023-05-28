@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MailService } from 'src/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
-import { User, Prisma } from '@prisma/client';
+import { User, Prisma, Transaction } from '@prisma/client';
 import { createUserDto } from './dto/create-user.dto';
 import { hash, compare } from 'bcrypt';
 import randomize from 'randomatic';
@@ -60,7 +60,6 @@ export class UsersService {
 
     const promoCode = randomize('A', 8);
 
-    //Generate username from the lastName and add 4 random character
     const username = `${lastName}${randomize('Aa', 4)}`;
 
     await this.mailService.sendVerificationMail(email, firstName, otp);
@@ -372,6 +371,31 @@ export class UsersService {
         where: {
           email: email,
         },
+        select: <any>{
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          isVerified: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+          bvn: true,
+          state: true,
+          lga: true,
+          city: true,
+          address: true,
+          pin: true,
+          userName: true,
+          promoCode: true,
+          otp: true,
+          transactions:true,
+          accounts: true,
+          bankTransfers: true,
+          cards: true
+        }
+
       });
     } catch (err) {
       return 'Something went wrong. Please try again';
