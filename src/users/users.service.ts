@@ -60,9 +60,7 @@ export class UsersService {
 
     const promoCode = randomize('A', 8);
 
-    //Generate username from the lastName and add 4 random character
-    const username = `${lastName}${randomize('Aa', 4)}`;
-
+    //Generate username from the lastName and add 4 random
 
     await this.mailService.sendVerificationMail(email, firstName, otp);
 
@@ -79,26 +77,29 @@ export class UsersService {
         password: hashedPassword,
         otp: Number(otp),
         promoCode: promoCode,
-        userName: username
       },
     });
 
     if (!newUser) {
-      const status: RegistrationStatus = {
-        status: `${HttpStatus.SERVICE_UNAVAILABLE}`,
-        message: 'Something Went Wrong. Please Try Again ',
-        id: newUser.id,
-      }
-      return status
+      throw new HttpException(
+        'Something Went Wrong. Please Try Again',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    const status: RegistrationStatus = {
+    if (newUser) {
+      await this.prisma.account.create({
+        data: <any>{
+          userId: newUser.id
+        }
+      })
+    }
+
+    return {
       status: 'success',
       message: 'Account Registered Sucessfully',
       id: newUser.id,
-    };
-
-    return status;
+    }
   }
 
   async verifyUser(id: string, otp: number): Promise<any> {
@@ -372,7 +373,7 @@ export class UsersService {
       return await this.prisma.user.findUnique({
         where: {
           email: email,
-        },
+        }
       });
     } catch (err) {
       return 'Something went wrong. Please try again';
@@ -385,7 +386,36 @@ export class UsersService {
       const user = await this.prisma.user.findUnique({
         where: {
           id: id,
-        },
+        }, 
+        select: <any> {
+          id : true,
+          email   :    true,
+          firstName :    true,
+          lastName   :   true,
+          userName  :    true,
+          password  :    true,
+          phone    :    true,
+          address   :   true,
+          city      :   true,
+          state     :   true,
+          lga       :   true,
+          accountNumber: true,
+          promoCode   :  true,
+          otp       :    true,
+          NGNBalance :   true,
+          USDBalance :  true,
+          EURBalance :   true,
+          GPBBalance :  true,
+          pin        :  true,
+          token  :       true,
+          bvn       :   true,
+          isVerified  : true,  
+          isActive   :   true,
+          transactions : true,
+          bankTransfers:true,
+          accounts    :  true,
+          cards     :    true,
+        }
       });
       if (!user) {
         throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);

@@ -12,7 +12,7 @@ model User {
   email         String        @unique
   firstName     String
   lastName      String
-  userName      String
+  userName      String?
   password      String
   phone         String
   address       String?
@@ -22,10 +22,6 @@ model User {
   accountNumber String?
   promoCode     String?
   otp           Int?
-  NGNBalance    Float         @default(0.00)
-  USDBalance    Float         @default(0.00)
-  EURBalance    Float         @default(0.00)
-  GPBBalance    Float         @default(0.00)
   pin           String?
   token         String?
   bvn           Int?

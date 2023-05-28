@@ -43,6 +43,7 @@ export class AuthService {
       );
     }
 
+
     await this.mailService.sendVerificationMail(
       user.email,
       user.firstName,
@@ -59,11 +60,12 @@ export class AuthService {
     //remove password and pin from the userInfo
     const { password: _,  ...result } = user;
 
+
     return {
       access_token: this.jwtService.sign(user.id, {
         secret: `${process.env.JWT_SECRET}`,
       }),
-      ...result,
+      ...result
     };
   }
 

@@ -122,8 +122,6 @@ export class UsersController {
         return this.userService.findUserById(id);
     }
 
-    // @ApiBody({type:UpdateUserDto})
-
     @Post('bvn-verify')
     @ApiBody({type:BVNverificationDto})
     verifyUserBvn(@Body() {id, bvn}:any){
