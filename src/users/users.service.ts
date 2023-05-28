@@ -29,7 +29,7 @@ export class UsersService {
     private jwtService: JwtService,
   ) { }
 
-  async createUser({firstName, lastName, email, phone, password}: createUserDto): Promise<RegistrationStatus> {
+  async createUser({firstName, lastName, email, phone, password}: createUserDto): Promise<any> {
     
 
     //check if any of the userinfo is not provided
@@ -48,13 +48,10 @@ export class UsersService {
     });
 
     if (userExists) {
-
-      const status: RegistrationStatus = {
-        status: `${HttpStatus.CONFLICT}`,
-        message: 'Account Already Exist. Please login to continue using payyng',
-        id: null
-      };
-      return status
+      throw new HttpException(
+        'Account Already Exist. Please login to continue using payyng',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     //Generate Otp Code
@@ -63,7 +60,8 @@ export class UsersService {
 
     const promoCode = randomize('A', 8);
 
-    //Send Verification Email To The User
+    //Generate username from the lastName and add 4 random character
+    const username = `${lastName}${randomize('Aa', 4)}`;
 
     await this.mailService.sendVerificationMail(email, firstName, otp);
 
@@ -80,6 +78,7 @@ export class UsersService {
         password: hashedPassword,
         otp: Number(otp),
         promoCode: promoCode,
+        userName: username,
       },
     });
 

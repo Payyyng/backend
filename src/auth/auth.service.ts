@@ -67,8 +67,6 @@ export class AuthService {
     };
   }
 
-  
-
   async forgotPassword(email: string) {
 
     if (!email) {
@@ -87,8 +85,6 @@ export class AuthService {
       }
 
       // Generate OTP
-
-      
     const otp = randomize('0', 6);
 
     await this.prisma.user.update({

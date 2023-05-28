@@ -12,6 +12,7 @@ model User {
   email         String        @unique
   firstName     String
   lastName      String
+  userName      String
   password      String
   phone         String
   address       String?
@@ -21,10 +22,10 @@ model User {
   accountNumber String?
   promoCode     String?
   otp           Int?
-  NGNBalance  Float? @default(0.00)
-  USDBalance  Float? @default(0.00)
-  EURBalance  Float? @default(0.00)
-  GPBBalance  Float? @default(0.00)
+  NGNBalance    Float         @default(0.00)
+  USDBalance    Float         @default(0.00)
+  EURBalance    Float         @default(0.00)
+  GPBBalance    Float         @default(0.00)
   pin           String?
   token         String?
   bvn           Int?
@@ -39,39 +40,38 @@ model User {
 }
 
 model Transaction {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  amount    Float?
-  currency  String?
-  type      String?
-  customer  String?
-  status    String?
-  reference String?
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount     Float?
+  currency   String?
+  type       String?
+  customer   String?
+  status     String?
+  reference  String?
   billerName String?
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @db.ObjectId
-  Bank      Bank[]
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @db.ObjectId
+  Bank       Bank[]
 }
 
 model Account {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   USDAccount Int?
-  USDBank String?
+  USDBank    String?
   NGNAccount Int?
-  NGNBank String?
+  NGNBank    String?
   EURAccount Int?
-  EURBank String?
+  EURBank    String?
   GPBAccount Int?
-  GPBBank String?
-  USD       Float    @default(0.00)
-  NGN       Float    @default(0.00)
-  EUR       Float    @default(0.00)
-  GPB       Float    @default(0.00)
-  createdAt DateTime @default(now())
-  user      User     @relation("account", fields: [userId], references: [id])
-  userId    String   @db.ObjectId
+  GPBBank    String?
+  USD        Float    @default(0.00)
+  NGN        Float    @default(0.00)
+  EUR        Float    @default(0.00)
+  GPB        Float    @default(0.00)
+  createdAt  DateTime @default(now())
+  user       User     @relation("account", fields: [userId], references: [id])
+  userId     String   @db.ObjectId
 }
-
 
 model Bank {
   id               String       @id @default(auto()) @map("_id") @db.ObjectId
@@ -93,18 +93,18 @@ model Bank {
 }
 
 model Card {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  cardType  String?
-  cardName  String?
-  cardNo    String?
-  expiration   String?
-  cvv       String?
-  cardId String?
-  address String?
-  city String
-  state String
-  zipCode String?
-  createdAt DateTime @default(now())
-  user      User?     @relation(fields: [userId], references: [id])
-  userId    String   @db.ObjectId
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  cardType   String?
+  cardName   String?
+  cardNo     String?
+  expiration String?
+  cvv        String?
+  cardId     String?
+  address    String?
+  city       String
+  state      String
+  zipCode    String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String   @db.ObjectId
 }
