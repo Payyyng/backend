@@ -416,6 +416,8 @@ export class UsersService {
       if (!user) {
         throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
       }
+
+      
       return user;
 
     } catch (err) {
