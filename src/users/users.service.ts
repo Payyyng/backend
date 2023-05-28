@@ -411,7 +411,6 @@ export class UsersService {
           bankTransfers:true,
           accounts    :  true,
           cards     :    true,
-          
         }
       });
       if (!user) {
