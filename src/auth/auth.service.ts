@@ -89,7 +89,6 @@ export class AuthService {
       // Generate OTP
     const otp = randomize('0', 6);
 
-    // Update the user with the new OTP
     await this.prisma.user.update({
       where: {
         email,
