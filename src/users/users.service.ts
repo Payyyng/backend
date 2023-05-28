@@ -387,12 +387,12 @@ export class UsersService {
         where: {
           id: id,
         }, 
-        select: <any> {
+        select:  {
           id : true,
           email   :    true,
           firstName :    true,
           lastName   :   true,
-          userName  :    true,
+          // userName  :    true,
           password  :    true,
           phone    :    true,
           address   :   true,
@@ -409,7 +409,7 @@ export class UsersService {
           isActive   :   true,
           transactions : true,
           bankTransfers:true,
-          accounts    :  true,
+          // accounts    :  true,
           cards     :    true,
         }
       });
@@ -417,7 +417,7 @@ export class UsersService {
         throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
       }
 
-      
+
       return user;
 
     } catch (err) {
