@@ -16,6 +16,7 @@ import { AdminController } from './admin/admin.controller';
 import { AdminService } from './admin/admin.service';
 import { ConfigModule } from '@nestjs/config';
 import { CardModule } from './card/card.module';
+import { AccountsModule } from './accounts/accounts.module';
 
 
 @Module({
@@ -28,6 +29,7 @@ import { CardModule } from './card/card.module';
     MailModule,
     TransactionModule,
     CardModule,
+    AccountsModule,
   ],
   controllers: [
     AppController,

@@ -205,6 +205,21 @@ export class TransactionService {
                     }
                 })
 
+                await this.prisma.transaction.create({
+                    data: <any> {
+                        amount: amount,
+                        type: "BANK TRANSFER",
+                        billerName: bank_name,
+                        currency: 'NG',
+                        customer: account_number,
+                        reference: reference,
+                        status: "Completed",
+                        user: {
+                            connect: { id: id },
+                        }
+                    }
+                })
+
                 //Send Notification Email
                 await this.mailService.sendBankTransferNotificationEmail(
                     user.email,

@@ -132,7 +132,7 @@ export class AdminService {
 
     async getAllBalance(): Promise<any> {
         try {
-            return await this.prisma.balance.findMany({
+            return await this.prisma.account.findMany({
                 select: {
                     id: true,
                     createdAt: true,

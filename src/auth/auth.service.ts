@@ -46,14 +46,6 @@ export class AuthService {
       );
     }
 
-    //Detect The User Login Device
-
-
-    // const deviceDetector = new DeviceDetector();
-    // const userAgent = @Headers()['user-agent'];
-    // const device = deviceDetector.parse(userAgent);
-    // console.log(device, "THE USERAGENT")
-
     await this.mailService.sendVerificationMail(
       user.email,
       user.firstName,
@@ -64,8 +56,9 @@ export class AuthService {
   }
 
   async loginWithCredentials(user: any) {
-    //remove password from the userInfo
-    const { password: _, ...result } = user;
+    //remove password and pin from the userInfo
+    const { password: _,  ...result } = user;
+
     return {
       access_token: this.jwtService.sign(user.id, {
         secret: `${process.env.JWT_SECRET}`,
@@ -77,7 +70,6 @@ export class AuthService {
   
 
   async forgotPassword(email: string) {
-    console.log(email, "ENTERED")
 
     if (!email) {
       throw new BadRequestException(
@@ -87,7 +79,6 @@ export class AuthService {
 
     try {
       const user = await this.usersService.findUserByEmail(email);
-
       if (!user) {
         throw new HttpException(
           "User Doesn't Exist",
