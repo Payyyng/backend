@@ -21,6 +21,7 @@ model User {
   lga           String?
   accountNumber String?
   promoCode     String?
+  
   otp           Int?
   pin           String?
   token         String?
