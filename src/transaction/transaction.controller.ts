@@ -44,6 +44,8 @@ export class TransactionController {
         return this.transactionService.bankTransfer(transferDetails);
     }
 
+
+    
     @Post('verify-bill')
     @ApiBody({ type: ValidateBillDto })
     verifyBill(@Body() {item_code, customer, code}: ValidateBillDto) {
@@ -64,7 +66,7 @@ export class TransactionController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('constant')
+    @Get('constants')
     getAdminConstants() {
         return this.transactionService.getAdminConstants(); 
     }
