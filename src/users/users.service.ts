@@ -8,13 +8,13 @@ import { hash, compare } from 'bcrypt';
 import randomize from 'randomatic';
 import axios from 'axios';
 import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
-import { Console } from 'console';
+import Flutterwave from 'flutterwave-node-v3';
 
-const BASE_API_URL = process.env.FLW_API_URL
-const SECRET_KEY = process.env.FLW_SECRET_KEY
 
-// console.log(BASE_API_URL, SECRET_KEY, "flw details")
 
+const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
+
+const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, SECRET_KEY);
 export interface RegistrationStatus {
   status: string;
   message: string;
@@ -101,6 +101,7 @@ export class UsersService {
       id: newUser.id,
     }
   }
+
 
   async verifyUser(id: string, otp: number): Promise<any> {
     //check if there's no otp
@@ -381,8 +382,6 @@ export class UsersService {
   }
 
   async findUserById(id: string): Promise<any> {
-    
-    try {
       const user = await this.prisma.user.findUnique({
         where: {
           id: id,
@@ -408,7 +407,7 @@ export class UsersService {
           isVerified  : true,  
           isActive   :   true,
           transactions : true,
-          bankTransfers:true,
+          bankTransfers: true,
           accounts    :  true,
           cards     :    true,
         }
@@ -416,16 +415,8 @@ export class UsersService {
       if (!user) {
         throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
       }
-
-
       return user;
-
-    } catch (err) {
-      throw err
-    }
   }
-
-  // async getUserDetails(id:)
 
   /**
    * @param data
@@ -433,32 +424,26 @@ export class UsersService {
    * @description This method is used to create bank account for users
    * @returns
    */
-  async createBankAccount(email: string, bvn: number) {
+  async createBankAccount(email: string, bvn: string) {
 
     if (!email || !bvn) {
       throw new HttpException(
-        'All fields are required',
+        'Email And BVN is Required',
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
 
     const reference = randomize('aa', 10);
-    const config = {
-      method: 'POST',
-      url: `${BASE_API_URL}/virtual-account-numbers`,
-      headers: {
-        Authorization: `Bearer ${SECRET_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      data: {
-        email: email,
-        bvn: bvn,
-        currency: 'NGN',
-        trx_ref: reference,
-      },
-    };
 
-    const response = await axios(config);
+    const payload = {
+      email: email,
+      bvn: bvn,
+      is_permanent: true,
+      tx_ref: reference
+    }
+    const response = await flw.VirtualAcct.create(payload)
+    console.log(response);
+
 
     if (response.data.status !== 'success') {
       throw new HttpException(
@@ -468,7 +453,7 @@ export class UsersService {
     }
 
     // Save The Account Number in DataBase
-    console.log (response.data, "THE RESSSS")
+    // console.log (response.data, "THE RESSSS")
     return response.data;
   }
 
@@ -523,12 +508,10 @@ export class UsersService {
 
   async verifyUserBvn(id:string, bvn:number ) {
     
-    console.log(bvn, id, "ENTEREEE")
 
     if (!bvn || !id) {
       throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
     }
-
 
     try {
       const user = await this.prisma.user.findUnique({
@@ -537,20 +520,16 @@ export class UsersService {
         }
       })
 
-      console.log("AFTER")
-      console.log(user, "THE USER")
-
       if (!user) {
         throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
       }
 
-
-      const updatedUser = await this.prisma.user.update({
+      await this.prisma.user.update({
         where: {
           id
         },
         data: <any>{
-          bvn: bvn
+          bvn: Number(bvn)
         }
       })
 
@@ -560,7 +539,7 @@ export class UsersService {
       }
 
     } catch (err) {
-      throw new HttpException(err, HttpStatus.SERVICE_UNAVAILABLE);
+      throw err
     }
   }
 

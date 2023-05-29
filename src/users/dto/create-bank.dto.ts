@@ -14,6 +14,6 @@ export class createAccountDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    readonly bvn: number;
+    readonly bvn: string;
 
 }
