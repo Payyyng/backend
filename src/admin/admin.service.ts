@@ -155,8 +155,8 @@ export class AdminService {
 
     async updateAdminConstant (updateAdminConst) {
        const {exchangeUSD, exchangeEUR, exchangeGPB, exchangeNGN, exchangeFee } = updateAdminConst
-            const updatedValues = await this.prisma.admin.update({
-                where: {
+            const updatedValues = await this.prisma.admin.updateMany({
+                where:  {
                     userRole: "ADMIN`"
                 } ,
                 data: {
