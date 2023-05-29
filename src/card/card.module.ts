@@ -7,7 +7,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { MailModule } from 'src/mail/mail.module';
 
 @Module({
-  providers: [CardService],
+  providers: [CardService, MailService, PrismaService],
   controllers: [CardController],
   imports: [PrismaModule,MailModule]
 })

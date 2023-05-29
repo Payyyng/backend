@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Body, Param, Patch, UseGuards} from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, UseGuards, Put} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateAdminDTO } from './dto/update-admin.dto';
 @Controller('admin')
 export class AdminController {
     constructor(private adminService: AdminService){}
@@ -31,5 +32,12 @@ export class AdminController {
     @Get('transactions')
     async getAllTransactions() {
         return this.adminService.getAllTransactions();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('admin-constants')
+    @ApiBody({type:UpdateAdminDTO})
+    updateAdminConstants(@Body() updateAdminConst: UpdateAdminDTO) {
+        return this.adminService.updateAdminConstant(updateAdminConst);
     }
 }

@@ -23,7 +23,7 @@ interface TransferDetails {
     bank_name: string
 }
 
-interface AccountDetails {
+export interface AccountDetails {
     account_number: string,
     account_bank: string
 }
@@ -41,6 +41,7 @@ export class TransactionService {
      * @description This method is used to pay bills
      * @returns 
      */
+
     async payBills(data: createBillDto): Promise<any> {
         const { id, amount, type, customer, biller_name } = data;
         if (!id || !amount || !type || !customer) {
@@ -91,6 +92,27 @@ export class TransactionService {
                     },
                 });
 
+                if (transaction){
+                    // get what's already in NGN Balance and remount the amount from it 
+                    const account = await this.prisma.account.findFirst({
+                        where: {
+                          userId: id,
+                        },
+                      });
+
+                      if (account) {
+                        const newBalance = account.NGN - amount;
+                        await this.prisma.account.update({
+                          where: {
+                            id: account.id,
+                          },
+                          data: {
+                            NGN: newBalance,
+                          },
+                        });
+                      }
+                }
+
                 // Send transaction notification email
                 this.mailService.sendTransactionNotificationEmail(
                     user.email,
@@ -109,7 +131,7 @@ export class TransactionService {
                     data: transaction,
                 };
             } else {
-                throw new HttpException(response, HttpStatus.EXPECTATION_FAILED);
+                throw new HttpException("Something went wrong. Please try again", HttpStatus.EXPECTATION_FAILED);
             }
 
         } catch (error) {
@@ -190,11 +212,29 @@ export class TransactionService {
             }
 
             try {
+
+                const account = await this.prisma.account.findFirst({
+                    where: {
+                      userId: id,
+                    },
+                  });
+
+                  if (account) {
+                    const newBalance = account.NGN - amount;
+                    await this.prisma.account.update({
+                      where: {
+                        id: account.id,
+                      },
+                      data: {
+                        NGN: newBalance,
+                      },
+                    });
+                  }
                 const bankTransfer = await this.prisma.bank.create({
-                    data: <any>{
+                    data: {
                         beneficiary_name: beneficiary_name,
-                        account_number: account_number,
-                        account_bank: account_bank,
+                        account_number: account_number.toString(),
+                        account_bank: account_bank.toString(),
                         amount: amount,
                         reference: reference,
                         transactionId: id,
@@ -224,7 +264,10 @@ export class TransactionService {
                 await this.mailService.sendBankTransferNotificationEmail(
                     user.email,
                     user.firstName,
-                    amount
+                    amount,
+                    bank_name,
+                    account_number,
+                    beneficiary_name,
                 )
 
                 return {
@@ -256,33 +299,33 @@ export class TransactionService {
         const account_number = accountDetails.account_number
         const account_bank = accountDetails.account_bank
 
+        console.log(accountDetails, "DETAILS WEY ENTER")
+
         if (!account_number || !account_bank) {
             throw new HttpException('Ensure all transfer information are provided.', HttpStatus.BAD_REQUEST)
         }
 
-        const config = {
-            'method': 'POST',
-            'url': `${BASE_API_URL}/accounts/resolve`,
-            'headers': {
-                'Authorization': `Bearer ${SECRET_KEY}`,
-                'Content-Type': 'application/json'
-            },
+        console.log(account_bank, "THE BANK ACCOUNT")
 
-            data: {
-                account_number, account_bank
-            }
+        const payload = {
+            account_number: account_number,
+            account_bank: account_bank
         }
-
-        // const {} = await axios(config)
 
         try {
-            const { data } = await axios(config)
-            return data
+            const response = await flw.Misc.verify_Account(payload)
+            if (!response) {
+                throw new HttpException('Something went wrong verifying this account', HttpStatus.BAD_REQUEST)
+            }
 
+            return response
+            
         } catch (error) {
-
+            console.log(error)
         }
     }
+
+
 
 
 
@@ -322,21 +365,40 @@ async getTransaction (id: string) {
     if (!id) {
         throw new HttpException('Transaction Id is required', HttpStatus.BAD_REQUEST)
     }
+return  {
+    status: 'success',
+}
+    // try {
+    //     const transaction = await this.prisma.transaction.findUnique({
+    //         where: {
+    //             id: id
+    //         }, 
+    //     })
 
+    //     if (!transaction) {
+    //         throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
+    //     }
+
+    //     return transaction
+    // } catch (err){
+    //     throw err
+    // }
+}
+
+async getAdminConstants () {
     try {
-        const transaction = await this.prisma.transaction.findUnique({
-            where: {
-                id
+        return await this.prisma.admin.findMany({
+            select: {
+                id: true,
+                exchangeNGN: true,
+                exchangeUSD: true,
+                exchangeEUR: true,
+                exchangeGPB: true,
+                exchangeFee: true,
             }
         })
-
-        if (!transaction) {
-            throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
-        }
-
-        return transaction
-    } catch (err){
-        throw err
+    } catch (err) {
+        return 'Something went wrong. Please try again'
     }
 }
 }

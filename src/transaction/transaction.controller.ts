@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { VerifyBillDTO } from './dto/verify-bill-dto';
 import { BankTransferDto } from './dto/bank-transfer.dto';
 import { ValidateBillDto } from './dto/validate-bill-dto';
+import { VerifyAccountDTO } from './dto/verify-account-dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -55,8 +56,16 @@ export class TransactionController {
         return this.transactionService.getTransaction(id);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('verify-account-number')
+    @ApiBody({ type: VerifyAccountDTO })
+    verifyAccount(@Body() {account_number, account_bank}: any) {
+        return this.transactionService.verifyAccountNumber({account_number, account_bank});
+    }
 
-    
-
-
+    @UseGuards(JwtAuthGuard)
+    @Get('constant')
+    getAdminConstants() {
+        return this.transactionService.getAdminConstants(); 
+    }
 }

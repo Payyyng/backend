@@ -4,7 +4,6 @@ import {
     HttpStatus
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User, Prisma } from '@prisma/client';
 
 @Injectable()
 export class AdminService {
@@ -152,5 +151,30 @@ export class AdminService {
         } catch (err) {
             return 'Something went wrong. Please try again'
         }
+    }
+
+    async updateAdminConstant (updateAdminConst) {
+       const {exchangeUSD, exchangeEUR, exchangeGPB, exchangeNGN, exchangeFee } = updateAdminConst
+            const updatedValues = await this.prisma.admin.update({
+                where: <any>{
+                    userRole: "ADMIN`"
+                } ,
+                data: {
+                    exchangeUSD,
+                    exchangeEUR,
+                    exchangeGPB,
+                    exchangeNGN,
+                    exchangeFee
+                }
+            })
+
+            if(!updatedValues){
+                throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
+            }
+            return {
+                status: 'success',
+                message: 'Values Updated Successfully'
+            }
+  
     }
 }
