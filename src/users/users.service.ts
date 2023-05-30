@@ -215,10 +215,10 @@ export class UsersService {
     return {
       status: 'success',
       message: 'Pin Created Successfully',
-      user: {
-        access_token: token,
-        ...updatedUser,
-      },
+      // user: {
+      //   access_token: token,
+      //   ...updatedUser,
+      // },
     };
   }
 
