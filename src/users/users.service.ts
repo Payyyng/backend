@@ -60,6 +60,8 @@ export class UsersService {
 
     const promoCode = randomize('A', 8);
 
+    const userName= firstName + randomize('A', 4).toLowerCase()
+
     //Generate username from the lastName and add 4 random
 
     await this.mailService.sendVerificationMail(email, firstName, otp);
@@ -77,6 +79,7 @@ export class UsersService {
         password: hashedPassword,
         otp: Number(otp),
         promoCode: promoCode,
+        userName: userName
       },
     });
 

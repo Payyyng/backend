@@ -11,7 +11,7 @@ export class AccountsService {
   constructor(
     private prisma: PrismaService,
     private mailService: MailService
-  ){}
+  ) { }
 
 
   create(createAccountDto: CreateAccountDto) {
@@ -22,22 +22,22 @@ export class AccountsService {
     return `This action returns all accounts`;
   }
 
-  async findOne(id: string): Promise<any>{
+  async findOne(id: string): Promise<any> {
     if (!id) {
       throw new HttpException('Accout ID is Required', HttpStatus.BAD_REQUEST)
     }
 
 
-      const account = await this.prisma.account.findUnique({
-        where: {
-          id: id
-        }
-      })
-      if (!account) {
-        throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
+    const account = await this.prisma.account.findUnique({
+      where: {
+        id: id
       }
-      return account
-        }
+    })
+    if (!account) {
+      throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
+    }
+    return account
+  }
 
   update(id: number, updateAccountDto: UpdateAccountDto) {
     return `This action updates a #${id} account`;
@@ -45,5 +45,13 @@ export class AccountsService {
 
   remove(id: number) {
     return `This action removes a #${id} account`;
+  }
+
+  /*
+  * @param {string} email
+  */
+
+  async accountTransferPayyng ({}) {
+    return
   }
 }

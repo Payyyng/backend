@@ -8,7 +8,6 @@ import Flutterwave from 'flutterwave-node-v3';
 import { MailService } from 'src/mail/mail.service';
 
 
-const BASE_API_URL = "https://api.flutterwave.com/v3"
 const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
 
 const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, SECRET_KEY);
@@ -246,14 +245,16 @@ export class TransactionService {
                 })
 
                 await this.prisma.transaction.create({
-                    data: <any> {
+                    data: <any>  {
                         amount: amount,
                         type: "BANK TRANSFER",
                         billerName: bank_name,
                         currency: 'NG',
-                        customer: account_number,
+                        customer: account_number.toString(),
                         reference: reference,
                         status: "Completed",
+                        narration: narration,
+                        bank_name: bank_name,
                         user: {
                             connect: { id: id },
                         }
@@ -401,4 +402,109 @@ async getAdminConstants () {
         return 'Something went wrong. Please try again'
     }
 }
+
+async tranferToPayyngAccount ({ id, userName, amount, narration }) {
+
+    if (!amount || !id || !userName ) {
+        throw new HttpException('Ensure All Values Are Provided', HttpStatus.BAD_REQUEST)
+    }
+
+    try {
+        const senderAccount = await this.prisma.account.findFirst({
+            where: {
+                userId: id
+            }
+        })
+
+        if (!senderAccount) {
+            throw new HttpException('Sender Account Not Found', HttpStatus.NOT_FOUND)
+        }
+
+        const receiver = await this.prisma.user.findFirst({
+            where: {
+                userName: userName
+            }
+        })
+
+        if (!receiver) {
+            throw new HttpException('Receiver Doesnt Found', HttpStatus.NOT_FOUND)
+        }
+
+
+        const newBalance = senderAccount.NGN - amount
+
+        if (newBalance < 0) {
+            throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+        }
+
+        const updatedSenderAccount = await this.prisma.account.update({
+            where: {
+                id: senderAccount.id
+            },
+            data: {
+                NGN: newBalance
+            }
+        })
+
+        if (!updatedSenderAccount) {
+            throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
+        }
+
+        const receiverAccount = await this.prisma.account.findFirst({
+            where: {
+                userId: receiver.id
+            }
+        })
+
+        if (!receiverAccount) {
+            throw new HttpException('Receiver Account Not Found', HttpStatus.NOT_FOUND)
+        }
+
+        const newReceiverBalance = receiverAccount.NGN + amount
+
+        const updatedReceiverAccount = await this.prisma.account.update({
+            where: {
+                id: receiverAccount.id
+            },
+            data: {
+                NGN: newReceiverBalance
+            }
+        })
+
+        if (!updatedReceiverAccount) {
+            throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
+        }
+
+        //Save To Transactions In Database
+        const transaction = await this.prisma.transaction.create({
+            data: <any> {
+                amount: amount,
+                type: "TRANSFER",
+                billerName: receiver.userName,
+                currency: 'NG',
+                bank_name : `PAYYNG - ${receiver.userName.toUpperCase()} `  ,
+                customer: receiver.firstName + "" + receiver.lastName,
+                reference: randomize('Aa', 10),
+                status: "Completed",
+                narration: narration,
+                user: {
+                    connect: { id: id },
+                }
+            }
+        })
+
+        if (!transaction) {
+            throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
+        }
+
+        return{
+            status: 'success',
+            message: 'Transfer Successful',
+            transfer: transaction
+        }
+    } catch (err) {
+        throw err
+    }
+}
+
 }

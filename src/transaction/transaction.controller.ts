@@ -16,6 +16,7 @@ import { VerifyBillDTO } from './dto/verify-bill-dto';
 import { BankTransferDto } from './dto/bank-transfer.dto';
 import { ValidateBillDto } from './dto/validate-bill-dto';
 import { VerifyAccountDTO } from './dto/verify-account-dto';
+import { PayyngTransferDto } from './dto/payyng-transfer.dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -45,7 +46,7 @@ export class TransactionController {
     }
 
 
-    
+
     @Post('verify-bill')
     @ApiBody({ type: ValidateBillDto })
     verifyBill(@Body() {item_code, customer, code}: ValidateBillDto) {
@@ -70,4 +71,15 @@ export class TransactionController {
     getAdminConstants() {
         return this.transactionService.getAdminConstants(); 
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('payyng-transfer')
+    transferToPayyngUser(@Body( ) { id, userName, amount, narration }:PayyngTransferDto) {
+        return this.transactionService.tranferToPayyngAccount({ id, userName, amount, narration }); 
+    }
+
+
+
+    
+    
 }
