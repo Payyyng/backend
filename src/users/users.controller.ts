@@ -57,7 +57,7 @@ export class UsersController {
     }
 
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @ApiHeader(
         {
             name: 'Authorization',

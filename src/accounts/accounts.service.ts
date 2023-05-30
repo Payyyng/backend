@@ -27,7 +27,7 @@ export class AccountsService {
       throw new HttpException('Accout ID is Required', HttpStatus.BAD_REQUEST)
     }
 
-    try {
+
       const account = await this.prisma.account.findUnique({
         where: {
           id: id
@@ -37,19 +37,7 @@ export class AccountsService {
         throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
       }
       return account
-      
-    } catch (err) {
-      throw err
-    }
-
-    const account = await this.prisma.account.findUnique({
-      where: {
-        id: id
-      }
-    })
-
-    return `This action returns a #${id} account`;
-  }
+        }
 
   update(id: number, updateAccountDto: UpdateAccountDto) {
     return `This action updates a #${id} account`;
