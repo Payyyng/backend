@@ -389,7 +389,7 @@ export class UsersService {
         where: {
           id: id,
         }, 
-        select: <any> {
+        select: {
           id : true,
           email   :    true,
           firstName :    true,
@@ -401,7 +401,6 @@ export class UsersService {
           city      :   true,
           state     :   true,
           lga       :   true,
-          accountNumber: true,
           promoCode   :  true,
           otp       :    true,
           pin        :  true,

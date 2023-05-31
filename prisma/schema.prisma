@@ -55,11 +55,11 @@ model Account {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   USDAccount Int?
   USDBank    String?
-  NGNAccount Int?
+  NGNAccount String?
   NGNBank    String?
-  EURAccount Int?
+  EURAccount String?
   EURBank    String?
-  GPBAccount Int?
+  GPBAccount String?
   GPBBank    String?
   USD        Float    @default(0.00)
   NGN        Float    @default(0.00)
