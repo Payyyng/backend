@@ -14,12 +14,11 @@ import { createUserDto } from './dto/create-user.dto';
 import { createAccountDto } from './dto/create-bank.dto'
 import { verifyAccount } from './dto/verify-account.dto'
 import { createPin } from './dto/create-pin.dto'
-import { ApiBody, ApiProperty, ApiHeader, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBody, ApiHeader } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { isArray } from 'class-validator';
 import { BVNverificationDto } from './dto/bvn-verification-dto';
 
 interface createAccount {

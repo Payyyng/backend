@@ -176,10 +176,27 @@ export class TransactionService {
     * @description This function is used to Transfer Money To Bank Account
     * @returns 
     */
+
     async bankTransfer(transferInfo: TransferDetails) {
         const { id, account_bank, bank_name, account_number, amount, narration, beneficiary_name } = transferInfo
         if (!id || !account_bank || !bank_name || !account_number || !amount) {
             throw new HttpException('Ensure all transfer information are provided.', HttpStatus.BAD_REQUEST)
+        }
+
+        //Get The Current Account Balance of the User 
+
+        const accountBalance = await this.prisma.account.findFirst({
+            where: {
+                userId:id
+            }
+        })
+
+        if (!accountBalance) {
+            throw new HttpException('Something went wrong. Please try again', HttpStatus.BAD_REQUEST)
+        }
+
+        if (accountBalance.NGN < amount) {
+            throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
         }
 
         if (amount < 100) {
@@ -279,8 +296,6 @@ export class TransactionService {
                 throw new HttpException(err, HttpStatus.BAD_REQUEST)
             }
             // Send transaction notification email
-
-
 
         } catch (err) {
             console.log(err, "THE ERROR")
@@ -506,5 +521,24 @@ async tranferToPayyngAccount ({ id, userName, amount, narration }) {
         throw err
     }
 }
+
+    /**
+* @body Deposite With Paypal
+* @access PUBLIC
+* @description This function is used to validate bill
+* @returns 
+*/
+
+async depositeWithPaypal (id:string, amount:number){
+
+    if (!id || !amount){
+        throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
+    }
+    return
+}
+
+
+
+
 
 }

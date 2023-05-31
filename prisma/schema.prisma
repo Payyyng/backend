@@ -19,7 +19,6 @@ model User {
   city          String?
   state         String?
   lga           String?
-  accountNumber String?
   promoCode     String?
   otp           Int?
   pin           String?

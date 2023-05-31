@@ -89,7 +89,6 @@ export class AdminService {
                     createdAt: true,
                     updatedAt: true,
                     phone: true,
-                    accountNumber: true,
                 }
             })
         } catch (err) {

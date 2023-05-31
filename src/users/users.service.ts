@@ -162,7 +162,7 @@ export class UsersService {
   }
 
   async createUserPin(id: string, pin: number): Promise<any> {
-    console.log(id, 'THE ID');
+    // console.log(id, 'THE ID');
     // console.log(BASE_API_URL, SECRET_KEY, "flw details")
 
     if (!pin || !id) {
@@ -427,12 +427,25 @@ export class UsersService {
    * @description This method is used to create bank account for users
    * @returns
    */
-  async createBankAccount(email: string, bvn: string) {
+  async createBankAccount(email: string, bvn: string, ) {
 
     if (!email || !bvn) {
       throw new HttpException(
         'Email And BVN is Required',
         HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: email
+      }
+    })
+
+    if (!user) {
+      throw new HttpException(
+        'User Account Not Found',
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -442,26 +455,62 @@ export class UsersService {
       email: email,
       bvn: bvn,
       is_permanent: true,
-      tx_ref: reference
+      tx_ref: `${reference}`,
+      narration: `${user.firstName} ${user.lastName}`
     }
     const response = await flw.VirtualAcct.create(payload)
     console.log(response);
 
-
-    if (response.data.status !== 'success') {
+    if (!response) {
       throw new HttpException(
-        response.data,
-        HttpStatus.GATEWAY_TIMEOUT,
+        'Something Went Wrong Creating Account. Please Try Again',
+        HttpStatus.SERVICE_UNAVAILABLE,
       );
     }
 
-    // Save The Account Number in DataBase
-    // console.log (response.data, "THE RESSSS")
-    return response.data;
+    if (response ) {
+      //Save the details in Dabavase 
+
+      const account = await this.prisma.account.findFirst({
+        where: {
+          userId: user.id
+        }
+      })
+
+      if (!account) {
+        throw new HttpException(
+          'Something Went Wrong. Please Try Again',
+          HttpStatus.SERVICE_UNAVAILABLE,
+        );
+      }
+
+      
+      const updatedAccount = await this.prisma.account.update({
+        where: {
+          id: account.id
+        },
+        data: {
+          NGNAccount: response.data.account_number,
+          NGNBank: response.data.bank_name,
+        }
+      })
+
+      if (!updatedAccount) {
+        throw new HttpException(
+          'Something Went Wrong. Please Try Again',
+          HttpStatus.SERVICE_UNAVAILABLE,
+        );
+      }
+
+      return {
+        status: 'success',
+        message: 'Account Created Successfully',
+      }
+    }
   }
 
-  async updatePassword({ id, current_password, new_password }: any) {
 
+  async updatePassword({ id, current_password, new_password }: any) {
     if (!current_password || !new_password || !id) {
       throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
     }
