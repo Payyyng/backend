@@ -389,7 +389,7 @@ export class UsersService {
         where: {
           id: id,
         }, 
-        select: {
+        select: <any> {
           id : true,
           email   :    true,
           firstName :    true,
