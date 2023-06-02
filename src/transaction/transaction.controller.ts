@@ -34,6 +34,7 @@ export class TransactionController {
     @Get('verify/:reference')
     @ApiBody({   type: VerifyBillDTO }
     )
+    
     verifyTransaction(@Param() reference: string) {
         return this.transactionService.verifyTransaction(reference);
     }

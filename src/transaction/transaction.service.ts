@@ -73,6 +73,7 @@ export class TransactionService {
             }
 
             const response = await flw.Bills.create_bill(payload);
+            console.log(response, "THE RESPONSE")
 
             if (response.status === "success") {
                 // Save the transaction in the database
@@ -130,11 +131,11 @@ export class TransactionService {
                     data: transaction,
                 };
             } else {
-                throw new HttpException("Something went wrong. Please try again", HttpStatus.EXPECTATION_FAILED);
+                throw new HttpException(response, HttpStatus.EXPECTATION_FAILED);
             }
 
         } catch (error) {
-            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR)
+            throw error
         }
     }
     /**
@@ -534,6 +535,16 @@ async depositeWithPaypal (id:string, amount:number){
     if (!id || !amount){
         throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
     }
+
+    try {
+
+        
+
+    } catch (err) {
+        throw err
+    }
+
+
     return
 }
 

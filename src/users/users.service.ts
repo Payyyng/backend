@@ -162,8 +162,7 @@ export class UsersService {
   }
 
   async createUserPin(id: string, pin: number): Promise<any> {
-    // console.log(id, 'THE ID');
-    // console.log(BASE_API_URL, SECRET_KEY, "flw details")
+    console.log(id, pin, "ENTEREd")
 
     if (!pin || !id) {
       throw new HttpException('Pin and ID is required', HttpStatus.BAD_REQUEST);
@@ -583,6 +582,13 @@ export class UsersService {
           bvn: Number(bvn)
         }
       })
+
+      //Call the create Account Endpoint
+      const bankAccount = await this.createBankAccount(user.email, bvn.toString())
+
+      if (!bankAccount) {
+        throw new HttpException("Something went wrong. Please Try Again", HttpStatus.SERVICE_UNAVAILABLE);
+      }
 
       return {
         status: 'success',
