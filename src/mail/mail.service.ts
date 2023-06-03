@@ -21,8 +21,8 @@ export class MailService {
     async sendVerificationMail(email: string, firstName: string, code: any) {
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Account Access',
-            template: './loginNotification',
+            subject: 'Email Verification',
+            template: './verification',
             context: {
                 firstName,
                 code
