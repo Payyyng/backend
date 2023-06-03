@@ -383,10 +383,10 @@
                                     <tr>
                                         <td>
                                             <p>Hi {{firstName}},</p>
-                                            <p>We are writing to inform you that a transaction has
-                                                been made on your account. Please find the details of
-                                                the transaction below:</p>
+                                            <p>We are writing to inform you that your transaction {{type}} -
+                                                {{customer}} - {{amount}} - {{biller_name}} was successful </p>
                                         </td>
+                                        {{!--
                                     <tr>
                                         <td>
                                             <p>Transaction Amount: {{amount}}</p>
@@ -409,7 +409,7 @@
                                         <td>
                                             <p>Status: {{status}}</p>
                                         </td>
-                                    </tr>
+                                    </tr> --}}
                         </tr>
                     </table>
                     <p>If you did not sign up on Payyng, please disregard this
