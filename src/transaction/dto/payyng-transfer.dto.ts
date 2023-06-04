@@ -17,4 +17,8 @@ export class PayyngTransferDto {
 
     @ApiProperty()
     @IsString() readonly narration: string;
+
+    
+    @ApiProperty()
+    @IsString() readonly currency: string;
 }

@@ -75,8 +75,8 @@ export class TransactionController {
 
     @UseGuards(JwtAuthGuard)
     @Post('payyng-transfer')
-    transferToPayyngUser(@Body( ) { id, userName, amount, narration }:PayyngTransferDto) {
-        return this.transactionService.tranferToPayyngAccount({ id, userName, amount, narration }); 
+    transferToPayyngUser(@Body( ) { id, userName, amount, narration, currency }:PayyngTransferDto) {
+        return this.transactionService.tranferToPayyngAccount({ id, userName, amount, narration, currency }); 
     }
 
 
