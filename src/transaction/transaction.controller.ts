@@ -78,9 +78,4 @@ export class TransactionController {
     transferToPayyngUser(@Body( ) { id, userName, amount, narration, currency }:PayyngTransferDto) {
         return this.transactionService.tranferToPayyngAccount({ id, userName, amount, narration, currency }); 
     }
-
-
-
-    
-    
 }

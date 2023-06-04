@@ -654,14 +654,14 @@ export class TransactionService {
                 }
             }
 
-            
+
             //Save To Transactions In Database
             const transaction = await this.prisma.transaction.create({
                 data: <any>{
                     amount: amount,
                     type: "TRANSFER",
                     billerName: receiver.userName,
-                    currency: 'NG',
+                    currency: currency,
                     bank_name: `PAYYNG - ${receiver.userName.toUpperCase()} `,
                     customer: receiver.firstName + "" + receiver.lastName,
                     reference: randomize('Aa', 10),

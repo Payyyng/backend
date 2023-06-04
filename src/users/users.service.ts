@@ -60,7 +60,7 @@ export class UsersService {
 
     const promoCode = randomize('A', 8);
 
-    const userName= firstName + randomize('A', 4).toLowerCase()
+    const userName= `${firstName+randomize('A', 4).toLowerCase()}`
 
     //Generate username from the lastName and add 4 random
 
