@@ -689,7 +689,7 @@ export class TransactionService {
             const transactionRecipient = await this.prisma.transaction.create({
                 data: <any>{
                     amount: amount,
-                    type: "DEPOSIT",
+                    type: "CREDIT",
                     billerName: sender.userName,
                     currency: currency,
                     bank_name: `PAYYNG - ${sender.userName.toUpperCase()} `,
