@@ -44,10 +44,9 @@ export class AuthService {
     }
 
 
-    await this.mailService.sendVerificationMail(
+    await this.mailService.sendLoginNotificationMail(
       user.email,
       user.firstName,
-      '8080',
     );
 
     //Add the transaction and Bank details of user to the response 

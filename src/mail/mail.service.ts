@@ -30,6 +30,17 @@ export class MailService {
         });
     }
 
+    async sendLoginNotificationMail(email: string, firstName: string, ) {
+        await this.mailerService.sendMail({
+            to: email,
+            subject: 'Payyng Account Access',
+            template: './loginNotification',
+            context: {
+                firstName,
+            },
+        });
+    }
+
     async sendTransactionNotificationEmail(email: string, reference:string, type:string, customer: any, firstName: string, status: string, amount: number, biller_name: string) {
         await this.mailerService.sendMail({
             to: email,
