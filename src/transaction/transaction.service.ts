@@ -442,7 +442,7 @@ export class TransactionService {
             })
 
             if (!receiver) {
-                throw new HttpException('Receiver With the Userame Doesnt Found', HttpStatus.NOT_FOUND)
+                throw new HttpException(`Receiver with the Username ${userName} doesn't exist`, HttpStatus.NOT_FOUND)
             }
 
             //IF THE CURRENCY BEING SENT IS NGN
@@ -663,7 +663,7 @@ export class TransactionService {
                     billerName: receiver.userName,
                     currency: currency,
                     bank_name: `PAYYNG - ${receiver.userName.toUpperCase()} `,
-                    customer: receiver.firstName + "" + receiver.lastName,
+                    customer: receiver.firstName + " " + receiver.lastName,
                     reference: randomize('Aa', 10),
                     status: "Completed",
                     narration: narration,
@@ -676,6 +676,17 @@ export class TransactionService {
             if (!transaction) {
                 throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
             }
+
+            //Send Notification Email
+            // await this.mailService.sendTransactionNotificationEmail()
+
+            await this.mailService.sendPayyngTransferNotificationEmail(
+                receiver.email,
+                receiver.firstName,
+                amount,
+                currency,
+                narration,
+            )
 
             return {
                 status: 'success',

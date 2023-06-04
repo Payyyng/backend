@@ -71,5 +71,20 @@ export class MailService {
         });
     }
 
+    async sendPayyngTransferNotificationEmail(email: string, firstName: string, amount:number,currency:string, sender_name:string ) {
+        await this.mailerService.sendMail({
+            to: email,
+            subject: 'Transaction Notification',
+            template: './payyngTransfer',
+            context: {
+                firstName,
+                amount,
+                currency,
+                sender_name
+
+            },
+        });
+    }
+
 }
 

@@ -1,13 +1,17 @@
+<!doctype html>
 <html>
 
 <head>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-    <title>Payyng Transactional Email</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Bank Transfer Notification</title>
     <style>
-        /* ------------------------------------- GLOBAL RESETS
+        /* -------------------------------------
+          GLOBAL RESETS
       ------------------------------------- */
+
         /*All the styling goes here*/
+
         img {
             border: none;
             -ms-interpolation-mode: bicubic;
@@ -39,18 +43,16 @@
             vertical-align: top;
         }
 
-        /*
-      ------------------------------------- BODY & CONTAINER
+        /* -------------------------------------
+          BODY & CONTAINER
       ------------------------------------- */
+
         .body {
-            background-color:
-                #f6f6f6;
+            background-color: #f6f6f6;
             width: 100%;
         }
 
-        /* Set a max-width, and make it display as block
-      so it will automatically stretch to that width, but will also shrink down
-      on a phone or something */
+        /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
         .container {
             display: block;
             margin: 0 auto !important;
@@ -60,19 +62,17 @@
             width: 580px;
         }
 
-        /* This should also be a block element, so that it will
-      fill 100% of the .container */
+        /* This should also be a block element, so that it will fill 100% of the .container */
         .content {
             box-sizing: border-box;
-            display:
-                block;
+            display: block;
             margin: 0 auto;
             max-width: 580px;
             padding: 10px;
         }
 
-        /*
-      ------------------------------------- HEADER, FOOTER, MAIN
+        /* -------------------------------------
+          HEADER, FOOTER, MAIN
       ------------------------------------- */
         .main {
             background: #ffffff;
@@ -94,8 +94,7 @@
             clear: both;
             margin-top: 10px;
             text-align: center;
-            width:
-                100%;
+            width: 100%;
         }
 
         .footer td,
@@ -107,8 +106,8 @@
             text-align: center;
         }
 
-        /*
-      ------------------------------------- TYPOGRAPHY
+        /* -------------------------------------
+          TYPOGRAPHY
       ------------------------------------- */
         h1,
         h2,
@@ -125,8 +124,7 @@
         h1 {
             font-size: 35px;
             font-weight: 300;
-            text-align:
-                center;
+            text-align: center;
             text-transform: capitalize;
         }
 
@@ -152,17 +150,17 @@
             text-decoration: underline;
         }
 
-        /*
-      ------------------------------------- BUTTONS
+        /* -------------------------------------
+          BUTTONS
       ------------------------------------- */
         .btn {
             box-sizing: border-box;
-            background-color: '#000' width: 100%;
+            background-color: '#000'
+                width: 100%;
         }
 
         .btn>tbody>tr>td {
-            padding-bottom:
-                15px;
+            padding-bottom: 15px;
         }
 
         .btn table {
@@ -170,8 +168,7 @@
         }
 
         .btn table td {
-            background-color:
-                #ffffff;
+            background-color: #ffffff;
             border-radius: 5px;
             text-align: center;
         }
@@ -183,8 +180,7 @@
             box-sizing: border-box;
             color: #fff;
             cursor: pointer;
-            display:
-                inline-block;
+            display: inline-block;
             font-size: 25px;
             font-weight: bold;
             margin: 0;
@@ -198,14 +194,13 @@
         }
 
         .btn-primary a {
-            background-color:
-                #3498db;
+            background-color: #3498db;
             border-color: #3498db;
             color: #ffffff;
         }
 
-        /*
-      ------------------------------------- OTHER STYLES THAT MIGHT BE USEFUL
+        /* -------------------------------------
+          OTHER STYLES THAT MIGHT BE USEFUL
       ------------------------------------- */
         .last {
             margin-bottom: 0;
@@ -248,8 +243,7 @@
             opacity: 0;
             overflow: hidden;
             mso-hide: all;
-            visibility:
-                hidden;
+            visibility: hidden;
             width: 0;
         }
 
@@ -258,15 +252,14 @@
         }
 
         hr {
-            border:
-                0;
+            border: 0;
             border-bottom: 1px solid #f6f6f6;
             margin: 20px 0;
         }
 
-        /*
-      ------------------------------------- RESPONSIVE AND MOBILE FRIENDLY
-      STYLES ------------------------------------- */
+        /* -------------------------------------
+          RESPONSIVE AND MOBILE FRIENDLY STYLES
+      ------------------------------------- */
         @media only screen and (max-width: 620px) {
             table.body h1 {
                 font-size: 28px !important;
@@ -318,7 +311,8 @@
         }
 
         /* -------------------------------------
-      PRESERVE THESE STYLES IN THE HEAD ------------------------------------- */
+          PRESERVE THESE STYLES IN THE HEAD
+      ------------------------------------- */
         @media all {
             .ExternalClass {
                 width: 100%;
@@ -334,8 +328,7 @@
             }
 
             .apple-link a {
-                color:
-                    inherit !important;
+                color: inherit !important;
                 font-family: inherit !important;
                 font-size: inherit !important;
                 font-weight: inherit !important;
@@ -347,8 +340,7 @@
                 color: inherit;
                 text-decoration: none;
                 font-size: inherit;
-                font-family:
-                    inherit;
+                font-family: inherit;
                 font-weight: inherit;
                 line-height: inherit;
             }
@@ -366,91 +358,70 @@
 </head>
 
 <body>
-    {{!-- <span class='preheader'>.</span> --}}
-    <table role='presentation' border='0' cellpadding='0' cellspacing='0' class='body'>
+    <span class="preheader">Transaction Details</span>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
         <tr>
             <td>&nbsp;</td>
-            <td class='container'>
-                <div class='content'>
+            <td class="container">
+                <div class="content">
 
                     <!-- START CENTERED WHITE CONTAINER -->
-                    <table role='presentation' class='main'>
+                    <table role="presentation" class="main">
 
                         <!-- START MAIN CONTENT AREA -->
                         <tr>
-                            <td class='wrapper'>
-                                <table role='presentation' border='0' cellpadding='0' cellspacing='0'>
+                            <td class="wrapper">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td>
+
                                             <p>Hi {{firstName}},</p>
-                                            <p>We are writing to inform you that your transaction {{type}} -
-                                                {{customer}} - {{amount}} - {{biller_name}} was successful </p>
+                                            <p>This is to notify you that you {{currency}} {{amount}} was sent to your
+                                                account successfully from {{sender_name}}
+                                                Thanks for using Payyng</p>
                                         </td>
-                                        {{!--
-                                    <tr>
-                                        <td>
-                                            <p>Transaction Amount: {{amount}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Transaction Date: {{date}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Type: {{type}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Customer: {{customer}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Reference: {{reference}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Biller: {{biller_name}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Status: {{status}}</p>
-                                        </td>
-                                    </tr> --}}
+                                    </tr>
+
+                                </table>
+                                <p>If you have received this payment in error, please contact us immediately at
+                                    <span><a href="mailto:support@payymg.com"
+                                            target="_blank">support@payyng.com</a></span> to report any unauthorized
+                                    transactions on your account.
+                                </p>
+
+                                {{!-- <p>Thank you for choosing Payyng, and please let us know if you have any further
+                                    questions or concerns.</p> --}}
+
+                                <p>Thank you for choosing Payyng.</p>
+                            </td>
+
                         </tr>
+                        <!-- END MAIN CONTENT AREA -->
                     </table>
-                    <p>If you did not sign up on Payyng, please disregard this
-                        message and contact us immediately at
-                        <span><a href='mailto:support@payymg.com' target='_blank'>support@payyng.com</a></span>
-                        to report any unauthorized access to your account.
-                    </p>
 
-                    <p>Thank you for choosing Payyng, and please let us know if
-                        you have any further questions or concerns.</p>
+                    <!-- END CENTERED WHITE CONTAINER -->
+
+                    <!-- START FOOTER -->
+                    <div class="footer">
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td class="content-block">
+                                    <span class="apple-link">Payyng Technologies, Lagos Nigeria. </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="content-block powered-by">
+                                    <a href="https://payyng.com">© Payyng . All rights reserved.</a>.
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!-- END FOOTER -->
+
+                </div>
             </td>
-
+            <td>&nbsp;</td>
         </tr>
-
-        <!-- END MAIN CONTENT AREA -->
-    </table>
-
-    <!-- END CENTERED WHITE CONTAINER -->
-
-    <!-- START FOOTER -->
-    <div class='footer'>
-        <table role='presentation' border='0' cellpadding='0' cellspacing='0'>
-            <tr>
-                <td class='content-block'>
-                    <span class='apple-link'>Payyng Technologies, Lagos Nigeria.
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class='content-block powered-by'>
-                    <a href='https://payyng.com'>© Payyng . All rights reserved.</a>.
-                </td>
-            </tr>
-        </table>
-    </div>
-    <!-- END FOOTER -->
-
-    </div>
-    </td>
-    <td>&nbsp;</td>
-    </tr>
     </table>
 </body>
 
