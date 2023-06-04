@@ -425,6 +425,18 @@ export class TransactionService {
         }
 
         try {
+
+            const sender = await this.prisma.user.findUnique({
+                where: {
+                    id: id
+                }
+            })
+
+            if (!sender) {
+                throw new HttpException('Sender Not Found', HttpStatus.NOT_FOUND)
+            }
+
+
             const senderAccount = await this.prisma.account.findFirst({
                 where: {
                     userId: id
@@ -654,6 +666,7 @@ export class TransactionService {
                 }
             }
 
+            const reference = randomize('Aa', 10)
 
             //Save To Transactions In Database
             const transaction = await this.prisma.transaction.create({
@@ -664,7 +677,7 @@ export class TransactionService {
                     currency: currency,
                     bank_name: `PAYYNG - ${receiver.userName.toUpperCase()} `,
                     customer: receiver.firstName + " " + receiver.lastName,
-                    reference: randomize('Aa', 10),
+                    reference: reference,
                     status: "Completed",
                     narration: narration,
                     user: {
@@ -672,6 +685,28 @@ export class TransactionService {
                     }
                 }
             })
+
+            const transactionRecipient = await this.prisma.transaction.create({
+                data: <any>{
+                    amount: amount,
+                    type: "DEPOSIT",
+                    billerName: sender.userName,
+                    currency: currency,
+                    bank_name: `PAYYNG - ${sender.userName.toUpperCase()} `,
+                    customer: sender.firstName + " " + sender.lastName,
+                    reference: reference,
+                    status: "Completed",
+                    narration: narration,
+                    user: {
+                        connect: { id: receiver.id },
+                    }
+                }
+            })
+
+            if(!transactionRecipient){
+                throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
+            }
+            
 
             if (!transaction) {
                 throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
