@@ -17,6 +17,7 @@ import { BankTransferDto } from './dto/bank-transfer.dto';
 import { ValidateBillDto } from './dto/validate-bill-dto';
 import { VerifyAccountDTO } from './dto/verify-account-dto';
 import { PayyngTransferDto } from './dto/payyng-transfer.dto';
+import { ExchangeDTO } from './dto/exchange-currency.dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -77,5 +78,11 @@ export class TransactionController {
     @Post('payyng-transfer')
     transferToPayyngUser(@Body( ) { id, userName, amount, narration, currency }:PayyngTransferDto) {
         return this.transactionService.tranferToPayyngAccount({ id, userName, amount, narration, currency }); 
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('exchange')
+    exchangeCurrency(@Body( ) { id, newAmount, newCurrency, exchangeCurrency, exchangeAmount }:ExchangeDTO) {
+        return this.transactionService.exchangeCurrency({ id, newAmount, newCurrency, exchangeCurrency, exchangeAmount }); 
     }
 }

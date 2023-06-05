@@ -6,11 +6,14 @@ import { createBillDto } from './dto/create-bills.dto';
 import randomize from 'randomatic'
 import Flutterwave from 'flutterwave-node-v3';
 import { MailService } from 'src/mail/mail.service';
+import { ExchangeDTO } from './dto/exchange-currency.dto';
 
 
 const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
 
 const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, SECRET_KEY);
+
+const reference = randomize('Aa', 10)
 
 interface TransferDetails {
     id: any,
@@ -703,10 +706,10 @@ export class TransactionService {
                 }
             })
 
-            if(!transactionRecipient){
+            if (!transactionRecipient) {
                 throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
             }
-            
+
 
             if (!transaction) {
                 throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
@@ -755,6 +758,349 @@ export class TransactionService {
         }
 
 
+        return
+    }
+
+    async exchangeCurrency({ id, newAmount, newCurrency, exchangeCurrency, exchangeAmount }: ExchangeDTO) {
+
+        if (!id || !newAmount || !newCurrency || !exchangeAmount || !exchangeCurrency){
+            throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
+        }
+
+        try {
+
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: id
+                }
+            })
+
+            if (!user) { 
+                throw new HttpException('User Not Found', HttpStatus.NOT_FOUND)
+            }
+
+            const account = await this.prisma.account.findFirst({
+                where: {
+                    userId: id
+                }
+            })
+
+            if (!account) {
+                throw new HttpException('Account Not Found', HttpStatus.NOT_FOUND)
+            }
+
+            if (exchangeCurrency === "USD" && newCurrency === "NGN" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.USD < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.USD - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        USD: newBalance,
+                        NGN: account.NGN + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "USD" && newCurrency === "EUR" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.USD < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.USD - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        USD: newBalance,
+                        EUR: account.EUR + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "USD" && newCurrency === "GBP" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.USD < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.USD - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        USD: newBalance,
+                        GBP: account.GPB + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "EUR" && newCurrency === "NGN" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.EUR < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.EUR - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        EUR: newBalance,
+                        NGN: account.NGN + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "EUR" && newCurrency === "USD" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.EUR < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.EUR - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        EUR: newBalance,
+                        USD: account.USD + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "EUR" && newCurrency === "GBP" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.EUR < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.EUR - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        EUR: newBalance,
+                        GBP: account.GPB + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "GBP" && newCurrency === "NGN" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.GPB < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.GPB - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        GBP: newBalance,
+                        NGN: account.NGN + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "GBP" && newCurrency === "USD" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.GPB < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.GPB - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        GBP: newBalance,
+                        USD: account.USD + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "GBP" && newCurrency === "EUR" ) {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.GPB < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.GPB - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: <any> {
+                        GBP: newBalance,
+                        EUR: account.EUR + newAmount
+                    }
+                })
+            }
+            
+            if (exchangeCurrency === "NGN" && newCurrency === "USD") {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.NGN < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.NGN - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: {
+                        NGN: newBalance,
+                        USD: account.USD + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "NGN" && newCurrency === "EUR") {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.NGN < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.NGN - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where:{
+                        id: account.id
+                    },
+                    data: {
+                        NGN: newBalance,
+                        EUR: account.EUR + newAmount
+                    }
+                })
+            }
+
+            if (exchangeCurrency === "NGN" && newCurrency === "GBP") {
+                //GET THE USE BALANCE FROM ACCOUNT
+
+                if (account.NGN < exchangeAmount) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                const newBalance = account.NGN - exchangeAmount
+
+                if (newBalance < 0) {
+                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+                }
+
+                await this.prisma.account.update({
+                    where:{
+                        id: account.id
+                    },
+                    data: {
+                        NGN: newBalance,
+                        GPB: account.GPB + newAmount
+                    }
+                })
+            }
+
+
+            //Save To Transactions In Database
+            const transaction = await this.prisma.transaction.create({
+                data: <any>{
+                    amount: exchangeAmount,
+                    type: "EXCHANGE",
+                    billerName: `EXCHANGE FROM ${exchangeCurrency} to ${newCurrency}`,
+                    currency: exchangeCurrency,
+                    bank_name: `PAYYNG - ${newCurrency} Account `,
+                    customer: user.firstName + " " + user.lastName,
+                    reference: reference,
+                }
+            })
+
+            return {
+                status: 'success',
+                message: 'Exchange Successful',
+                transaction: transaction
+            }
+
+
+        }catch (err) {
+            throw err
+        }
         return
     }
 
