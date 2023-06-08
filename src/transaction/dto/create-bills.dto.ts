@@ -22,4 +22,7 @@ export class createBillDto {
 
     @ApiProperty()
     @IsNotEmpty() readonly customer: string;
+
+    @ApiProperty() readonly fee: number;
+
 }

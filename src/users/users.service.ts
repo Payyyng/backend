@@ -332,7 +332,7 @@ export class UsersService {
       }
 
     } catch (err) {
-      throw new HttpException(err, HttpStatus.GATEWAY_TIMEOUT);
+      throw err
     }
   }
 
@@ -599,6 +599,8 @@ export class UsersService {
       throw err
     }
   }
+
+  
 
 
 

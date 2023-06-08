@@ -22,7 +22,8 @@ interface TransferDetails {
     amount: number,
     narration: string,
     beneficiary_name: string
-    bank_name: string
+    bank_name: string,
+    fee: number
 }
 
 export interface AccountDetails {
@@ -45,7 +46,7 @@ export class TransactionService {
      */
 
     async payBills(data: createBillDto): Promise<any> {
-        const { id, amount, type, customer, biller_name } = data;
+        const { id, amount, type, customer, biller_name, fee } = data;
         if (!id || !amount || !type || !customer) {
             throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
         }
@@ -88,6 +89,7 @@ export class TransactionService {
                         customer: customer,
                         reference: reference,
                         status: "Completed",
+                        fee: fee,
                         user: {
                             connect: { id: id },
                         },
@@ -103,7 +105,7 @@ export class TransactionService {
                     });
 
                     if (account) {
-                        const newBalance = account.NGN - amount;
+                        const newBalance = account.NGN - amount - fee;
                         await this.prisma.account.update({
                             where: {
                                 id: account.id,
@@ -181,7 +183,7 @@ export class TransactionService {
     */
 
     async bankTransfer(transferInfo: TransferDetails) {
-        const { id, account_bank, bank_name, account_number, amount, narration, beneficiary_name } = transferInfo
+        const { id, account_bank, bank_name, account_number, amount, narration, beneficiary_name, fee } = transferInfo
         if (!id || !account_bank || !bank_name || !account_number || !amount) {
             throw new HttpException('Ensure all transfer information are provided.', HttpStatus.BAD_REQUEST)
         }
@@ -239,7 +241,7 @@ export class TransactionService {
                 });
 
                 if (account) {
-                    const newBalance = account.NGN - amount;
+                    const newBalance = account.NGN - amount - fee;
                     await this.prisma.account.update({
                         where: {
                             id: account.id,
@@ -275,6 +277,7 @@ export class TransactionService {
                         status: "Completed",
                         narration: narration,
                         bank_name: bank_name,
+                        fee: fee,
                         user: {
                             connect: { id: id },
                         }
@@ -1104,6 +1107,33 @@ export class TransactionService {
         return
     }
 
+
+    async generateReceipt (id:string) {
+        if (!id) {
+            throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
+        }
+
+        try {
+
+            const transaction = this.prisma.transaction.findUnique({
+                where:{
+                    id: id
+                }
+            })
+
+            if (!transaction) {
+                throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
+            }
+
+            
+            
+
+        } catch (err){
+            throw err
+        }
+
+        return
+    }
 
 
 

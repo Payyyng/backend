@@ -47,8 +47,6 @@ export class TransactionController {
         return this.transactionService.bankTransfer(transferDetails);
     }
 
-
-
     @Post('verify-bill')
     @ApiBody({ type: ValidateBillDto })
     verifyBill(@Body() {item_code, customer, code}: ValidateBillDto) {
