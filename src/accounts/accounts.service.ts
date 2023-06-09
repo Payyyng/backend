@@ -3,7 +3,9 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MailService } from 'src/mail/mail.service';
+import randomize from 'randomatic'
 
+const reference = `${randomize('Aa', 10)}`
 
 @Injectable()
 export class AccountsService {
@@ -15,7 +17,7 @@ export class AccountsService {
 
 
   create(reateAccountDto: CreateAccountDto) {
-    
+
 
 
     return 'This action adds a new account';
@@ -54,7 +56,67 @@ export class AccountsService {
   * @param {string} email
   */
 
-  async accountTransferPayyng ({}) {
-    return
+  async accountDeposit(depositData: any) {
+    const { id, amount, } = depositData
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id
+      }
+    })
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+    }
+
+    console.log(user, "THE USER")
+
+    const account = await this.prisma.account.findFirst({
+      where: {
+        userId: id
+      }
+    })
+
+    if (!account) {
+      throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
+    }
+
+    console.log(account, "THE ACCOUNT")
+
+
+    const newBalance = account.NGN + amount
+
+ await this.prisma.account.update({
+      where: {
+        id: account.id
+      },
+      data: {
+        NGN: newBalance
+      }
+    })
+
+    //Create A Transaction Details
+    const transaction = await this.prisma.transaction.create({
+      data: {
+        amount: amount,
+        type: 'DEPOSIT',
+        userId: id,  
+        currency: "NGN",
+        status: "Completed",
+        narration:`Card Deposit ${user.firstName}`, 
+        customer: `${user.firstName + " " + user.lastName}`,
+        reference: reference,
+      }
+    })
+
+    if (!transaction) {
+      throw new HttpException('Something went wrong.', HttpStatus.INTERNAL_SERVER_ERROR)
+      
+    }
+
+    return{
+      status: "success",
+      message: "Deposit Successful",
+    }
   }
 }

@@ -24,6 +24,7 @@ model User {
   pin           String?
   token         String?
   bvn           Int?
+  isPaypalVerified Boolean   @default(false)
   isVerified    Boolean?      @default(false)
   isActive      Boolean       @default(true)
   transactions  Transaction[]
@@ -119,4 +120,20 @@ model Admin {
   userRole    String?  @default("ADMIN")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Paypal {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String?
+  password   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model TransferWise {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String?
+  password   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

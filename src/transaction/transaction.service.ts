@@ -116,8 +116,6 @@ export class TransactionService {
                         });
                     }
                 }
-
-
                 
                 // Send transaction notification email
                 this.mailService.sendTransactionNotificationEmail(

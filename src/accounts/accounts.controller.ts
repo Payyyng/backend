@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import { DepositDTO } from './dto/deposit.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('accounts')
 export class AccountsController {
@@ -32,4 +34,9 @@ export class AccountsController {
   // remove(@Param('id') id: string) {
   //   return this.accountsService.remove(+id);
   // }
+  @UseGuards(JwtAuthGuard)
+  @Post("deposit")
+  deposit(@Body() deposit: DepositDTO) {
+    return this.accountsService.accountDeposit(deposit)
+  }
 }
