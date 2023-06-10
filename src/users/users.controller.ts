@@ -110,8 +110,8 @@ export class UsersController {
     @ApiHeader({ name: 'Authorization', description: "Bearer <token>" })
     @ApiBody({ type: UpdateUserDto })
     @Put('update')
-    updateUserAccount(@Body() id: string, userInfo: any) {
-        return this.userService.updateUserAccount(id, userInfo);
+    updateUserAccount(@Body() {lastName, firstName, phone, id}: UpdateUserDto) {
+        return this.userService.updateUserAccount({lastName, firstName, phone, id});
     }
 
     // @UseGuards(JwtAuthGuard)

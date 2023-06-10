@@ -9,6 +9,7 @@ import randomize from 'randomatic';
 import axios from 'axios';
 import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
 import Flutterwave from 'flutterwave-node-v3';
+import { UpdateAccountDto } from 'src/accounts/dto/update-account.dto';
 
 
 
@@ -336,11 +337,7 @@ export class UsersService {
     }
   }
 
-
-  async updateUserAccount(
-    id: string,
-    data: Prisma.UserUpdateInput,
-  ): Promise<any> {
+  async updateUserAccount({id, lastName, firstName, phone}: any): Promise<any> {
     const user = await this.prisma.user.findUnique({
       where: {
         id,
@@ -355,7 +352,11 @@ export class UsersService {
       where: {
         id,
       },
-      data,
+      data: {
+        firstName,
+        lastName,
+        phone
+      }
     });
 
     if (!updatedUser) {
