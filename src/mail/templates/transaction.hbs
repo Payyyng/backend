@@ -3,7 +3,7 @@
 <head>
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-    <title>Payyng Transactional Email</title>
+    <title>Transaction Notification</title>
     <style>
         /* ------------------------------------- GLOBAL RESETS
       ------------------------------------- */
@@ -383,43 +383,19 @@
                                     <tr>
                                         <td>
                                             <p>Hi {{firstName}},</p>
-                                            <p>We are writing to inform you that your transaction {{type}} -
-                                                {{customer}} - {{amount}} - {{biller_name}} was successful </p>
+                                            <p>You just  {{type}} -
+                                                {{customer}} - {{amount}} - {{biller_name}}  </p>
                                         </td>
-                                        {{!--
-                                    <tr>
-                                        <td>
-                                            <p>Transaction Amount: {{amount}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Transaction Date: {{date}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Type: {{type}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Customer: {{customer}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Reference: {{reference}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Biller: {{biller_name}}</p>
-                                        </td>
-                                        <td>
-                                            <p>Status: {{status}}</p>
-                                        </td>
-                                    </tr> --}}
+          
                         </tr>
                     </table>
-                    <p>If you did not sign up on Payyng, please disregard this
+                    <p>If you did not perform this transaction on your account, please disregard this
                         message and contact us immediately at
                         <span><a href='mailto:support@payymg.com' target='_blank'>support@payyng.com</a></span>
                         to report any unauthorized access to your account.
                     </p>
 
-                    <p>Thank you for choosing Payyng, and please let us know if
-                        you have any further questions or concerns.</p>
+                    <p>Thank you for choosing Payyng</p>
             </td>
 
         </tr>
