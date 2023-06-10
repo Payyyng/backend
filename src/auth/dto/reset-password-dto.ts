@@ -15,7 +15,7 @@ export class ResetPasswordDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
-    readonly otp: string;
+    readonly otp: number;
 
     @ApiProperty()
     @IsNotEmpty()

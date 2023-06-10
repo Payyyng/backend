@@ -90,7 +90,7 @@ export class AuthService {
 
     await this.prisma.user.update({
       where: {
-        email
+        email,
       },
       data: {
         otp: Number(otp),
@@ -160,15 +160,15 @@ export class AuthService {
     };
   }
 
-  async resetPassword(id: string, otp: number, password: string) {
-    if (!id || !otp || !password) {
+  async resetPassword({email, otp, password}:any) {
+    if (!email || !otp || !password) {
       throw new HttpException(
         'All fields are required',
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    const user = await this.usersService.findUserById(id);
+    const user = await this.usersService.findUserByEmail(email)
 
     if (!user) {
       throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
@@ -190,6 +190,7 @@ export class AuthService {
       },
       data: {
         password: hashedPassword,
+        otp: null
       },
     });
 

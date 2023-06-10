@@ -51,8 +51,8 @@ export class AuthController {
 
   @Post('reset-password')
   @ApiBody({type: ResetPasswordDto})
-  async resetPassword(@Body() email: string, otp: number, password: string) {
-    return this.authService.resetPassword(email, otp, password);
+  async resetPassword(@Body() {email, otp, password}:ResetPasswordDto)  {
+    return this.authService.resetPassword({email, otp, password});
   }
 
   @Post('send-otp')
