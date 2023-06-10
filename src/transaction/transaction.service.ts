@@ -269,7 +269,7 @@ export class TransactionService {
 
                 await this.prisma.transaction.create({
                     data: <any>{
-                        amount: amount,
+                        amount: amount + fee,
                         type: "BANK TRANSFER",
                         billerName: bank_name,
                         currency: 'NG',
