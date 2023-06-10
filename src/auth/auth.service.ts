@@ -90,7 +90,7 @@ export class AuthService {
 
     await this.prisma.user.update({
       where: {
-        email: email.toLowerCase(),
+        email
       },
       data: {
         otp: Number(otp),
