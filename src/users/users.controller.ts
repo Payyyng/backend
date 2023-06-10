@@ -32,8 +32,8 @@ export class UsersController {
 
     @Post('register')
     @ApiBody({ type: createUserDto })
-    createUser(@Body() {firstName, lastName, email, phone, password}: createUserDto) {
-            return this.userService.createUser({firstName, lastName, email, phone, password});
+    createUser(@Body() { firstName, lastName, email, phone, password }: createUserDto) {
+        return this.userService.createUser({ firstName, lastName, email, phone, password });
     }
 
     @Post('verify')
@@ -47,12 +47,12 @@ export class UsersController {
         {
             name: 'Authorization',
             description: "Bearer <token>"
-        } 
+        }
     )
-    @ApiBody({type: UpdateTransactionPinDto})
+    @ApiBody({ type: UpdateTransactionPinDto })
     @Post('update-pin')
-    updatePin(@Body() {id, new_pin, current_pin}: UpdateTransactionPinDto) {
-        return this.userService.updateTransactionPin({id, new_pin, current_pin});
+    updatePin(@Body() { id, new_pin, current_pin }: UpdateTransactionPinDto) {
+        return this.userService.updateTransactionPin({ id, new_pin, current_pin });
     }
 
 
@@ -89,8 +89,8 @@ export class UsersController {
     )
     @Put('update-address/:id')
     @ApiBody({ type: UpdateAddressDto })
-    updateAddress(@Param('id') id: string, @Body() {address, city,  state, lga}: any) {
-        return this.userService.updateAddress({id, address, city, state, lga});
+    updateAddress(@Param('id') id: string, @Body() { address, city, state, lga }: any) {
+        return this.userService.updateAddress({ id, address, city, state, lga });
     }
 
     @UseGuards(JwtAuthGuard)
@@ -102,28 +102,28 @@ export class UsersController {
     )
     // @ApiBody()
     @Patch('update-password/:id')
-    updatePassword(@Param('id') id: string, @Body() {password, new_password}: any) {
-        return this.userService.updatePassword({id, password, new_password});
+    updatePassword(@Param('id') id: string, @Body() { password, new_password }: any) {
+        return this.userService.updatePassword({ id, password, new_password });
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiHeader({name: 'Authorization',description: "Bearer <token>"})
-    @ApiBody({type:UpdateUserDto})
+    @ApiHeader({ name: 'Authorization', description: "Bearer <token>" })
+    @ApiBody({ type: UpdateUserDto })
     @Put('update')
     updateUserAccount(@Body() id: string, userInfo: any) {
         return this.userService.updateUserAccount(id, userInfo);
     }
 
     // @UseGuards(JwtAuthGuard)
-    @ApiHeader({name: 'Authorization',description: "Bearer <token>"})
+    @ApiHeader({ name: 'Authorization', description: "Bearer <token>" })
     @Get(':id')
     getUserAccount(@Param('id') id: string) {
         return this.userService.findUserById(id);
     }
 
     @Post('bvn-verify')
-    @ApiBody({type:BVNverificationDto})
-    verifyUserBvn(@Body() {id, bvn}:any){
+    @ApiBody({ type: BVNverificationDto })
+    verifyUserBvn(@Body() { id, bvn }: any) {
         return this.userService.verifyUserBvn(id, bvn);
     }
 
@@ -146,7 +146,7 @@ export class UsersController {
             description: "Bearer <token>"
         }
     )
-    createBankAccount(@Body() {email, bvn}: createAccountDto) {
+    createBankAccount(@Body() { email, bvn }: createAccountDto) {
         return this.userService.createBankAccount(email, bvn);
     }
 }

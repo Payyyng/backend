@@ -191,6 +191,12 @@ export class TransactionService {
 
         //Get The Current Account Balance of the User 
 
+        const userDetails = await this.prisma.user.findUnique({
+            where: {
+               id
+            }
+        })
+
         const accountBalance = await this.prisma.account.findFirst({
             where: {
                 userId: id
@@ -224,7 +230,7 @@ export class TransactionService {
                 amount: amount,
                 currency: "NGN",
                 reference: reference,
-                narration: narration,
+                narration: `${userDetails.firstName } ${userDetails.firstName } -${narration} `,
             }
 
             const response = await flw.Transfer.initiate(payload)

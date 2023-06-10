@@ -508,8 +508,8 @@ export class UsersService {
   }
 
 
-  async updatePassword({ id, current_password, new_password }: any) {
-    if (!current_password || !new_password || !id) {
+  async updatePassword({ id, password, new_password }: any) {
+    if (!password || !new_password || !id) {
       throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
     }
 
@@ -524,7 +524,7 @@ export class UsersService {
         throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
       }
 
-      const isMatch = await compare(current_password, user.password);
+      const isMatch = await compare(password, user.password);
 
       if (!isMatch) {
         throw new HttpException('Invalid Password', HttpStatus.BAD_REQUEST);
@@ -599,10 +599,5 @@ export class UsersService {
       throw err
     }
   }
-
-  
-
-
-
 
 }
