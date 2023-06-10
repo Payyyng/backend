@@ -91,7 +91,7 @@ export class AccountsService {
         id: account.id
       },
       data: {
-        NGN: newBalance
+        NGN: Number(newBalance)
       }
     })
 
