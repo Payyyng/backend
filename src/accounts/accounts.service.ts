@@ -57,7 +57,7 @@ export class AccountsService {
   */
 
   async accountDeposit(depositData: any) {
-    const { id, amount, } = depositData
+    const { id, amount } = depositData
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -84,7 +84,7 @@ export class AccountsService {
     console.log(account, "THE ACCOUNT")
 
 
-    const newBalance = account.NGN + amount
+    const newBalance = account.NGN + Number(amount)
 
  await this.prisma.account.update({
       where: {
