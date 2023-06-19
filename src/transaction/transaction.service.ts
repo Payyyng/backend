@@ -44,12 +44,6 @@ export class TransactionService {
      * @returns 
      */
 
-    async create () {
-
-
-        return
-    }
-
     async payBills(data: createBillDto): Promise<any> {
         const { id, amount, type, customer, biller_name, fee } = data;
         if (!id || !amount || !type || !customer) {
