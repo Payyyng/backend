@@ -168,7 +168,6 @@ export class AdminService {
                 status: 'success',
                 message: 'Admin Constants Updated Successfully'
             }
-  
     }
 
     async getAdminConstant () {
