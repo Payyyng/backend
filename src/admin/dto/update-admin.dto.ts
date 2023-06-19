@@ -13,11 +13,21 @@ export class UpdateAdminDTO {
     @IsNotEmpty() readonly exchangeEUR: string;
 
     @ApiProperty()
-    @IsNotEmpty() readonly exchangeGPB: string;
+    @IsNotEmpty() readonly exchangeGBP: string;
 
     @ApiProperty()
     @IsNotEmpty() readonly exchangeNGN: string;
 
     @ApiProperty()
-    @IsNotEmpty() readonly exchangeFee: string;
+    @IsNotEmpty() readonly   exchangeFee: string;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly paypalRate: string;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly exchangeTransactionFeePercentage: string;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly paypalEmail: string;
+
 }

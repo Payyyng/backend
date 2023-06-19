@@ -119,4 +119,37 @@ export class AccountsService {
       message: "Deposit Successful",
     }
   }
+
+  //FUNC TO UPDATE ACCOUNT BALANCE
+  async updateAccountBalance(account:any, currency:string, amount:number, fee:number, type:string) {
+
+    if (type === 'debit'){
+      if (account[currency] < amount) {
+        throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+    }
+  
+    let newBalance : any;
+
+    if (type === "credit"){
+      newBalance = account[currency] + amount + fee;
+    } else {
+      newBalance = account[currency] - amount - fee;
+    }
+  
+    if (newBalance < 0) {
+      throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  
+    const updatedAccount = await this.prisma.account.update({
+      where: { id: account.id },
+      data: { [currency]: newBalance },
+    });
+  
+    if (!updatedAccount) {
+      throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+    }
+  
+    return updatedAccount;
+  }
 }

@@ -10,8 +10,4 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  // @Get('*')
-  // notValid(): string {
-  //   return this.appService.notValid();
-  // }
 }

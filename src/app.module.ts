@@ -17,6 +17,7 @@ import { AdminService } from './admin/admin.service';
 import { ConfigModule } from '@nestjs/config';
 import { CardModule } from './card/card.module';
 import { AccountsModule } from './accounts/accounts.module';
+import { PaypalModule } from './paypal/paypal.module';
 
 
 @Module({
@@ -30,6 +31,7 @@ import { AccountsModule } from './accounts/accounts.module';
     TransactionModule,
     CardModule,
     AccountsModule,
+    PaypalModule,
   ],
   controllers: [
     AppController,

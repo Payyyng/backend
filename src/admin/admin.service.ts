@@ -19,7 +19,6 @@ export class AdminService {
             }
         })
 
-
         if (!user) {
             throw new HttpException("User not found", HttpStatus.NOT_FOUND)
         }
@@ -153,7 +152,7 @@ export class AdminService {
     }
 
     async updateAdminConstant (updateAdminConst) {
-       const {exchangeUSD, exchangeEUR, exchangeGPB, exchangeNGN, exchangeFee } = updateAdminConst
+       const {exchangeUSD, exchangeEUR, exchangeGBP, exchangeNGN, exchangeFee } = updateAdminConst
             const updatedValues = await this.prisma.admin.updateMany({
                 where:  {
                     userRole: "ADMIN`"
@@ -161,7 +160,7 @@ export class AdminService {
                 data: {
                     exchangeUSD,
                     exchangeEUR,
-                    exchangeGPB,
+                    exchangeGBP,
                     exchangeNGN,
                     exchangeFee
                 }
@@ -175,5 +174,24 @@ export class AdminService {
                 message: 'Values Updated Successfully'
             }
   
+    }
+
+    async getAdminConstant () {
+        try {
+            return await this.prisma.admin.findMany({
+                select: {
+                    exchangeUSD: true,
+                    exchangeEUR: true,
+                    exchangeGBP: true,
+                    exchangeNGN: true,
+                    exchangeFee: true,
+                    paypalEmail: true,
+                    paypalRate: true,
+                    exchangeTransactionFeePercentage: true
+                }
+            })
+        } catch (err) {
+            return 'Something went wrong. Please try again'
+        }
     }
 }

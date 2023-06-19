@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import axios from 'axios'
 import { Transaction, Prisma, } from '@prisma/client';
 import { createBillDto } from './dto/create-bills.dto';
 import randomize from 'randomatic'
@@ -422,7 +421,7 @@ export class TransactionService {
                     exchangeNGN: true,
                     exchangeUSD: true,
                     exchangeEUR: true,
-                    exchangeGPB: true,
+                    exchangeGBP: true,
                     exchangeFee: true,
                 }
             })
@@ -432,319 +431,106 @@ export class TransactionService {
     }
 
     async tranferToPayyngAccount({ id, userName, amount, narration, currency }) {
-
         if (!amount || !id || !userName || !currency) {
-            throw new HttpException('Ensure All Values Are Provided', HttpStatus.BAD_REQUEST)
+          throw new HttpException('Ensure All Values Are Provided', HttpStatus.BAD_REQUEST);
         }
-
+      
         try {
+          const sender = await this.prisma.user.findUnique({ where: { id: id } });
+          if (!sender) {
+            throw new HttpException('Sender Not Found', HttpStatus.NOT_FOUND);
+          }
+      
+          const senderAccount = await this.prisma.account.findFirst({ where: { userId: id } });
+          if (!senderAccount) {
+            throw new HttpException('Sender Account Not Found', HttpStatus.NOT_FOUND);
+          }
+      
+          const receiver = await this.prisma.user.findFirst({ where: { userName: userName } });
+          if (!receiver) {
+            throw new HttpException(`Receiver with the Username ${userName} doesn't exist`, HttpStatus.NOT_FOUND);
+          }
 
-            const sender = await this.prisma.user.findUnique({
-                where: {
-                    id: id
-                }
-            })
-
-            if (!sender) {
-                throw new HttpException('Sender Not Found', HttpStatus.NOT_FOUND)
-            }
-
-
-            const senderAccount = await this.prisma.account.findFirst({
-                where: {
-                    userId: id
-                }
-            })
-
-            if (!senderAccount) {
-                throw new HttpException('Sender Account Not Found', HttpStatus.NOT_FOUND)
-            }
-
-            const receiver = await this.prisma.user.findFirst({
-                where: {
-                    userName: userName
-                }
-            })
-
-            if (!receiver) {
-                throw new HttpException(`Receiver with the Username ${userName} doesn't exist`, HttpStatus.NOT_FOUND)
-            }
-
-            //IF THE CURRENCY BEING SENT IS NGN
-
-            if (currency === "NGN") {
-                if (senderAccount.NGN < amount) {
-                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-                }
-
-                const newBalance = senderAccount.NGN - amount
-
-                if (newBalance < 0) {
-                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-                }
-
-                const updatedSenderAccount = await this.prisma.account.update({
-                    where: {
-                        id: senderAccount.id
-                    },
-                    data: {
-                        NGN: newBalance
-                    }
-                })
-
-                if (!updatedSenderAccount) {
-                    throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-                }
-
-                const receiverAccount = await this.prisma.account.findFirst({
-                    where: {
-                        userId: receiver.id
-                    }
-                })
-
-                if (!receiverAccount) {
-                    throw new HttpException('Receiver Account Not Found', HttpStatus.NOT_FOUND)
-                }
-
-                const newReceiverBalance = receiverAccount.NGN + amount
-
-                const updatedReceiverAccount = await this.prisma.account.update({
-                    where: {
-                        id: receiverAccount.id
-                    },
-                    data: {
-                        NGN: newReceiverBalance
-                    }
-                })
-
-                if (!updatedReceiverAccount) {
-                    throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-                }
-
-
-
-            }
-
-            //IF THE CURRENCY IS USD
-
-            if (currency === "USD") {
-                if (senderAccount.USD < amount) {
-                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-                }
-
-                const newBalance = senderAccount.USD - amount
-
-                if (newBalance < 0) {
-                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-                }
-
-                const updatedSenderAccount = await this.prisma.account.update({
-                    where: {
-                        id: senderAccount.id
-                    },
-                    data: {
-                        USD: newBalance
-                    }
-                })
-
-                if (!updatedSenderAccount) {
-                    throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-                }
-
-                const receiverAccount = await this.prisma.account.findFirst({
-                    where: {
-                        userId: receiver.id
-                    }
-                })
-
-                if (!receiverAccount) {
-                    throw new HttpException('Receiver Account Not Found', HttpStatus.NOT_FOUND)
-                }
-
-                const newReceiverBalance = receiverAccount.USD + amount
-
-                const updatedReceiverAccount = await this.prisma.account.update({
-                    where: {
-                        id: receiverAccount.id
-                    },
-                    data: {
-                        USD: newReceiverBalance
-                    }
-                })
-
-                if (!updatedReceiverAccount) {
-                    throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-                }
-            }
-
-            //IF THE CURRENCY IS EUR
-
-            if (currency === "EUR") {
-                if (senderAccount.EUR < amount) {
-                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-                }
-                const newBalance = senderAccount.EUR - amount
-
-                if (newBalance < 0) {
-                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-                }
-
-                const updatedSenderAccount = await this.prisma.account.update({
-                    where: {
-                        id: senderAccount.id
-                    },
-                    data: {
-                        EUR: newBalance
-                    }
-                })
-
-                if (!updatedSenderAccount) {
-                    throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-                }
-
-                const receiverAccount = await this.prisma.account.findFirst({
-                    where: {
-                        userId: receiver.id
-                    }
-                })
-
-                if (!receiverAccount) {
-                    throw new HttpException('Receiver Account Not Found', HttpStatus.NOT_FOUND)
-                }
-
-                const newReceiverBalance = receiverAccount.EUR + amount
-
-                const updatedReceiverAccount = await this.prisma.account.update({
-                    where: {
-                        id: receiverAccount.id
-                    },
-                    data: {
-                        EUR: newReceiverBalance
-                    }
-                })
-
-                if (!updatedReceiverAccount) {
-                    throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-                }
-            }
-
-            //IF THE CURRENCY IS GBP
-
-            if (currency === "GBP") {
-                if (senderAccount.GPB < amount) {
-                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-                }
-                const newBalance = senderAccount.GPB - amount
-
-                if (newBalance < 0) {
-                    throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-                }
-
-                const updatedSenderAccount = await this.prisma.account.update({
-                    where: {
-                        id: senderAccount.id
-                    },
-                    data: {
-                        GPB: newBalance
-                    }
-                })
-
-                if (!updatedSenderAccount) {
-                    throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-                }
-
-                const receiverAccount = await this.prisma.account.findFirst({
-                    where: {
-                        userId: receiver.id
-                    }
-                })
-
-                if (!receiverAccount) {
-                    throw new HttpException('Receiver Account Not Found', HttpStatus.NOT_FOUND)
-                }
-
-                const newReceiverBalance = receiverAccount.EUR + amount
-
-                const updatedReceiverAccount = await this.prisma.account.update({
-                    where: {
-                        id: receiverAccount.id
-                    },
-                    data: {
-                        GPB: newReceiverBalance
-                    }
-                })
-
-                if (!updatedReceiverAccount) {
-                    throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-                }
-            }
-
-            const reference = randomize('Aa', 10)
-
-            //Save To Transactions In Database
-            const transaction = await this.prisma.transaction.create({
-                data: <any>{
-                    amount: amount,
-                    type: "TRANSFER",
-                    billerName: receiver.userName,
-                    currency: currency,
-                    bank_name: `PAYYNG - ${receiver.userName.toUpperCase()} `,
-                    customer: receiver.firstName + " " + receiver.lastName,
-                    reference: reference,
-                    status: "Completed",
-                    narration: narration,
-                    user: {
-                        connect: { id: id },
-                    }
-                }
-            })
-
-            const transactionRecipient = await this.prisma.transaction.create({
-                data: <any>{
-                    amount: amount,
-                    type: "CREDIT",
-                    billerName: sender.userName,
-                    currency: currency,
-                    bank_name: `PAYYNG - ${sender.userName.toUpperCase()} `,
-                    customer: sender.firstName + " " + sender.lastName,
-                    reference: reference,
-                    status: "Completed",
-                    narration: narration,
-                    user: {
-                        connect: { id: receiver.id },
-                    }
-                }
-            })
-
-            if (!transactionRecipient) {
-                throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-            }
-
-
-            if (!transaction) {
-                throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE)
-            }
-
-            //Send Notification Email
-            // await this.mailService.sendTransactionNotificationEmail()
-
-            await this.mailService.sendPayyngTransferNotificationEmail(
-                receiver.email,
-                receiver.firstName,
-                amount,
-                currency,
-                narration,
-            )
-
-            return {
-                status: 'success',
-                message: 'Transfer Successful',
-                transfer: transaction
-            }
+          const receiverAccount = await this.prisma.user.findFirst({ where: { userName: userName } });
+          if (!receiver) {
+            throw new HttpException(`Receiver with the Username ${userName} doesn't exist`, HttpStatus.NOT_FOUND);
+          }
+      
+          const updatedSenderAccount = await this.updateAccountBalance(senderAccount, currency, -amount);
+          const updatedReceiverAccount = await this.updateAccountBalance(receiverAccount, currency, amount);
+      
+          const reference = randomize('Aa', 10);
+      
+          const transaction = await this.createTransaction(sender, receiver, amount, currency, reference, narration);
+          const transactionRecipient = await this.createTransaction(receiver, sender, amount, currency, reference, narration);
+      
+          if (!transactionRecipient || !transaction) {
+            throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+          }
+      
+          await this.mailService.sendPayyngTransferNotificationEmail(
+            receiver.email,
+            receiver.firstName,
+            amount,
+            currency,
+            narration,
+          );
+      
+          return {
+            status: 'success',
+            message: 'Transfer Successful',
+            transfer: transaction,
+          };
         } catch (err) {
-            throw err
+          throw err;
         }
-    }
+      }
+
+    async updateAccountBalance(account, currency, amount) {
+        if (account[currency] < amount) {
+          throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+      
+        const newBalance = account[currency] + amount;
+      
+        if (newBalance < 0) {
+          throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+      
+        const updatedAccount = await this.prisma.account.update({
+          where: { id: account.id },
+          data: { [currency]: newBalance },
+        });
+      
+        if (!updatedAccount) {
+          throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+        }
+      
+        return updatedAccount;
+      }
+
+
+      
+      async createTransaction(user, biller, amount, currency, reference, narration) {
+        const transaction = await this.prisma.transaction.create({
+          data: {
+            amount: amount,
+            type: "TRANSFER",
+            billerName: biller.userName,
+            currency: currency,
+            bank_name: `PAYYNG - ${biller.userName.toUpperCase()} `,
+            customer: biller.firstName + " " + biller.lastName,
+            reference: reference,
+            status: "Completed",
+            narration: narration,
+            user: {
+              connect: { id: user.id },
+            },
+          },
+        });
+      
+        return transaction;
+      }
 
     /**
 * @body Deposite With Paypal
@@ -866,7 +652,7 @@ export class TransactionService {
                     },
                     data: <any> {
                         USD: newBalance,
-                        GBP: account.GPB + newAmount
+                        GBP: account.GBP + newAmount
                     }
                 })
             }
@@ -938,7 +724,7 @@ export class TransactionService {
                     },
                     data: <any> {
                         EUR: newBalance,
-                        GBP: account.GPB + newAmount
+                        GBP: account.GBP + newAmount
                     }
                 })
             }
@@ -946,11 +732,11 @@ export class TransactionService {
             if (exchangeCurrency === "GBP" && newCurrency === "NGN" ) {
                 //GET THE USE BALANCE FROM ACCOUNT
 
-                if (account.GPB < exchangeAmount) {
+                if (account.GBP < exchangeAmount) {
                     throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
                 }
 
-                const newBalance = account.GPB - exchangeAmount
+                const newBalance = account.GBP - exchangeAmount
 
                 if (newBalance < 0) {
                     throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
@@ -970,11 +756,11 @@ export class TransactionService {
             if (exchangeCurrency === "GBP" && newCurrency === "USD" ) {
                 //GET THE USE BALANCE FROM ACCOUNT
 
-                if (account.GPB < exchangeAmount) {
+                if (account.GBP < exchangeAmount) {
                     throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
                 }
 
-                const newBalance = account.GPB - exchangeAmount
+                const newBalance = account.GBP - exchangeAmount
 
                 if (newBalance < 0) {
                     throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
@@ -994,11 +780,11 @@ export class TransactionService {
             if (exchangeCurrency === "GBP" && newCurrency === "EUR" ) {
                 //GET THE USE BALANCE FROM ACCOUNT
 
-                if (account.GPB < exchangeAmount) {
+                if (account.GBP < exchangeAmount) {
                     throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
                 }
 
-                const newBalance = account.GPB - exchangeAmount
+                const newBalance = account.GBP - exchangeAmount
 
                 if (newBalance < 0) {
                     throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
@@ -1082,7 +868,7 @@ export class TransactionService {
                     },
                     data: {
                         NGN: newBalance,
-                        GPB: account.GPB + newAmount
+                        GBP: account.GBP + newAmount
                     }
                 })
             }

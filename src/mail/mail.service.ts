@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
+interface TransactionEmailDTO {
+    email: string;
+    firstName: string;
+    content: string;
+}
 @Injectable()
 export class MailService {
     constructor(private mailerService: MailerService) { }
@@ -81,10 +86,22 @@ export class MailService {
                 amount,
                 currency,
                 sender_name
-
             },
         });
     }
+
+    async TransactionsNotificationEmail({email, firstName, content}: TransactionEmailDTO) {
+        await this.mailerService.sendMail({
+            to: email,
+            subject: 'Transaction Notification',
+            template: './allTransactions',
+            context: {
+                firstName,
+                content,
+            },
+        });
+    }
+
 
 }
 

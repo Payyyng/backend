@@ -40,4 +40,12 @@ export class AdminController {
     updateAdminConstants(@Body() updateAdminConst: UpdateAdminDTO) {
         return this.adminService.updateAdminConstant(updateAdminConst);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    @ApiBody({type:UpdateAdminDTO})
+    adminConstants() {
+        return this.adminService.getAdminConstant();
+    }
+
 }
