@@ -162,11 +162,11 @@ export class PaypalService {
 
       const transaction = await this.prisma.transaction.create({
         data: {
-          amount: amount,
+          amount: tradeAmount,
           type: "BUY PAYPAL FUNDS",
           billerName: email,
           currency: currency,
-          bank_name: `PAYPAL - BUY FUNDS - ${email}`,
+          bank_name: `PAYPAL - BUY FUNDS - ${email} - ${amount}`,
           customer: ` ${user.firstName} ${user.lastName}`,
           reference: reference,
           status: "COMPLETED",
