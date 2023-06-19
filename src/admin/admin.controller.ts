@@ -43,7 +43,6 @@ export class AdminController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    @ApiBody({type:UpdateAdminDTO})
     adminConstants() {
         return this.adminService.getAdminConstant();
     }

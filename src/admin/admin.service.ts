@@ -152,17 +152,12 @@ export class AdminService {
     }
 
     async updateAdminConstant (updateAdminConst) {
-       const {exchangeUSD, exchangeEUR, exchangeGBP, exchangeNGN, exchangeFee } = updateAdminConst
             const updatedValues = await this.prisma.admin.updateMany({
                 where:  {
                     userRole: "ADMIN`"
                 } ,
                 data: {
-                    exchangeUSD,
-                    exchangeEUR,
-                    exchangeGBP,
-                    exchangeNGN,
-                    exchangeFee
+                    ...updateAdminConst
                 }
             })
 
@@ -171,7 +166,7 @@ export class AdminService {
             }
             return {
                 status: 'success',
-                message: 'Values Updated Successfully'
+                message: 'Admin Constants Updated Successfully'
             }
   
     }
