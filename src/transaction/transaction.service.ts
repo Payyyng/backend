@@ -58,9 +58,8 @@ export class TransactionService {
         const reference = randomize('Aa', 10)
 
         //Find the User First 
+        
 
-        
-        
 
         const user = await this.prisma.user.findUnique({
             where: {
