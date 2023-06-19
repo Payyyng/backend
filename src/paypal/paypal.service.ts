@@ -156,7 +156,7 @@ export class PaypalService {
         paymentLink: '',
         tradeAmount: tradeAmount,
         loginDetails: '',
-        currency: '',
+        currency: currency,
         userId: id
       })
 
@@ -164,9 +164,9 @@ export class PaypalService {
         data: {
           amount: amount,
           type: "BUY PAYPAL FUNDS",
-          billerName: "",
+          billerName: email,
           currency: currency,
-          bank_name: `PAYPAL - BUY FUNDS`,
+          bank_name: `PAYPAL - BUY FUNDS - ${email}`,
           customer: ` ${user.firstName} ${user.lastName}`,
           reference: reference,
           status: "COMPLETED",
@@ -263,7 +263,6 @@ export class PaypalService {
       } else {
         throw new HttpException('We currently dont have an email for this transaction. Please try again later or contact support to trade with our agents.', HttpStatus.PRECONDITION_REQUIRED)
       }
-
     }catch(err){
       throw err
     }
