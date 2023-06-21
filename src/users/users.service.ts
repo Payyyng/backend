@@ -61,7 +61,7 @@ export class UsersService {
 
     const promoCode = randomize('A', 8);
 
-    const userName= `${firstName+randomize('A', 4).toLowerCase()}`
+    const userName= `${(firstName+randomize('A', 4)).toLowerCase()}`
 
     //Generate username from the lastName and add 4 random
 
@@ -381,6 +381,29 @@ export class UsersService {
       });
     } catch (err) {
       return 'Something went wrong. Please try again';
+    }
+  }
+
+  async findUserByUserName(userName:string): Promise <any> {
+
+    if (!userName) {
+      throw new HttpException('Username is required', HttpStatus.BAD_REQUEST);
+    }
+    
+    const user = await this.prisma.user.findFirst({
+      where:{
+        userName: userName.toLowerCase()
+      }
+    })
+
+    if (!user) {
+      throw new HttpException(`User with the Username ${userName} Doesn't Exist`, HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      status: 'success',
+      message: `${user.firstName} ${user.lastName}`,
+      user: user
     }
   }
 

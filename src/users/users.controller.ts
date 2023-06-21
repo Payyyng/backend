@@ -149,6 +149,18 @@ export class UsersController {
     createBankAccount(@Body() { email, bvn }: createAccountDto) {
         return this.userService.createBankAccount(email, bvn);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiHeader(
+        {
+            name: 'Authorization',
+            description: "Bearer <token>"
+        }
+    )
+    findUserByUserName(@Body() { userName }: any) {
+        return this.userService.findUserByUserName(userName);
+    }
+
 }
 
 
