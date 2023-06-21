@@ -385,7 +385,7 @@ export class UsersService {
   }
 
   async findUserByUserName(userName:string): Promise <any> {
-
+console.log(userName, "ENTERED")
     if (!userName) {
       throw new HttpException('Username is required', HttpStatus.BAD_REQUEST);
     }

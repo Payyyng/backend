@@ -459,13 +459,13 @@ export class TransactionService {
             throw new HttpException(`Receiver with the Username ${userName} doesn't exist`, HttpStatus.NOT_FOUND);
           }
       
-          const updatedSenderAccount = await this.updateAccountBalance(senderAccount, currency, -amount);
-          const updatedReceiverAccount = await this.updateAccountBalance(receiverAccount, currency, amount);
+          await this.updateAccountBalance(senderAccount, currency, -amount);
+           await this.updateAccountBalance(receiverAccount, currency, amount);
       
           const reference = randomize('Aa', 10);
       
-          const transaction = await this.createTransaction(sender, receiver, amount, currency, reference, narration);
-          const transactionRecipient = await this.createTransaction(receiver, sender, amount, currency, reference, narration);
+          const transaction = await this.createTransaction(sender, receiver, amount, currency, reference, narration, "DEBIT");
+          const transactionRecipient = await this.createTransaction(receiver, sender, amount, currency, reference, narration, 'CREDIT');
       
           if (!transactionRecipient || !transaction) {
             throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
@@ -514,7 +514,7 @@ export class TransactionService {
 
 
       
-      async createTransaction(user, biller, amount, currency, reference, narration) {
+      async createTransaction(user, biller, amount, currency, reference, narration, type) {
         const transaction = await this.prisma.transaction.create({
           data: {
             amount: amount,
@@ -526,6 +526,7 @@ export class TransactionService {
             reference: reference,
             status: "Completed",
             narration: narration,
+            transactionType: type,
             user: {
               connect: { id: user.id },
             },

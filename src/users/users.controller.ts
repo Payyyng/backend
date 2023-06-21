@@ -151,7 +151,7 @@ export class UsersController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get(':userName')
+    @Post('/userName')
     @ApiBody({
         type: String
     })
@@ -161,7 +161,7 @@ export class UsersController {
             description: "Bearer <token>"
         }
     )
-    findUserByUserName(@Param('userName') userName: string) {
+    findUserByUserName(@Body('userName') userName: string) {
         return this.userService.findUserByUserName(userName);
     }
 
