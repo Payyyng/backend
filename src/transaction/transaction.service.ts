@@ -286,6 +286,7 @@ export class TransactionService {
                         narration: narration,
                         bank_name: bank_name,
                         fee: fee,
+                        transactionType: 'DEBIT',
                         user: {
                             connect: { id: id },
                         }
@@ -295,11 +296,11 @@ export class TransactionService {
                 //Send Notification Email
                 await this.mailService.sendBankTransferNotificationEmail(
                     user.email,
+                    beneficiary_name,
+                    account_number,
                     user.firstName,
                     amount,
                     bank_name,
-                    account_number,
-                    beneficiary_name,
                 )
 
                 return {
@@ -886,6 +887,8 @@ export class TransactionService {
                     bank_name: `PAYYNG - ${newCurrency} Account `,
                     customer: user.firstName + " " + user.lastName,
                     reference: reference,
+                    transactionType: 'EXCHANGE',
+                    status: "Completed",
                 }
             })
 

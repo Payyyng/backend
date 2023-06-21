@@ -41,6 +41,7 @@ model Transaction {
   amount     Float?
   currency   String?
   type       String?
+  transactionType        String?
   customer   String?
   status     String?
   reference  String?
