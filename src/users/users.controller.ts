@@ -151,6 +151,10 @@ export class UsersController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('username')
+    @ApiBody({
+        type: String
+    })
     @ApiHeader(
         {
             name: 'Authorization',
