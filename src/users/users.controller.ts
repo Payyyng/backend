@@ -42,6 +42,7 @@ export class UsersController {
         return this.userService.verifyUser(verifyAccount.id, verifyAccount.otp);
     }
 
+    
     @UseGuards(JwtAuthGuard)
     @ApiHeader(
         {
