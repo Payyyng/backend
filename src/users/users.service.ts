@@ -431,7 +431,11 @@ console.log(userName, "ENTERED")
           isVerified  : true,  
           isPaypalVerified: true,
           isActive   :   true,
-          transactions : true,
+          transactions: {
+            orderBy: {
+              createdAt: 'desc'
+            }
+          },
           bankTransfers: true,
           accounts    :  true,
           cards     :    true,
