@@ -6,6 +6,7 @@ import randomize from 'randomatic'
 import Flutterwave from 'flutterwave-node-v3';
 import { MailService } from 'src/mail/mail.service';
 import { ExchangeDTO } from './dto/exchange-currency.dto';
+import axios from 'axios';
 
 
 const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
@@ -934,6 +935,77 @@ export class TransactionService {
 
         return
     }
+
+
+    async smeData ({network_id, phone, plan_id, id, amount}){
+
+        if (!network_id || !phone || !plan_id|| !id || !amount){
+            throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
+        }
+
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if (!user){
+            throw new HttpException('User Not Found', HttpStatus.NOT_FOUND)
+        }
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization : `Bearer ${process.env.SME_TOKEN}`
+            }
+        }
+        console.log(process.env.ELECASTLE_BASE_URL, "THE BASEEEE")
+
+        const {data}= await axios.post(`${process.env.ELECASTLE_BASE_URL}/data `, {network_id, phone, plan_id}, config)
+        console.log(data, "THE RESSSSSS")
+
+        if(data.status === false) {
+            throw new HttpException("Something Went Wrong, Please Try Again", HttpStatus.BAD_REQUEST)
+        }
+
+        const account = await this.prisma.account.findFirst({
+            where:{
+                userId: id
+            }
+        })
+
+
+
+        await this.updateAccountBalance(account, "NGN", amount)
+
+        const transaction = await this.prisma.transaction.create({
+            data: {
+                amount: amount,
+                type: "DATA",
+                billerName: data.data.network,
+                currency: 'NG',
+                customer: phone,
+                reference: data.data.reference,
+                status: "Completed",
+                transactionType: 'DEBIT',
+                user: {
+                    connect: { id: id },
+                }
+            }
+        })
+
+        if(!transaction) {
+            throw new HttpException("Something Went Wrong, Please Try Again", HttpStatus.BAD_REQUEST)
+        }
+
+        return {
+            status: 'success',
+            message: 'Data Purchase Successful',
+            transaction: transaction
+        }
+    }
+
+    
 
 
 

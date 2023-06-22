@@ -18,6 +18,7 @@ import { ValidateBillDto } from './dto/validate-bill-dto';
 import { VerifyAccountDTO } from './dto/verify-account-dto';
 import { PayyngTransferDto } from './dto/payyng-transfer.dto';
 import { ExchangeDTO } from './dto/exchange-currency.dto';
+import { SmeDataDTO } from './dto/sme-data.dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -83,4 +84,10 @@ export class TransactionController {
     exchangeCurrency(@Body( ) { id, newAmount, newCurrency, exchangeCurrency, exchangeAmount }:ExchangeDTO) {
         return this.transactionService.exchangeCurrency({ id, newAmount, newCurrency, exchangeCurrency, exchangeAmount }); 
     }
+
+    @Post('sme-data')
+    smeData(@Body() {network_id, phone, plan_id, id, amount}:SmeDataDTO) {
+        return this.transactionService.smeData({network_id, phone, plan_id, id, amount}); 
+    }
+
 }

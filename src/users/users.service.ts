@@ -412,13 +412,12 @@ console.log(userName, "ENTERED")
         where: {
           id: id,
         }, 
-        select: <any> {
+        select:  {
           id : true,
           email   :    true,
           firstName :    true,
           lastName   :   true,
           userName  :    true,
-          password  :    true,
           phone    :    true,
           address   :   true,
           city      :   true,
@@ -430,11 +429,13 @@ console.log(userName, "ENTERED")
           token  :       true,
           bvn       :   true,
           isVerified  : true,  
+          isPaypalVerified: true,
           isActive   :   true,
           transactions : true,
           bankTransfers: true,
           accounts    :  true,
           cards     :    true,
+          Paypal: true,
         }
       });
       if (!user) {
