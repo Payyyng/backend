@@ -91,6 +91,7 @@ export class TransactionService {
                         customer: customer,
                         reference: reference,
                         status: "Completed",
+                        transactionType: 'DEBIT',
                         fee: fee,
                         user: {
                             connect: { id: id },

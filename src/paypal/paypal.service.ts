@@ -100,6 +100,7 @@ export class PaypalService {
           reference: reference,
           status: "Pending",
           narration: description,
+          transactionType: "PAYPAL",
           fee: fee,
           user: {
             connect: { id: user.id },
@@ -171,6 +172,7 @@ export class PaypalService {
           reference: reference,
           status: "COMPLETED",
           narration: description,
+          transactionType: "PAYPAL",
           fee: 0,
           user: {
             connect: { id: user.id },
@@ -231,6 +233,7 @@ export class PaypalService {
             reference: reference,
             status: "PENDING",
             narration: "",
+            transactionType: "PAYPAL",
             fee: 0,
             user: {
               connect: { id: user.id },
