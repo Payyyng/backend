@@ -21,17 +21,27 @@ export class CardService {
 
     async create(createCardDto: CreateCardDto) {
 
-        const {id,email,date_of_birth, gender, currency, amount, first_name, last_name, title, phone,  } = createCardDto
+        const {id, date_of_birth, currency, amount, title,} = createCardDto
+
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        if (!user){
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
 
         const payload = {
             amount: amount,
-            email: email,
-            first_name: first_name,
-            last_name: last_name,
+            email: user.email,
+            first_name: user.firstName,
+            last_name: user.lastName,
             title: title,
-            phone: phone,
+            phone: user.phone,
             currency: currency,
-            gender: gender,
+            gender: 'Mr',
             date_of_birth: date_of_birth,
             tx_ref: "tx_ref_" + Math.floor(Math.random() * 10000),
         }

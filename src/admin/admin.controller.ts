@@ -35,6 +35,18 @@ export class AdminController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('balances')
+    async getAllBalances() {
+        return this.adminService.getAllBalance();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('paypals')
+    async getAllPaypals() {
+        return this.adminService.getAllPaypals();
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Put('admin-constants')
     @ApiBody({type:UpdateAdminDTO})
     updateAdminConstants(@Body() updateAdminConst: UpdateAdminDTO) {

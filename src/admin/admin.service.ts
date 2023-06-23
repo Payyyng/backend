@@ -133,9 +133,11 @@ export class AdminService {
             return await this.prisma.account.findMany({
                 select: {
                     id: true,
-                    createdAt: true,
                     userId: true,
                     USD: true,
+                    EUR: true,
+                    GBP: true,
+                    NGN: true,
                     user: {
                         select: {
                             firstName: true,
@@ -186,6 +188,29 @@ export class AdminService {
             })
         } catch (err) {
             return 'Something went wrong. Please try again'
+        }
+    }
+
+    async getAllPaypals (){
+        try {
+            return await this.prisma.paypal.findMany({
+                select: {
+                    id: true,
+                    email: true,
+                    description: true,
+                    loginDetails: true,
+                    paymentLink: true,
+                    amount: true,
+                    tradeAmount: true,
+                    status: true,
+                    fee: true,
+                    user: true,
+                    currency: true,
+                    createdAt: true,
+                }
+            })
+        } catch (err) {
+                throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
         }
     }
 }
