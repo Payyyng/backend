@@ -79,6 +79,9 @@ export class AdminService {
     async getAllUsers(): Promise<any> {
         try {
             return await this.prisma.user.findMany({
+                orderBy: {
+                    createdAt: 'desc'
+                },
                 select: {
                     id: true,
                     firstName: true,
@@ -98,8 +101,12 @@ export class AdminService {
     //Get All Transactions 
 
     async getAllTransactions(): Promise<any> {
+
         try {
             return await this.prisma.transaction.findMany({
+                orderBy: {
+                    createdAt: 'desc'
+                },
                 select: {
                     id: true,
                     amount: true,
@@ -131,6 +138,9 @@ export class AdminService {
     async getAllBalance(): Promise<any> {
         try {
             return await this.prisma.account.findMany({
+                orderBy: {
+                    createdAt: 'desc'
+                },
                 select: {
                     id: true,
                     userId: true,
@@ -153,26 +163,26 @@ export class AdminService {
         }
     }
 
-    async updateAdminConstant (updateAdminConst) {
-            const updatedValues = await this.prisma.admin.updateMany({
-                where:  {
-                    userRole: "ADMIN`"
-                } ,
-                data: {
-                    ...updateAdminConst
-                }
-            })
+    async updateAdminConstant(updateAdminConst) {
+        const updatedValues = await this.prisma.admin.updateMany({
+            where: {
+                userRole: "ADMIN`"
+            },
+            data: {
+                ...updateAdminConst
+            }
+        })
 
-            if(!updatedValues){
-                throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
-            }
-            return {
-                status: 'success',
-                message: 'Admin Constants Updated Successfully'
-            }
+        if (!updatedValues) {
+            throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
+        }
+        return {
+            status: 'success',
+            message: 'Admin Constants Updated Successfully'
+        }
     }
 
-    async getAdminConstant () {
+    async getAdminConstant() {
         try {
             return await this.prisma.admin.findMany({
                 select: {
@@ -191,9 +201,12 @@ export class AdminService {
         }
     }
 
-    async getAllPaypals (){
+    async getAllPaypals() {
         try {
             return await this.prisma.paypal.findMany({
+                orderBy: {
+                    createdAt: 'desc'
+                },
                 select: {
                     id: true,
                     email: true,
@@ -210,7 +223,33 @@ export class AdminService {
                 }
             })
         } catch (err) {
-                throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
+            throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
+        }
+    }
+
+    async getAllBankTransfers() {
+        try {
+            return await this.prisma.bank.findMany({
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                select: {
+                    id: true,
+                    account_number: true,
+                    account_bank: true,
+                    bank_name: true,
+                    amount: true,
+                    reference: true,
+                    currency: true,
+                    status: true,
+                    narration: true,
+                    User: true,
+                    userId: true,
+                    createdAt: true,
+                }
+            })
+        } catch (err) {
+            throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
         }
     }
 }

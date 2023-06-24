@@ -59,4 +59,9 @@ export class AdminController {
         return this.adminService.getAdminConstant();
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('bank-transfers')
+    abankTransfers() {
+        return this.adminService.getAllBankTransfers();
+    }
 }
