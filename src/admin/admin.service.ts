@@ -118,6 +118,7 @@ export class AdminService {
                     customer: true,
                     Bank: true,
                     type: true,
+                    transactionType: true,
                     user: {
                         select: {
                             firstName: true,
