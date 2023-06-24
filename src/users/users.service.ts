@@ -94,7 +94,12 @@ export class UsersService {
     if (newUser) {
       await this.prisma.account.create({
         data: <any>{
-          userId: newUser.id
+          userId: newUser.id,
+          user: {
+            connect: {
+              id: newUser.id
+            }
+          }
         }
       })
     }
