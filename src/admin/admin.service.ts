@@ -148,6 +148,8 @@ export class AdminService {
                     EUR: true,
                     GBP: true,
                     NGN: true,
+                    USDAccount: true,
+
                     user: {
                         select: {
                             firstName: true,
@@ -243,7 +245,14 @@ export class AdminService {
                     currency: true,
                     status: true,
                     narration: true,
-                    User: true,
+                    User: {
+                        select: {
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            phone: true,
+                        }
+                    },
                     userId: true,
                     createdAt: true,
                 }
