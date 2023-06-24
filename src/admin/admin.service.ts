@@ -161,7 +161,8 @@ export class AdminService {
                 }
             })
         } catch (err) {
-            return 'Something went wrong. Please try again'
+            console.log(err)
+            return err
         }
     }
 
