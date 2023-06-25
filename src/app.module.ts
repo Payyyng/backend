@@ -18,6 +18,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CardModule } from './card/card.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { PaypalModule } from './paypal/paypal.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 
 @Module({
@@ -32,6 +33,7 @@ import { PaypalModule } from './paypal/paypal.module';
     CardModule,
     AccountsModule,
     PaypalModule,
+    NotificationsModule,
   ],
   controllers: [
     AppController,

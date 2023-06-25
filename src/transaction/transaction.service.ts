@@ -398,24 +398,24 @@ export class TransactionService {
         if (!id) {
             throw new HttpException('Transaction Id is required', HttpStatus.BAD_REQUEST)
         }
-        return {
-            status: 'success',
+        try {
+            const transaction = await this.prisma.transaction.findUnique({
+                where: {
+                    id: id
+                }, 
+            })
+
+            if (!transaction) {
+                throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
+            }
+
+            return {
+                status: 'success',
+                transaction: transaction
+            }
+        } catch (err){
+            throw err
         }
-        // try {
-        //     const transaction = await this.prisma.transaction.findUnique({
-        //         where: {
-        //             id: id
-        //         }, 
-        //     })
-
-        //     if (!transaction) {
-        //         throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
-        //     }
-
-        //     return transaction
-        // } catch (err){
-        //     throw err
-        // }
     }
 
     async getAdminConstants() {
@@ -973,8 +973,6 @@ export class TransactionService {
                 userId: id
             }
         })
-
-
 
         await this.updateAccountBalance(account, "NGN", amount)
 
