@@ -170,7 +170,7 @@ export class AdminService {
     async updateAdminConstant(updateAdminConst) {
         const updatedValues = await this.prisma.admin.updateMany({
             where: {
-                userRole: "ADMIN`"
+                userRole: "ADMIN"
             },
             data: {
                 ...updateAdminConst
