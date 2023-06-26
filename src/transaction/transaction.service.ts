@@ -964,9 +964,9 @@ export class TransactionService {
         const {data}= await axios.post(`${process.env.ELECASTLE_BASE_URL}/data `, {network_id, phone, plan_id}, config)
         console.log(data, "THE RESSSSSS")
 
-        if(data.status === false) {
-            throw new HttpException("Something Went Wrong, Please Try Again", HttpStatus.BAD_REQUEST)
-        }
+        // if(data.status === false) {
+        //     throw new HttpException("Something Went Wrong, Please Try Again", HttpStatus.BAD_REQUEST)
+        // }
 
         const account = await this.prisma.account.findFirst({
             where:{
@@ -975,15 +975,14 @@ export class TransactionService {
         })
 
         await this.updateAccountBalance(account, "NGN", amount)
-
         const transaction = await this.prisma.transaction.create({
             data: {
                 amount: amount,
                 type: "DATA",
-                billerName: data.data.network,
+                billerName: data?.data?.network || "SME DATA",
                 currency: 'NG',
                 customer: phone,
-                reference: data.data.reference,
+                reference: reference,
                 status: "Completed",
                 transactionType: 'DEBIT',
                 user: {
