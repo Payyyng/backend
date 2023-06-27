@@ -123,6 +123,7 @@ export class AccountsService {
   //FUNC TO UPDATE ACCOUNT BALANCE
   async updateAccountBalance(account:any, currency:string, amount:number, fee:number, type:string) {
 
+    console.log(account, currency, amount, fee, type, "HEHEHEHEH")
     if (type === 'debit'){
       if (account[currency] < amount) {
         throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
