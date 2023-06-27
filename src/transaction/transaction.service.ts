@@ -88,7 +88,7 @@ export class TransactionService {
                         amount: amount,
                         type: type,
                         billerName: biller_name,
-                        currency: 'NGN',
+                        currency: '₦',
                         customer: customer,
                         reference: reference,
                         status: "Completed",

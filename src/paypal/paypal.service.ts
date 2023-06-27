@@ -47,6 +47,7 @@ export class PaypalService {
   }
 
   update(id: number, updatePaypalDto: UpdatePaypalDto) {
+
     return `This action updates a #${id} paypal`;
   }
 
@@ -56,10 +57,10 @@ export class PaypalService {
 
   async makeApayment (MakePayment: MakePayment) {
 
-    const {amount, paymentLink, currency, id, description, fee } = MakePayment
+    const {amount, paymentLink, currency, id, description, fee, tradeAmount } = MakePayment
 
-    if (!amount || !paymentLink || !currency) {
-      throw new HttpException('Insufficient Balance', HttpStatus.BAD_REQUEST)
+    if (!amount || !paymentLink || !currency || !tradeAmount) {
+      throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
     }
 
     try {
@@ -75,7 +76,7 @@ export class PaypalService {
         }
       })
 
-      await this.accountService.updateAccountBalance(account, currency, amount, fee, 'debit')
+      await this.accountService.updateAccountBalance(account, currency, tradeAmount, fee, 'debit')
 
       await this.createPaypal({
         amount, 

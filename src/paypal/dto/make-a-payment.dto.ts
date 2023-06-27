@@ -16,6 +16,9 @@ export class MakePayment {
     @IsNotEmpty() readonly fee: number;
 
     @ApiProperty()
+    @IsNotEmpty() readonly tradeAmount: number;
+
+    @ApiProperty()
     @IsString()
     readonly description: string;
 
