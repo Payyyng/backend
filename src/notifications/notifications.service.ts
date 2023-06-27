@@ -26,6 +26,7 @@ export class NotificationsService {
     return `This action removes a #${id} notification`;
   }
 
+
   async sendNotification(expoPushToken: string, data:any) {
     const expo = new Expo({ accessToken: "IJ1sPtEFwGCkVz4F5fu60s758FgVSd7NXulW_BJb" });
 
@@ -57,4 +58,23 @@ export class NotificationsService {
 
     return response;
   }
+
+
+ async sendSingleNotification (receiptId: string){
+    const expo = new Expo({ accessToken: process.env.ACCESS_TOKEN });
+
+    const receiptIdChunks = expo.chunkPushNotificationReceiptIds([receiptId]);
+
+    let receipt;
+
+    for (const chunk of receiptIdChunks) {
+        try {
+            receipt = await expo.getPushNotificationReceiptsAsync(chunk);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    return receipt ? receipt[receiptId] : null;
+}
 }

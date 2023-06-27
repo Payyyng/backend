@@ -88,7 +88,7 @@ export class TransactionService {
                         amount: amount,
                         type: type,
                         billerName: biller_name,
-                        currency: 'NG',
+                        currency: 'NGN',
                         customer: customer,
                         reference: reference,
                         status: "Completed",
@@ -1001,10 +1001,4 @@ export class TransactionService {
             transaction: transaction
         }
     }
-
-    
-
-
-
-
 }
