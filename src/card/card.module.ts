@@ -5,9 +5,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { MailModule } from 'src/mail/mail.module';
+import { AccountsService } from 'src/accounts/accounts.service';
 
 @Module({
-  providers: [CardService, MailService, PrismaService],
+  providers: [CardService, MailService, PrismaService, AccountsService],
   controllers: [CardController],
   imports: [PrismaModule,MailModule]
 })

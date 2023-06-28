@@ -106,7 +106,7 @@ export class UsersService {
     return {
       status: 'success',
       message: 'Account Registered Sucessfully',
-      id: newUser.id,
+      id: newUser.id, 
     }
   }
 
