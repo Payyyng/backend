@@ -14,7 +14,7 @@ export class MailService {
 
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Payyng Password Reset',
+            subject: 'Password Reset',
             template: './passwordreset',
             context: {
                 firstName,
@@ -38,7 +38,7 @@ export class MailService {
     async sendLoginNotificationMail(email: string, firstName: string, ) {
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Payyng Account Access',
+            subject: 'Account Access',
             template: './loginNotification',
             context: {
                 firstName,
@@ -64,7 +64,7 @@ export class MailService {
     async sendBankTransferNotificationEmail(email: string, beneficiary_name: string,  account_number: number, firstName: string, amount:number, bank_name: string) {
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Payyng Bank Transfer Notification',
+            subject: 'Bank Transfer Notification',
             template: './bankTransfer',
             context: {
                 firstName,
