@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Expo } from "expo-server-sdk";
 
 
-interface NotificationDTO {
+interface NotificationDTO{
   title: string;
   expoPushToken: string
   body: string;
@@ -14,11 +14,11 @@ interface NotificationDTO {
 }
 @Injectable()
 export class NotificationsService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
 
-  async create({ id, notificationKey }: CreateNotificationDto) {
-    if (!id || !notificationKey) {
+  async create({id, notificationKey}: CreateNotificationDto) {
+    if (!id || !notificationKey){
       throw new HttpException(
         'Id & Notification key is Required',
         HttpStatus.BAD_REQUEST,
@@ -36,8 +36,7 @@ export class NotificationsService {
     return {
       status: "success",
       message: 'Notification key updated successfully'
-    }
-  }
+    }  }
 
   findAll() {
     return `This action returns all notifications`;
@@ -56,59 +55,59 @@ export class NotificationsService {
   }
 
 
-  async sendNotification({ expoPushToken, title, body }: NotificationDTO) {
+  async sendNotification({expoPushToken, title, body}: NotificationDTO) {
     const expo = new Expo({ accessToken: "IJ1sPtEFwGCkVz4F5fu60s758FgVSd7NXulW_BJb" });
 
     const data = {
-      title: `${title}`,
-      body: `${body}`,
-      sound: "default",
-      // data: { withSome: `${data}` },
+        title: `${title}`,
+        body: `${body}`,
+        sound: "default",
+        // data: { withSome: `${data}` },
     }
     const chunks = expo.chunkPushNotifications([{ to: expoPushToken, data }]);
     const tickets = [];
 
     for (const chunk of chunks) {
-      try {
-        const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-        tickets.push(...ticketChunk);
-      } catch (error) {
-        console.error(error);
-      }
+        try {
+            const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+            tickets.push(...ticketChunk);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     let response = "";
 
     for (const ticket of tickets) {
-      if (ticket.status === "error") {
-        if (ticket.details && ticket.details.error === "DeviceNotRegistered") {
-          response = "DeviceNotRegistered";
+        if (ticket.status === "error") {
+            if (ticket.details && ticket.details.error === "DeviceNotRegistered") {
+                response = "DeviceNotRegistered";
+            }
         }
-      }
 
-      if (ticket.status === "ok") {
-        response = ticket.id;
-      }
+        if (ticket.status === "ok") {
+            response = ticket.id;
+        }
     }
 
     return response;
   }
 
 
-  async sendSingleNotification(receiptId: string) {
+ async sendSingleNotification (receiptId: string){
     const expo = new Expo({ accessToken: process.env.ACCESS_TOKEN });
     const receiptIdChunks = expo.chunkPushNotificationReceiptIds([receiptId]);
 
     let receipt;
 
     for (const chunk of receiptIdChunks) {
-      try {
-        receipt = await expo.getPushNotificationReceiptsAsync(chunk);
-      } catch (error) {
-        console.error(error);
-      }
+        try {
+            receipt = await expo.getPushNotificationReceiptsAsync(chunk);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return receipt ? receipt[receiptId] : null;
-  }
+}
 }
