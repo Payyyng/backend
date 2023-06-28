@@ -295,24 +295,24 @@ export class TransactionService {
                     }
                 })
 
-                await this.prisma.transaction.create({
-                    data: <any>{
-                        amount: fee,
-                        type: "TRANSFER FEE",
-                        billerName: bank_name,
-                        currency: 'NGN',
-                        customer: account_number.toString(),
-                        reference: reference,
-                        status: "Completed",
-                        narration: narration,
-                        bank_name: bank_name,
-                        fee: "",
-                        transactionType: 'DEBIT',
-                        user: {
-                            connect: { id: id },
-                        }
-                    }
-                })
+                // await this.prisma.transaction.create({
+                //     data: <any>{
+                //         amount: fee,
+                //         type: "TRANSFER FEE",
+                //         billerName: bank_name,
+                //         currency: 'NGN',
+                //         customer: account_number.toString(),
+                //         reference: reference,
+                //         status: "Completed",
+                //         narration: narration,
+                //         bank_name: bank_name,
+                //         fee: "",
+                //         transactionType: 'DEBIT',
+                //         user: {
+                //             connect: { id: id },
+                //         }
+                //     }
+                // })
 
                 //Send Notification Email
                 await this.mailService.sendBankTransferNotificationEmail(
