@@ -92,10 +92,10 @@ export class PaypalService {
       
       const transaction = await this.prisma.transaction.create({
         data: {
-          amount: tradeAmount,
+          amount: amount,
           type: "MAKE A PAYMENT",
           billerName: paymentLink,
-          currency: currency,
+          currency: 'USD',
           bank_name: `PAYPAL - MAKE A PAYMENT REQUEST`,
           customer: ` ${user.firstName} ${user.lastName}`,
           reference: reference,
