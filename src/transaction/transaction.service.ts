@@ -278,16 +278,35 @@ export class TransactionService {
 
                 await this.prisma.transaction.create({
                     data: <any>{
-                        amount: amount + fee,
+                        amount: amount,
                         type: "BANK TRANSFER",
                         billerName: bank_name,
-                        currency: 'NG',
+                        currency: 'NGN',
                         customer: account_number.toString(),
                         reference: reference,
                         status: "Completed",
                         narration: narration,
                         bank_name: bank_name,
                         fee: fee,
+                        transactionType: 'DEBIT',
+                        user: {
+                            connect: { id: id },
+                        }
+                    }
+                })
+
+                await this.prisma.transaction.create({
+                    data: <any>{
+                        amount: fee,
+                        type: "TRANSFER FEE",
+                        billerName: bank_name,
+                        currency: 'NGN',
+                        customer: account_number.toString(),
+                        reference: reference,
+                        status: "Completed",
+                        narration: narration,
+                        bank_name: bank_name,
+                        fee: "",
                         transactionType: 'DEBIT',
                         user: {
                             connect: { id: id },
@@ -312,7 +331,6 @@ export class TransactionService {
             } catch (err) {
                 throw new HttpException(err, HttpStatus.BAD_REQUEST)
             }
-            // Send transaction notification email
 
         } catch (err) {
             console.log(err, "THE ERROR")
