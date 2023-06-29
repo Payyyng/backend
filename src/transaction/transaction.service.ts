@@ -7,6 +7,7 @@ import Flutterwave from 'flutterwave-node-v3';
 import { MailService } from 'src/mail/mail.service';
 import { ExchangeDTO } from './dto/exchange-currency.dto';
 import axios from 'axios';
+import { NotificationsService } from '../notifications/notifications.service';
 
 
 const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
@@ -35,7 +36,8 @@ export interface AccountDetails {
 export class TransactionService {
     constructor(
         private prisma: PrismaService,
-        private mailService: MailService
+        private mailService: MailService,
+        private notificationService: NotificationsService
     ) { }
 
     /**
@@ -132,6 +134,12 @@ export class TransactionService {
                     amount,
                     biller_name
                 );
+
+                await this.notificationService.sendNotification({
+                    expoPushToken: user.notificationKey,
+                    title: "Transaction Successful",
+                    body: `Your ${type} transaction of ${amount} was successful`,
+                })
 
                 return {
                     status: "success",

@@ -19,6 +19,8 @@ import { CardModule } from './card/card.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { PaypalModule } from './paypal/paypal.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { NotificationsService } from './notifications/notifications.service';
+import { NotificationsController } from './notifications/notifications.controller';
 
 
 @Module({
@@ -40,6 +42,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     AuthController,
     TransactionController,
     AdminController,
+    NotificationsController
   ],
   providers: [
     AppService,
@@ -48,6 +51,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     UsersService,
     TransactionService,
     AdminService,
+    NotificationsService
   ],
 
 
