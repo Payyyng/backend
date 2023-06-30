@@ -82,7 +82,6 @@ export class TransactionService {
             const response = await flw.Bills.create_bill(payload);
             // console.log(response, "THE RESPONSE")
 
-
             if (response.status === "success") {
                 // Save the transaction in the database
                 const transaction = await this.prisma.transaction.create({

@@ -6,6 +6,8 @@ import { loginUserDto } from './dto/login-user.dto';
 import { MailService } from 'src/mail/mail.service';
 import randomize from 'randomatic';
 import { hash, compare } from 'bcrypt';
+import { NotificationsService } from '../notifications/notifications.service';
+
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private mailService: MailService,
+    private notificationService:  NotificationsService
   ) {}
 
   async validateUser(loginInfo: loginUserDto): Promise<any> {
@@ -59,6 +62,20 @@ export class AuthService {
     //remove password and pin from the userInfo
     const { password: _,  ...result } = user;
 
+    //Sign the User Login Authentication
+
+    await this.notificationService.sendNotification({
+      title: 'Login Notification',
+      body: `You just logged in to your account on ${new Date().toLocaleString()}`,
+      expoPushToken: user.notificationKey,
+      
+    })
+
+
+    // Login Notification
+
+
+
 
     return {
       access_token: this.jwtService.sign(user.id, {
@@ -99,12 +116,6 @@ export class AuthService {
 
     // Send the OTP to the user's email
     await this.mailService.sendPasswordResetMail(email, user.firstName, otp);
-
-    return {
-      status: 'success',
-      message: 'We have sent a verification code to your email. You will received a verification email shortly if the account exist.',
-    };
-
     } catch (err) {
       throw new BadRequestException(
         err,

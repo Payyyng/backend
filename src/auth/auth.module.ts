@@ -13,6 +13,7 @@ import { jwtConstants } from './constants';
 import { MailModule } from 'src/mail/mail.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Module({
     imports: [
@@ -30,7 +31,7 @@ dotenv.config();
 
     ],
     controllers: [AuthController],
-    providers: [AuthService, LocalStrategy, JwtStrategy, PrismaService, UsersService, JwtService, ConfigService],
+    providers: [AuthService, NotificationsService, LocalStrategy, JwtStrategy, PrismaService, UsersService, JwtService, ConfigService],
     exports: [AuthService],
 })
 export class AuthModule { }

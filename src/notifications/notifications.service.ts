@@ -89,7 +89,6 @@ export class NotificationsService {
             response = ticket.id;
         }
     }
-
     return response;
   }
 
