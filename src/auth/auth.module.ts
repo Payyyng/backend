@@ -28,7 +28,6 @@ import { NotificationsService } from 'src/notifications/notifications.service';
                 expiresIn: '3600s',
             },
         }),
-
     ],
     controllers: [AuthController],
     providers: [AuthService, NotificationsService, LocalStrategy, JwtStrategy, PrismaService, UsersService, JwtService, ConfigService],

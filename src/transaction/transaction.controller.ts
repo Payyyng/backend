@@ -32,7 +32,7 @@ export class TransactionController {
         return this.transactionService.payBills(billInfo);
     }
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Get('verify/:reference')
     @ApiBody({   type: VerifyBillDTO }
     )

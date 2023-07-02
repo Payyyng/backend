@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Expo } from "expo-server-sdk";
 
 
-interface NotificationDTO{
+export interface NotificationDTO{
   title: string;
   expoPushToken: string
   body: string;

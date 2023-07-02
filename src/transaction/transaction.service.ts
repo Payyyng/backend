@@ -302,7 +302,6 @@ export class TransactionService {
                     }
                 })
 
-
                 //Send Notification Email
                 await this.mailService.sendBankTransferNotificationEmail(
                     user.email,
@@ -1007,5 +1006,12 @@ export class TransactionService {
             message: 'Data Purchase Successful',
             transaction: transaction
         }
+    }
+
+    async webHook () {
+
+        const verify = flw.Transaction.verify
+
+        return
     }
 }

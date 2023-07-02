@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { NotificationsService } from './notifications.service';
+import { NotificationDTO, NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 
@@ -30,5 +30,10 @@ export class NotificationsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.notificationsService.remove(+id);
+  }
+
+  @Post ('send-notification')
+  SendNotification(@Body() {expoPushToken, title, body}: NotificationDTO) {
+    return this.notificationsService.sendNotification({expoPushToken, title, body});
   }
 }

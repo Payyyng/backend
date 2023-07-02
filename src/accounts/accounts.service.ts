@@ -106,6 +106,7 @@ export class AccountsService {
         narration:`Card Deposit ${user.firstName}`, 
         customer: `${user.firstName + " " + user.lastName}`,
         reference: reference,
+        transactionType: 'DEPOSIT',
       }
     })
 
@@ -152,5 +153,48 @@ export class AccountsService {
     }
   
     return updatedAccount;
+  }
+
+  async accountTopUp  ({id, currency, amount, fee, type}:any){
+
+
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id
+      }
+    })
+    const account= await this.prisma.account.findFirst({
+      where: {
+        userId: id
+      }
+    })
+
+    if (!account) {
+      throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
+    }
+
+    await this.updateAccountBalance(account, currency, amount, fee, type);
+
+    //Create A Transaction Details
+
+  const transaction = await this.prisma.transaction.create({
+      data: {
+        amount: amount,
+        type: type,
+        userId: id,
+        currency: currency,
+        status: "Completed",
+        narration:`Account Deposit ${user.firstName + ""+ user.lastName}`,
+        customer: `${user.firstName + " " + user.lastName}`,
+        fee: fee,
+        transactionType: "DEPOSIT"
+      }
+    })
+    return {
+      status: "success",
+      message: "Deposit Successful",
+      transaction: transaction
+    }
   }
 }
