@@ -970,15 +970,9 @@ export class TransactionService {
                 Authorization : `Bearer ${process.env.SME_TOKEN}`
             }
         }
-        console.log(process.env.ELECASTLE_BASE_URL, "THE BASEEEE")
 
         const {data}= await axios.post(`${process.env.ELECASTLE_BASE_URL}/data `, {network_id, phone, plan_id}, config)
-        console.log(data, "THE RESSSSSS")
-
-        // if(data.status === false) {
-        //     throw new HttpException("Something Went Wrong, Please Try Again", HttpStatus.BAD_REQUEST)
-        // }
-
+        
         const account = await this.prisma.account.findFirst({
             where:{
                 userId: id
