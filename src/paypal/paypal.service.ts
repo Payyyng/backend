@@ -9,6 +9,7 @@ import randomize from 'randomatic'
 import { BuyPaypalDTO } from './dto/buy-paypal-dto';
 import { SellPaypalDTO } from './dto/sell-paypal-dto';
 import { AdminService } from 'src/admin/admin.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 
 
@@ -21,7 +22,8 @@ export class PaypalService {
     private prisma: PrismaService,
     private mailService: MailService,
     private accountService: AccountsService,
-    private adminService : AdminService
+    private adminService : AdminService,
+    private notificationService: NotificationsService
 ) { }
 
   async createPaypal(createPaypalDto: CreatePaypalDto) {
@@ -116,6 +118,8 @@ export class PaypalService {
        email: user.email, 
        content : `Your Make a PAYPAL Payment Request order for ${currency} ${amount} was received successfully. You will be notified once completed.`
       })
+
+      //Send Email to Admin
 
       return {
         status: 'success',

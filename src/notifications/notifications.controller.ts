@@ -36,4 +36,9 @@ export class NotificationsController {
   SendNotification(@Body() {expoPushToken, title, body}: NotificationDTO) {
     return this.notificationsService.sendNotification({expoPushToken, title, body});
   }
+
+  @Post ('send-notification-to-all')
+  SendNotificationToAll(@Body() {title, body}: NotificationDTO) {
+    return this.notificationsService.sendNotificationToAll({title, body});
+  }
 }

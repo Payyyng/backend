@@ -157,6 +157,7 @@ export class AccountsService {
 
   async accountTopUp  ({id, currency, amount, fee, type}:any){
 
+    
 
 
     const user = await this.prisma.user.findUnique({

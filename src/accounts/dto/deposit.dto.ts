@@ -13,4 +13,6 @@ export class DepositDTO {
 
     @ApiProperty()
     @IsNotEmpty() readonly amount: number;
+
+    
 }

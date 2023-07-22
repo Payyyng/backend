@@ -312,6 +312,12 @@ export class TransactionService {
                     bank_name,
                 )
 
+                await this.notificationService.sendNotification({
+                    expoPushToken: user.notificationKey,
+                    title: "Transaction Successful",
+                    body: `Your Bank Transfer of ${amount} was successful`,
+                })
+
                 return {
                     status: "success",
                     transfer: bankTransfer
@@ -540,7 +546,6 @@ export class TransactionService {
             },
           },
         });
-      
         return transaction;
       }
 
@@ -1001,6 +1006,12 @@ export class TransactionService {
             throw new HttpException("Something Went Wrong, Please Try Again", HttpStatus.BAD_REQUEST)
         }
 
+        await this.notificationService.sendNotification({
+            expoPushToken: user.notificationKey,
+            title: "Transaction Successful",
+            body: `Your Data Purchase of ${amount} was successful`,
+        })
+
         return {
             status: 'success',
             message: 'Data Purchase Successful',
@@ -1008,10 +1019,9 @@ export class TransactionService {
         }
     }
 
-    async webHook () {
+    async verifyTransactions({id}) {
 
-        const verify = flw.Transaction.verify
+    await flw.Transaction.verify({id})
 
-        return
     }
 }
