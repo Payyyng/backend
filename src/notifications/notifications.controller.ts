@@ -38,7 +38,7 @@ export class NotificationsController {
   }
 
   @Post ('send-notification-to-all')
-  SendNotificationToAll(@Body() {title, body}: NotificationDTO) {
+  SendNotificationToAll(@Body() {title, body}: any) {
     return this.notificationsService.sendNotificationToAll({title, body});
   }
 }

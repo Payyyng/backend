@@ -109,6 +109,8 @@ export class NotificationsService {
     }
   }
 
+
+  
   async sendNotificationToAll({ title, body }: any) {
     if (!title || !body) {
       throw new HttpException('Title & Body are required', HttpStatus.BAD_REQUEST);
@@ -120,38 +122,42 @@ export class NotificationsService {
       },
     });
   
-    const validNotificationKeys = users
-      .filter((user) => user.notificationKey) // Filter out users without a notificationKey
-      .map((user) => user.notificationKey);
+    // const validNotificationKeys = users
+    //   .filter((user) => user.notificationKey) // Filter out users without a notificationKey
+    //   .map((user) => user.notificationKey);
   
-    if (validNotificationKeys.length === 0) {
-      throw new HttpException(
-        'No users with valid notification keys found',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    console.log(validNotificationKeys, "THE KEYSSSS")
-  
+    // if (validNotificationKeys.length === 0) {
+    //   throw new HttpException(
+    //     'No users with valid notification keys found',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
     try {
-      const response = await axios.post('https://exp.host/--/api/v2/push/send', {
-        to: validNotificationKeys,
-        title: title,
-        body: body,
+      const requests = users.map(async (user) => {
+        const { notificationKey } = user;
+        if (notificationKey){
+          return axios.post('https://exp.host/--/api/v2/push/send', {
+            to: notificationKey,
+            title: title,
+            body: body,
+          });
+        }
       });
-
-      console.log(response.data, "THE RESSSS")
   
-      // Check the response for any errors in sending the notifications
-      if (response.data.errors) {
-        // Handle any errors here, log, or throw an exception if needed.
+      const responses = await Promise.all(requests);
+      console.log(responses)
+      return {
+        status: 'success',
+        message: 'Notifications sent successfully',
       }
-  
-      return response.data;
     } catch (err) {
-      throw new HttpException('Failed to send notifications'+ err, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw err;
     }
+
   }
+   
+
+  
 
 
 }

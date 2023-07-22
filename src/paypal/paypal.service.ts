@@ -119,7 +119,11 @@ export class PaypalService {
        content : `Your Make a PAYPAL Payment Request order for ${currency} ${amount} was received successfully. You will be notified once completed.`
       })
 
-      //Send Email to Admin
+      await this.notificationService.sendNotification({
+        expoPushToken: user.notificationKey,
+        title: "Make A Payment Request",
+        body: `Your Make a PAYPAL Payment Request order for ${currency} ${amount} was received successfully.`,
+      })
 
       return {
         status: 'success',
@@ -192,6 +196,12 @@ export class PaypalService {
         content: `Your recent purchase of ${currency}${amount} PAYPAL funds was completed successfully`
       })
 
+      await this.notificationService.sendNotification({
+        expoPushToken: user.notificationKey,
+        title: "Buy Paypal Funds",
+        body: `Your recent purchase of ${currency}${amount} PAYPAL funds was completed successfully`,
+      })
+
       return {
         status: 'success',
         message: "Paypal funds purchased successfully",
@@ -261,6 +271,12 @@ export class PaypalService {
           firstName: user.firstName,
           email: user.email,
           content: `You have a pending Sell Paypal order of ${currency} ${amount}. Kindly complete the transaction and notify us once completed. `
+        })
+
+        await this.notificationService.sendNotification({
+          expoPushToken: user.notificationKey,
+          title: "Sell Paypal Funds",
+          body: `You have a pending Sell Paypal order of ${currency} ${amount}.`,
         })
 
         return {

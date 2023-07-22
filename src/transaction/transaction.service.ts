@@ -137,7 +137,7 @@ export class TransactionService {
                 await this.notificationService.sendNotification({
                     expoPushToken: user.notificationKey,
                     title: "Transaction Successful",
-                    body: `Your ${type} transaction of ${amount} was successful`,
+                    body: `Your ${type} transaction  was successful`,
                 })
 
                 return {
