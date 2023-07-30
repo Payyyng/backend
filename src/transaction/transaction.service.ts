@@ -134,7 +134,7 @@ export class TransactionService {
                     biller_name
                 );
 
-                await this.notificationService.sendNotification({
+                this.notificationService.sendNotification({
                     expoPushToken: user.notificationKey,
                     title: "Transaction Successful",
                     body: `Your ${type} transaction  was successful`,
@@ -312,7 +312,7 @@ export class TransactionService {
                     bank_name,
                 )
 
-                await this.notificationService.sendNotification({
+                this.notificationService.sendNotification({
                     expoPushToken: user.notificationKey,
                     title: "Transaction Successful",
                     body: `Your Bank Transfer of ${amount} was successful`,
@@ -1000,7 +1000,7 @@ export class TransactionService {
             throw new HttpException("Something Went Wrong, Please Try Again", HttpStatus.BAD_REQUEST)
         }
 
-        await this.notificationService.sendNotification({
+        this.notificationService.sendNotification({
             expoPushToken: user.notificationKey,
             title: "Transaction Successful",
             body: `Your Data Purchase of ${amount} was successful`,
