@@ -55,6 +55,4 @@ export class PaypalController {
     return this.paypalService.wiseDeposit(deposit);
   }
 
-
-
 }
