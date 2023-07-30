@@ -4,6 +4,7 @@ import { UpdateAccountDto } from './dto/update-account.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MailService } from 'src/mail/mail.service';
 import randomize from 'randomatic'
+import { DepositDTO } from './dto/deposit.dto';
 
 const reference = `${randomize('Aa', 10)}`
 
@@ -56,8 +57,8 @@ export class AccountsService {
   * @param {string} email
   */
 
-  async accountDeposit(depositData: any) {
-    const { id, amount } = depositData
+  async accountDeposit(depositData: DepositDTO) {
+    const { id, amount, type } = depositData
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -83,8 +84,13 @@ export class AccountsService {
 
     console.log(account, "THE ACCOUNT")
 
+    let newBalance;
 
-    const newBalance = account.NGN + Number(amount)
+    if (type === 'CREDIT') {
+      newBalance = account.NGN + Number(amount)
+    } else {
+      newBalance = account.NGN - Number(amount)
+    }
 
  await this.prisma.account.update({
       where: {

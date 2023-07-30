@@ -64,18 +64,11 @@ export class AuthService {
 
     //Sign the User Login Authentication
 
-    await this.notificationService.sendNotification({
+    this.notificationService.sendNotification({
       title: 'Login Notification',
       body: `You just logged in to your account on ${new Date().toLocaleString()}`,
       expoPushToken: user.notificationKey,
-      
     })
-
-
-    // Login Notification
-
-
-
 
     return {
       access_token: this.jwtService.sign(user.id, {
