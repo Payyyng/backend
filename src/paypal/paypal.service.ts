@@ -291,4 +291,84 @@ export class PaypalService {
       throw err
     }
   }
+
+  async wiseDeposit (MakePayment: MakePayment) {
+
+    const {amount, paymentLink, currency, id, description, fee, tradeAmount } = MakePayment
+
+    if (!amount || !paymentLink || !currency || !tradeAmount) {
+      throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
+    }
+
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id
+        }
+      })
+
+      const account = await this.prisma.account.findFirst({
+        where:{
+          userId: id
+        }
+      })
+
+      await this.accountService.updateAccountBalance(account, currency, tradeAmount, fee, 'debit')
+
+      await this.prisma.transferWise.create({
+        data: {
+          amount: amount,
+          tradeAmount: tradeAmount,
+          currency: currency,
+          fee: fee,
+          userId: id,
+          description: description,
+          wiseDetails: paymentLink,
+        }
+    })
+
+      const transaction = await this.prisma.transaction.create({
+        data: {
+          amount: amount,
+          type: "WISE DEPOSIT",
+          billerName: paymentLink,
+          currency: 'USD',
+          bank_name: "WISE DEPOSIT",
+          customer: ` ${user.firstName} ${user.lastName}`,
+          reference: reference,
+          status: "Pending",
+          narration: description,
+          transactionType: "WISE",
+          fee: fee,
+          user: {
+            connect: { id: user.id },
+          },
+        },
+      });
+
+      // Create Transaction Details 
+      //Send Email to User
+      await this.mailService.TransactionsNotificationEmail({
+       firstName: user.firstName,
+       email: user.email, 
+       content : `Your Make a PAYPAL Payment Request order for ${currency} ${amount} was received successfully. You will be notified once completed.`
+      })
+
+      await this.notificationService.sendNotification({
+        expoPushToken: user.notificationKey,
+        title: "Make A Payment Request",
+        body: `Your Make a PAYPAL Payment Request order for ${currency} ${amount} was received successfully.`,
+      })
+
+      return {
+        status: 'success',
+        message: "Make A Request Order Created Successfully", 
+        transaction: transaction
+      }
+
+    } catch (err) {
+      throw err
+    }
+  }
+
 }

@@ -620,7 +620,7 @@ console.log(userName, "ENTERED")
       const bankAccount = await this.createBankAccount(user.email, bvn.toString())
 
       if (!bankAccount) {
-        throw new HttpException("Something went wrong. Please Try Again", HttpStatus.SERVICE_UNAVAILABLE);
+        throw new HttpException("Something went wrong. Please check your BVN and try again", HttpStatus.SERVICE_UNAVAILABLE);
       }
 
       return {

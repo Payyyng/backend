@@ -50,5 +50,13 @@ export class PaypalController {
     return this.paypalService.sellPaypal(sellPaypal);
   }
 
+  @Post("sell-paypal")
+  wiseDeposit(@Body() deposit: MakePayment) {
+    return this.paypalService.wiseDeposit(deposit);
+  }
+
+
+
+
 
 }
