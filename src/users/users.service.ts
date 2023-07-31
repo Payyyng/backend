@@ -101,6 +101,10 @@ export class UsersService {
       })
     }
 
+    const bvn = process.env.ADMIN_BVN
+
+    await this.createBankAccount(email, bvn)
+
     await this.mailService.sendVerificationMail(email, firstName, otp);
 
     return {
@@ -616,12 +620,12 @@ console.log(userName, "ENTERED")
         }
       })
 
-      //Call the create Account Endpoint
-      const bankAccount = await this.createBankAccount(user.email, bvn.toString())
+      // //Call the create Account Endpoint
+      // const bankAccount = await this.createBankAccount(user.email, bvn.toString())
 
-      if (!bankAccount) {
-        throw new HttpException("Something went wrong. Please check your BVN and try again", HttpStatus.SERVICE_UNAVAILABLE);
-      }
+      // if (!bankAccount) {
+      //   throw new HttpException("Something went wrong. Please check your BVN and try again", HttpStatus.SERVICE_UNAVAILABLE);
+      // }
 
       return {
         status: 'success',
