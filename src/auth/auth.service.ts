@@ -62,14 +62,6 @@ export class AuthService {
     //remove password and pin from the userInfo
     const { password: _,  ...result } = user;
 
-    //Sign the User Login Authentication
-
-    this.notificationService.sendNotification({
-      title: 'Login Notification',
-      body: `You just logged in to your account on ${new Date().toLocaleString()}`,
-      expoPushToken: user.notificationKey,
-    })
-
     return {
       access_token: this.jwtService.sign(user.id, {
         secret: `${process.env.JWT_SECRET}`,
