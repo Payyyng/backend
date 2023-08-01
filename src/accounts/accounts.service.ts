@@ -82,8 +82,6 @@ export class AccountsService {
       throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
     }
 
-    console.log(account, "THE ACCOUNT")
-
     let newBalance;
 
     if (type === 'CREDIT') {
@@ -118,8 +116,14 @@ export class AccountsService {
 
     if (!transaction) {
       throw new HttpException('Something went wrong.', HttpStatus.INTERNAL_SERVER_ERROR)
-      
     }
+
+    //Send Email notification to admin
+    this.mailService.TransactionsNotificationEmail({
+      email:'support@payyng.com',
+      firstName: 'Admin',
+      content: `You have a new ${amount} deposited from User with Name ${user.lastName}, with email ${user.email} and the userID is ${user.id} `
+    })
 
     return{
       status: "success",
@@ -162,9 +166,6 @@ export class AccountsService {
   }
 
   async accountTopUp  ({id, currency, amount, fee, type}:any){
-
-    
-
 
     const user = await this.prisma.user.findUnique({
       where: {
