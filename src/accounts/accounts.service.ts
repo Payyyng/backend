@@ -60,6 +60,10 @@ export class AccountsService {
   async accountDeposit(depositData: DepositDTO) {
     const { id, amount, type } = depositData
 
+    if (!id || !amount || !type){
+      throw new HttpException('Please provide all required fields', HttpStatus.BAD_REQUEST)
+    }
+
     const user = await this.prisma.user.findUnique({
       where: {
         id: id
