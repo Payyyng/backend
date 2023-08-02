@@ -59,10 +59,11 @@ export class AccountsService {
 
   async accountDeposit(depositData: DepositDTO) {
     const { id, amount, type } = depositData
+    console.log(depositData, "IN HEREEEE")
 
-    if (!id || !amount || !type){
-      throw new HttpException('Please provide all required fields', HttpStatus.BAD_REQUEST)
-    }
+    // if (!id || !amount || !type){
+      
+    // }
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -70,9 +71,9 @@ export class AccountsService {
       }
     })
 
-    // if (!user) {
-    //   throw new HttpException(user, HttpStatus.NOT_FOUND)
-    // }
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+    }
 
     console.log(user, "THE USER")
 
