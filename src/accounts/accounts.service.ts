@@ -70,9 +70,9 @@ export class AccountsService {
       }
     })
 
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
-    }
+    // if (!user) {
+    //   throw new HttpException(user, HttpStatus.NOT_FOUND)
+    // }
 
     console.log(user, "THE USER")
 
