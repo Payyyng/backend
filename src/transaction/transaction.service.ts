@@ -508,7 +508,7 @@ export class TransactionService {
           throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
         }
       
-        const newBalance = account[currency] + amount;
+        const newBalance = account[currency] - amount;
       
         if (newBalance < 0) {
           throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
