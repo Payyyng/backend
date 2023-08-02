@@ -59,7 +59,7 @@ export class AccountsService {
 
   async accountDeposit(depositData: DepositDTO) {
     const { id, amount, type } = depositData
-    console.log(depositData, "IN HEREEEE")
+    // console.log(depositData, "IN HEREEEE")
 
     // if (!id || !amount || !type){
       
