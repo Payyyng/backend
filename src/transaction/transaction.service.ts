@@ -199,6 +199,9 @@ export class TransactionService {
             throw new HttpException('Ensure all transfer information are provided.', HttpStatus.BAD_REQUEST)
         }
 
+        throw new HttpException('We are unable to process your Transfer. Please try again later.', HttpStatus.BAD_REQUEST)
+        // return
+
         //Get The Current Account Balance of the User 
 
         const userDetails = await this.prisma.user.findUnique({
@@ -522,7 +525,7 @@ export class TransactionService {
         if (!updatedAccount) {
           throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
         }
-      
+
         return updatedAccount;
       }
 
