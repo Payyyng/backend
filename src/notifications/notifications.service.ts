@@ -104,10 +104,10 @@ export class NotificationsService {
       const config = {
         headers: {
           'Content-Type': 'application/json',
-          Authorization:`Bearer AIzaSyBGEKy3qL9RrL_augLAVDilQwP6wAvqQxw`
+          Authorization:`key=AIzaSyBGEKy3qL9RrL_augLAVDilQwP6wAvqQxw`
         }
       }
-      const res = await axios.post('https://fcm.googleapis.com/v1/projects/payyng-mobile/messages:send',{
+      const res = await axios.post('https://fcm.googleapis.com/fcm/send',{
         to: expoPushToken,
         notification: {
           title: title,
