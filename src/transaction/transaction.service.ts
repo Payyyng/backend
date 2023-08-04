@@ -354,8 +354,6 @@ export class TransactionService {
         const account_number = accountDetails.account_number
         const account_bank = accountDetails.account_bank
 
-        console.log(accountDetails, "DETAILS WEY ENTER")
-
         if (!account_number || !account_bank) {
             throw new HttpException('Ensure all transfer information are provided.', HttpStatus.BAD_REQUEST)
         }
@@ -974,6 +972,22 @@ export class TransactionService {
             throw new HttpException('User Not Found', HttpStatus.NOT_FOUND)
         }
 
+        const account = await this.prisma.account.findFirst({
+            where: {
+                userId: id
+            }
+        })
+
+        if (!account) {
+            throw new HttpException('Something went Wrong. Please Try Again', HttpStatus.NOT_FOUND)
+        }
+
+        //Check For User Balance
+
+        if (account.NGN < amount) {
+            throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+        }
+
         const config = {
             headers: {
                 'Content-Type': 'application/json',
@@ -983,13 +997,8 @@ export class TransactionService {
 
         const { data } = await axios.post(`${process.env.ELECASTLE_BASE_URL}/data `, { network_id, phone, plan_id }, config)
 
-        const account = await this.prisma.account.findFirst({
-            where: {
-                userId: id
-            }
-        })
-
         await this.updateAccountBalance(account, "NGN", amount)
+        
         const transaction = await this.prisma.transaction.create({
             data: {
                 amount: amount,
