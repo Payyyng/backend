@@ -65,21 +65,9 @@ export class AccountsService {
       
     // }
 
-    const user = await this.prisma.user.findUnique({
+    const account= await this.prisma.account.findUnique({
       where: {
         id: id
-      }
-    })
-
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
-    }
-
-    console.log(user, "THE USER")
-
-    const account = await this.prisma.account.findFirst({
-      where: {
-        userId: id
       }
     })
 
@@ -87,8 +75,8 @@ export class AccountsService {
       throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
     }
 
-    let newBalance;
 
+    let newBalance;
     if (type === 'CREDIT') {
       newBalance = account.NGN + Number(amount)
     } else {
@@ -104,6 +92,17 @@ export class AccountsService {
       }
     })
 
+
+    //Finf The User 
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: account.userId
+      }
+    })
+
+    if (!user){
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+    }
     //Create A Transaction Details
     const transaction = await this.prisma.transaction.create({
       data: {
