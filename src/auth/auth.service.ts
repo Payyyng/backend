@@ -47,10 +47,10 @@ export class AuthService {
     }
 
 
-    await this.mailService.sendLoginNotificationMail(
-      user.email,
-      user.firstName,
-    );
+    // await this.mailService.sendLoginNotificationMail(
+    //   user.email,
+    //   user.firstName,
+    // );
 
     //Add the transaction and Bank details of user to the response 
     return {
