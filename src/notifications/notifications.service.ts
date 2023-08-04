@@ -104,7 +104,7 @@ export class NotificationsService {
       const config = {
         headers: {
           'Content-Type': 'application/json',
-          Authorization:`AIzaSyBGEKy3qL9RrL_augLAVDilQwP6wAvqQxw`
+          Authorization:`Bearer AIzaSyBGEKy3qL9RrL_augLAVDilQwP6wAvqQxw`
         }
       }
       const res = await axios.post('https://fcm.googleapis.com/v1/projects/payyng-mobile/messages:send',{
