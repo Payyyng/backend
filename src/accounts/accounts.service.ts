@@ -107,11 +107,11 @@ export class AccountsService {
     const transaction = await this.prisma.transaction.create({
       data: {
         amount: amount,
-        type: 'DEPOSIT',
+        type: type === 'CREDIT' ? "DEPOSIT" : "DEBIT",
         userId: id,  
         currency: "NGN",
         status: "Completed",
-        narration:`DEPOSIT - ${user.firstName}`, 
+        narration: type === 'CREDIT' ? `DEPOSIT - ${user.firstName}` : `DEBIT - ${user.firstName}`, 
         customer: `${user.firstName + " " + user.lastName}`,
         reference: reference,
         transactionType: 'DEPOSIT',
