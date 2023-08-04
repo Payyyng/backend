@@ -75,6 +75,14 @@ export class AccountsService {
       throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
     }
 
+    //Check if the User Account is more or less 
+
+    if (type !== 'CREDIT'){
+      if(account.NGN < amount) {
+        throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+      }
+    }
+    
 
     let newBalance;
     if (type === 'CREDIT') {

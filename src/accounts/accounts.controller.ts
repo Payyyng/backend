@@ -30,10 +30,6 @@ export class AccountsController {
     return this.accountsService.update(+id, updateAccountDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.accountsService.remove(+id);
-  // }
   @UseGuards(JwtAuthGuard)
   @Post("deposit")
   deposit(@Body() deposit: DepositDTO) {
