@@ -104,7 +104,8 @@ export class NotificationsService {
       const config = {
         headers: {
           'Content-Type': 'application/json',
-          Authorization:`key=AIzaSyBGEKy3qL9RrL_augLAVDilQwP6wAvqQxw`
+          'Authorization': `key=AIzaSyBGEKy3qL9RrL_augLAVDilQwP6wAvqQxw`,
+
         }
       }
       const res = await axios.post('https://fcm.googleapis.com/fcm/send',{
@@ -112,8 +113,8 @@ export class NotificationsService {
         notification: {
           title: title,
           body: body,
-        }, config
-      })
+        }
+      }, config)
       return res.data
 
     } catch (err){
