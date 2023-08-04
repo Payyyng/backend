@@ -111,7 +111,7 @@ export class AccountsService {
         userId: id,  
         currency: "NGN",
         status: "Completed",
-        narration:`Card Deposit ${user.firstName}`, 
+        narration:`DEPOSIT - ${user.firstName}`, 
         customer: `${user.firstName + " " + user.lastName}`,
         reference: reference,
         transactionType: 'DEPOSIT',
