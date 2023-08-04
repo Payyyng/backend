@@ -96,29 +96,16 @@ export class NotificationsService {
   async sendNotification ({expoPushToken, title, body}: NotificationDTO) {
 
     try {
-      // const res = await axios.post('https://exp.host/--/api/v2/push/send', {
-      //   to: expoPushToken,
-      //   title: title,
-      //   body: body,
-      // })
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `key=AIzaSyBGEKy3qL9RrL_augLAVDilQwP6wAvqQxw`,
-
-        }
-      }
-      const res = await axios.post('https://fcm.googleapis.com/fcm/send',{
+      const res = await axios.post('https://exp.host/--/api/v2/push/send', {
         to: expoPushToken,
-        notification: {
-          title: title,
-          body: body,
-        }
-      }, config)
+        title: title,
+        body: body,
+      })
       return res.data
 
     } catch (err){
       throw err;
+      return err
     }
   }
 
