@@ -8,6 +8,7 @@ import { MailService } from 'src/mail/mail.service';
 import { ExchangeDTO } from './dto/exchange-currency.dto';
 import axios from 'axios';
 import { NotificationsService } from '../notifications/notifications.service';
+import { UpdateTransaction } from './dto/update-transaction.dto';
 
 
 const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
@@ -1036,5 +1037,39 @@ export class TransactionService {
 
         await flw.Transaction.verify({ id })
 
+    }
+
+
+
+
+    //UPDATE TRANSACTION
+
+    async updateTransaction ({status, id}: UpdateTransaction) {
+
+        if (!status || !id) {
+            throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
+        }
+        try{
+                const transaction = await this.prisma.transaction.update({
+                    where: {
+                        id: id
+                    },
+                    data: {
+                        status: status
+                    }
+                })
+    
+                if (!transaction) {
+                    throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
+                }
+                return {
+                    status: 'success',
+                    message: 'Transaction Updated Successfully',
+                    transaction: transaction
+                }
+
+        } catch (err){
+            throw err
+        }
     }
 }
