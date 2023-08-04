@@ -116,7 +116,7 @@ export class AccountsService {
       data: {
         amount: amount,
         type: type === 'CREDIT' ? "DEPOSIT" : "DEBIT",
-        userId: id,  
+        userId: account.userId,  
         currency: "NGN",
         status: "Completed",
         narration: type === 'CREDIT' ? `DEPOSIT - ${user.firstName}` : `DEBIT - ${user.firstName}`, 
