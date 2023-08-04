@@ -60,6 +60,15 @@ export class AuthService {
 
   async loginWithCredentials(user: any) {
     //remove password and pin from the userInfo
+
+    // Send Notification
+
+    this.notificationService.sendNotification({
+      title: "Login Notification",
+      body: "You have successfully logged in to your account",
+      expoPushToken: user.notificationKey
+    })
+
     const { password: _,  ...result } = user;
 
     return {

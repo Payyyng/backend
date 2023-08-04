@@ -220,7 +220,9 @@ export class TransactionService {
             throw new HttpException('Something went wrong. Please try again', HttpStatus.BAD_REQUEST)
         }
 
-        if (accountBalance.NGN < amount) {
+        const total = amount + fee
+
+        if (accountBalance.NGN < total) {
             throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
         }
 
