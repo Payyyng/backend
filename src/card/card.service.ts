@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AccountsService } from 'src/accounts/accounts.service';
 import { MailService } from '../mail/mail.service';
 import Flutterwave from 'flutterwave-node-v3';
 import { CreateUSDCardDto } from './dto/create-usd-card';
@@ -17,7 +16,6 @@ export class CardService {
     constructor(
         private prisma: PrismaService,
         private mailService: MailService,
-        private accountService: AccountsService
     ) {}
 
 

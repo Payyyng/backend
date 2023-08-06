@@ -10,6 +10,8 @@ import axios from 'axios';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UpdateTransaction } from './dto/update-transaction.dto';
 import { createTransactionDTO } from './dto/create-transaction-dto';
+import { UsersService } from 'src/users/users.service';
+import { AccountsService } from 'src/accounts/accounts.service';
 
 
 const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
@@ -39,7 +41,8 @@ export class TransactionService {
     constructor(
         private prisma: PrismaService,
         private mailService: MailService,
-        private notificationService: NotificationsService
+        private notificationService: NotificationsService,
+        private userService: UsersService,
     ) { }
 
     /**
@@ -51,6 +54,7 @@ export class TransactionService {
 
     async payBills(data: createBillDto): Promise<any> {
         const { id, amount, type, customer, biller_name, fee } = data;
+
         if (!id || !amount || !type || !customer) {
             throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
         }
@@ -78,11 +82,7 @@ export class TransactionService {
             throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
         }
 
-        const user = await this.prisma.user.findUnique({
-            where: {
-                id
-            }
-        })
+        const user = await this.userService.findUserById(id)
 
         try {
             const payload = {
@@ -94,52 +94,38 @@ export class TransactionService {
                 reference: reference,
             }
             const response = await flw.Bills.create_bill(payload);
-            // console.log(response, "THE RESPONSE")
 
             if (response.status === "success") {
-                // Save the transaction in the database
-                const transaction = await this.prisma.transaction.create({
+                const transaction = await this.create({
+                    userId: id,
+                    bankName: '',
+                    status: "Completed",
+                    customer: customer,
+                    billerName: biller_name,
+                    amount: amount,
+                    currency: 'NGN',
+                    narration: `${type} Bill Payment`,
+                    type: type,
+                    fee: 0.00,
+                    transactionType: type
+                })
+
+                const newBalance = account.NGN - amount - fee;
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id,
+                    },
                     data: {
-                        amount: amount,
-                        type: type,
-                        billerName: biller_name,
-                        currency: '₦',
-                        customer: customer,
-                        reference: reference,
-                        status: "Completed",
-                        transactionType: 'DEBIT',
-                        fee: fee,
-                        user: {
-                            connect: { id: id },
-                        },
+                        NGN: newBalance,
                     },
                 });
 
-                if (transaction) {
-                    if (account) {
-                        const newBalance = account.NGN - amount - fee;
-                        await this.prisma.account.update({
-                            where: {
-                                id: account.id,
-                            },
-                            data: {
-                                NGN: newBalance,
-                            },
-                        });
-                    }
-                }
-
-                // Send transaction notification email
-                this.mailService.sendTransactionNotificationEmail(
-                    user.email,
-                    reference,
-                    type,
-                    customer,
-                    user?.firstName,
-                    "success",
-                    amount,
-                    biller_name
-                );
+                this.mailService.TransactionsNotificationEmail({
+                    email: user.email,
+                    firstName: user.firstName,
+                    content: `Your ${type} of ${amount} was completed sucessfully.`
+                })
 
                 this.notificationService.sendNotification({
                     expoPushToken: user.notificationKey,
@@ -1000,7 +986,7 @@ export class TransactionService {
         const { data } = await axios.post(`${process.env.ELECASTLE_BASE_URL}/data `, { network_id, phone, plan_id }, config)
 
         await this.updateAccountBalance(account, "NGN", amount)
-        
+
         const transaction = await this.prisma.transaction.create({
             data: {
                 amount: amount,
@@ -1045,38 +1031,38 @@ export class TransactionService {
 
     //UPDATE TRANSACTION
 
-    async updateTransaction ({status, id}: UpdateTransaction) {
+    async updateTransaction({ status, id }: UpdateTransaction) {
 
         if (!status || !id) {
             throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
         }
-        try{
-                const transaction = await this.prisma.transaction.update({
-                    where: {
-                        id: id
-                    },
-                    data: {
-                        status: status
-                    }
-                })
-    
-                if (!transaction) {
-                    throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
+        try {
+            const transaction = await this.prisma.transaction.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    status: status
                 }
-                return {
-                    status: 'success',
-                    message: 'Transaction Updated Successfully',
-                    transaction: transaction
-                }
+            })
 
-        } catch (err){
+            if (!transaction) {
+                throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
+            }
+            return {
+                status: 'success',
+                message: 'Transaction Updated Successfully',
+                transaction: transaction
+            }
+
+        } catch (err) {
             throw err
         }
     }
 
     //Create Transaction
 
-    async create({userId,  bankName, status,  customer, billerName, amount, currency, narration, type}: createTransactionDTO) {
+    async create({ userId, bankName, status, customer, billerName, amount, currency, narration, type }: createTransactionDTO) {
         const reference = randomize('Aa', 10)
         try {
             const transaction = await this.prisma.transaction.create({
@@ -1102,7 +1088,7 @@ export class TransactionService {
             }
 
             return transaction
-        } catch (err){
+        } catch (err) {
             throw err
         }
     }
