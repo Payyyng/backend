@@ -7,6 +7,7 @@ import { MailService } from 'src/mail/mail.service';
 import { TransactionService } from 'src/transaction/transaction.service';
 import randomize from 'randomatic'
 import { DepositDTO } from './dto/deposit.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 const reference = `${randomize('Aa', 10)}`
 
@@ -134,7 +135,17 @@ try {
         firstName: 'Admin',
         content: `You have a new ${amount} deposited from User with Name ${user.lastName}, with email ${user.email} and the userID is ${user.id} `
       })
-  
+
+      //Send Email to User
+
+      this.mailService.TransactionsNotificationEmail({
+        email: user.email,
+        firstName: user.firstName,
+        content: `You have successfully deposited ${amount} to your account`
+      })
+
+      //Send Notification to User
+
       return{
         status: "success",
         message: "Deposit Successful",
