@@ -18,7 +18,8 @@ export class AccountsService {
     private prisma: PrismaService,
     private mailService: MailService,
     private userService: UsersService,
-    private transactionService: TransactionService
+    private transactionService: TransactionService,
+    private notificationService: NotificationsService    
   ) { }
 
 
@@ -54,12 +55,8 @@ export class AccountsService {
   async update(updateAccountDto: UpdateAccountDto) {
 
     const {type, id, currency, amount} = updateAccountDto
-    if (!type || !id || !currency || !amount){
-      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
-    }
     
 try {
-
   const account = await this.findOne(id)
 
   if (type !== 'CREDIT'){
@@ -146,6 +143,7 @@ try {
 
       //Send Notification to User
 
+
       return{
         status: "success",
         message: "Deposit Successful",
@@ -187,6 +185,51 @@ try {
     }
   
     return updatedAccount;
+  }
+
+  async adminUpdateUserAccounBalance (updateAccountDto: UpdateAccountDto){
+    try {
+      const account = await this.findOne(updateAccountDto.id)
+      const user = await this.userService.findUserById(account.userId)
+      await this.update(updateAccountDto)
+      const transaction = await this.transactionService.create({
+        amount: updateAccountDto.amount,
+        type: updateAccountDto.type,      
+        userId: user.id,
+        currency: updateAccountDto.currency,
+        status: "Completed",
+        narration:`Account Deposit ${user.firstName + " "+ user.lastName}`,
+        customer: `${updateAccountDto.id}`,
+        fee: 0.00,
+        transactionType: "DEPOSIT",
+        bankName: "",
+        billerName: "",
+      })
+
+      //Send Email To The User
+
+      this.mailService.TransactionsNotificationEmail({
+        email: user.email,
+        firstName: user.firstName,
+        content: `You have successfully deposited ${updateAccountDto.amount} to your account`
+      })
+
+      //Send Email To  Admin
+      this.mailService.TransactionsNotificationEmail({
+        email:'support@payyng.com',
+        firstName: 'Admin',
+        content: `You have a new ${updateAccountDto.amount} deposited from User with Name ${updateAccountDto.id}, with email ${updateAccountDto.id} and the userID is ${updateAccountDto.id} `
+      })
+
+      return {
+        status: 'success',
+        message:'successfully Credited',
+        data:transaction
+      }
+
+    } catch (err){
+      throw err
+    }
   }
 
   async accountTopUp  ({id, currency, amount, fee, type}:any){

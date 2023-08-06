@@ -26,8 +26,8 @@ export class AccountsController {
   }
 
   @Put('update')
-  update(@Param('') id: string, @Body() updateAccountDto: UpdateAccountDto) {
-    return this.accountsService.update(updateAccountDto);
+  update(@Body() updateAccountDto: UpdateAccountDto) {
+    return this.accountsService.adminUpdateUserAccounBalance(updateAccountDto);
   }
 
   @UseGuards(JwtAuthGuard)
