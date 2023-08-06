@@ -25,9 +25,9 @@ export class AccountsController {
     return this.accountsService.findOne(id);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateAccountDto: UpdateAccountDto) {
-    return this.accountsService.update(+id, updateAccountDto);
+  @Put('update')
+  update(@Param('') id: string, @Body() updateAccountDto: UpdateAccountDto) {
+    return this.accountsService.update(updateAccountDto);
   }
 
   @UseGuards(JwtAuthGuard)

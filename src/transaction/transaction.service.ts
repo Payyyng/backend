@@ -9,6 +9,7 @@ import { ExchangeDTO } from './dto/exchange-currency.dto';
 import axios from 'axios';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UpdateTransaction } from './dto/update-transaction.dto';
+import { createTransactionDTO } from './dto/create-transaction-dto';
 
 
 const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
@@ -1005,7 +1006,7 @@ export class TransactionService {
                 amount: amount,
                 type: "DATA",
                 billerName: data?.data?.network || "SME DATA",
-                currency: 'NG',
+                currency: 'NGN',
                 customer: phone,
                 reference: reference,
                 status: "Completed",
@@ -1068,6 +1069,39 @@ export class TransactionService {
                     transaction: transaction
                 }
 
+        } catch (err){
+            throw err
+        }
+    }
+
+    //Create Transaction
+
+    async create({userId,  bankName, status,  customer, billerName, amount, currency, narration, type}: createTransactionDTO) {
+        const reference = randomize('Aa', 10)
+        try {
+            const transaction = await this.prisma.transaction.create({
+                data: {
+                    amount: amount,
+                    type: type,
+                    billerName: billerName,
+                    currency: currency,
+                    bank_name: bankName,
+                    customer: customer,
+                    reference: reference,
+                    status: status,
+                    narration: narration,
+                    transactionType: type,
+                    user: {
+                        connect: { id: userId },
+                    },
+                },
+            });
+
+            if (!transaction) {
+                throw new HttpException('Something went wrong. Please Try Again', HttpStatus.NOT_FOUND)
+            }
+
+            return transaction
         } catch (err){
             throw err
         }

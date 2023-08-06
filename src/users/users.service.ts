@@ -112,6 +112,20 @@ export class UsersService {
     }
   }
 
+  async findUserDetails (id:string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id
+      }
+    })
+
+    if (!user) {
+      throw new HttpException('User Account Not Found', HttpStatus.NOT_FOUND)
+    }
+    
+    return user
+  }
+
 
   async verifyUser(id: string, otp: number): Promise<any> {
     //check if there's no otp

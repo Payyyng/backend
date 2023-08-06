@@ -2,7 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/mail/mail.service';
+import { TransactionService } from 'src/transaction/transaction.service';
 import randomize from 'randomatic'
 import { DepositDTO } from './dto/deposit.dto';
 
@@ -13,7 +15,9 @@ export class AccountsService {
 
   constructor(
     private prisma: PrismaService,
-    private mailService: MailService
+    private mailService: MailService,
+    private userService: UsersService,
+    private transactionService: TransactionService
   ) { }
 
 
@@ -28,9 +32,10 @@ export class AccountsService {
     return `This action returns all accounts`;
   }
 
+
   async findOne(id: string): Promise<any> {
     if (!id) {
-      throw new HttpException('Accout ID is Required', HttpStatus.BAD_REQUEST)
+      throw new HttpException('Account ID is Required', HttpStatus.BAD_REQUEST)
     }
 
 
@@ -45,108 +50,104 @@ export class AccountsService {
     return account
   }
 
-  update(id: number, updateAccountDto: UpdateAccountDto) {
-    return `This action updates a #${id} account`;
+  async update(updateAccountDto: UpdateAccountDto) {
+
+    const {type, id, currency, amount} = updateAccountDto
+    if (!type || !id || !currency || !amount){
+      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
+    }
+    
+try {
+
+  const account = await this.findOne(id)
+
+  if (type !== 'CREDIT'){
+    if(account.NGN < amount) {
+      throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+    }
+  }
+  
+  let newBalance;
+  if (type === 'CREDIT') {
+    newBalance = account.NGN + Number(amount)
+  } else {
+    newBalance = account.NGN - Number(amount)
+  }
+
+  const res = await this.prisma.account.update({
+    where: {
+      id: id
+    },
+    data: {
+      NGN: Number(newBalance)
+    }
+  })
+
+  if (!res){
+    throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
+  }
+  
+  return {
+    status: "success",
+    message: "Account Updated Successfully",
+    data: res
+  }
+} catch (err){
+  throw err
+}
   }
 
   remove(id: number) {
     return `This action removes a #${id} account`;
   }
 
-  /*
-  * @param {string} email
-  */
 
   async accountDeposit(depositData: DepositDTO) {
     const { id, amount, type } = depositData
-    // console.log(depositData, "IN HEREEEE")
 
-    // if (!id || !amount || !type){
-      
-    // }
-
-    const account= await this.prisma.account.findUnique({
-      where: {
-        id: id
-      }
-    })
-
-    if (!account) {
-      throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
+    if (!id || !amount || !type){
+      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
     }
 
-    //Check if the User Account is more or less 
-
-    if (type !== 'CREDIT'){
-      if(account.NGN < amount) {
-        throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-      }
-    }
-    
-
-    let newBalance;
-    if (type === 'CREDIT') {
-      newBalance = account.NGN + Number(amount)
-    } else {
-      newBalance = account.NGN - Number(amount)
-    }
-
- await this.prisma.account.update({
-      where: {
-        id: account.id
-      },
-      data: {
-        NGN: Number(newBalance)
-      }
-    })
-
-
-    //Finf The User 
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: account.userId
-      }
-    })
-
-    if (!user){
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND)
-    }
-    //Create A Transaction Details
-    const transaction = await this.prisma.transaction.create({
-      data: {
+    try {
+      const user = await this.userService.findUserById(id)
+      console.log(user, 'the user back')
+      const account = await this.findOne(user?.accounts[0].id)
+      await this.updateAccountBalance(account, 'NGN', amount, 0, type)
+      await this.transactionService.create({
         amount: amount,
-        type: type === 'CREDIT' ? "DEPOSIT" : "DEBIT",
-        userId: account.userId,  
-        currency: "NGN",
+        type: type,
+        userId: id,
+        currency: 'NGN',
         status: "Completed",
-        narration: type === 'CREDIT' ? `DEPOSIT - ${user.firstName}` : `DEBIT - ${user.firstName}`, 
+        narration:`Account Deposit ${user.firstName + ""+ user.lastName}`,
         customer: `${user.firstName + " " + user.lastName}`,
-        reference: reference,
-        transactionType: 'DEPOSIT',
+        fee: 0,
+        transactionType: "DEPOSIT",
+        bankName: "",
+        billerName: "",
+      })
+  
+      //Send Email notification to admin
+      this.mailService.TransactionsNotificationEmail({
+        email:'support@payyng.com',
+        firstName: 'Admin',
+        content: `You have a new ${amount} deposited from User with Name ${user.lastName}, with email ${user.email} and the userID is ${user.id} `
+      })
+  
+      return{
+        status: "success",
+        message: "Deposit Successful",
       }
-    })
-
-    if (!transaction) {
-      throw new HttpException('Something went wrong.', HttpStatus.INTERNAL_SERVER_ERROR)
+    } catch (err) {
+      throw err
     }
 
-    //Send Email notification to admin
-    this.mailService.TransactionsNotificationEmail({
-      email:'support@payyng.com',
-      firstName: 'Admin',
-      content: `You have a new ${amount} deposited from User with Name ${user.lastName}, with email ${user.email} and the userID is ${user.id} `
-    })
-
-    return{
-      status: "success",
-      message: "Deposit Successful",
-    }
   }
 
   //FUNC TO UPDATE ACCOUNT BALANCE
   async updateAccountBalance(account:any, currency:string, amount:number, fee:number, type:string) {
 
-    console.log(account, currency, amount, fee, type, "HEHEHEHEH")
     if (type === 'debit'){
       if (account[currency] < amount) {
         throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);

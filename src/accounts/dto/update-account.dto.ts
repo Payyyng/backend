@@ -1,4 +1,22 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateAccountDto } from './create-account.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+    Length,
+    IsEmail,
+    IsNotEmpty,
+    IsString,
+} from 'class-validator';
 
-export class UpdateAccountDto extends PartialType(CreateAccountDto) {}
+export class UpdateAccountDto {
+
+    @ApiProperty()
+    @IsNotEmpty() readonly id: string;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly amount: number;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly type: string;
+
+    @ApiProperty()
+    @IsNotEmpty() readonly currency: string;
+}
