@@ -199,7 +199,7 @@ try {
         currency: updateAccountDto.currency,
         status: "Completed",
         narration:`Account Deposit ${user.firstName + " "+ user.lastName}`,
-        customer: `${updateAccountDto.id}`,
+        customer: `${user.firstName + " "+ user.lastName}`,
         fee: 0.00,
         transactionType: "DEPOSIT",
         bankName: "",
