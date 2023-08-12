@@ -360,9 +360,6 @@ export class TransactionService {
     }
 
 
-
-
-
     /**
 * @body Validate Bill
 * @access PUBLIC
@@ -511,7 +508,6 @@ export class TransactionService {
         if (!updatedAccount) {
             throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
         }
-
         return updatedAccount;
     }
 
@@ -1085,4 +1081,66 @@ export class TransactionService {
             throw err
         }
     }
+
+        /**
+* @body Validate Bill
+* @access PUBLIC
+* @description This function is used to Buy Educational Transaction Pin
+* @returns 
+*/
+
+async educational (educationalDTO) {
+    const {id, network_id, amount, name_on_card} = educationalDTO
+
+    if (!id || !network_id || !amount || !name_on_card) {
+        throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
+    }
+
+    const user = await this.userService.findUserById(id)
+
+    //get the user account
+
+    const account = await this.prisma.account.findFirst({
+        where: {
+            userId: id
+        }
+    })
+
+    await this.updateAccountBalance(account, "NGN", amount)
+
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${process.env.SME_TOKEN}`
+        }
+    }
+
+    const { data } = await axios.post(`${process.env.ELECASTLE_BASE_URL}/buy_pin `, { network_id, amount, name_on_card }, config)
+
+const referenceCode = randomize('Aa', 10)
+    const transaction = await this.prisma.transaction.create({
+        data: {
+            amount: amount,
+            type: "Educational",
+            billerName: data?.data?.network || "SME DATA",
+            currency: 'NGN',
+            customer: name_on_card,
+            reference: referenceCode,
+            status: "Completed",
+            transactionType: 'DEBIT',
+            user: {
+                connect: { id: id },
+            }
+        }
+    })
+
+    if (!transaction){
+        throw new HttpException('Something went wrong. Please Try Again', HttpStatus.NOT_FOUND)
+    }
+    return {
+        status: 'success',
+        message: 'Transaction Successful',
+        transaction: transaction
+    }
+}
 }

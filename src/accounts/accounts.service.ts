@@ -109,7 +109,6 @@ try {
 
     try {
       const user = await this.userService.findUserById(id)
-      console.log(user, 'the user back')
       const account = await this.findOne(user?.accounts[0].id)
       await this.updateAccountBalance(account, 'NGN', amount, 0, type)
       await this.transactionService.create({
