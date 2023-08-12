@@ -96,44 +96,48 @@ export class NotificationsService {
   async sendNotification ({expoPushToken, title, body}: NotificationDTO) {
 
 
-    // try {
-    //   const response = await axios.post(
-    //     'https://fcm.googleapis.com/fcm/send',
-    //     {
-    //       token: expoPushToken,
-    //       // priority: 'normal',
-    //       notification: {
-    //         // experienceId: '@boyinbode/payyng',
-    //         // scopeKey: '@boyinbode/payyng',
-    //         title: title,
-    //         message: body,
-    //       },
-    //     },
-    //     {
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         Authorization: 'key=AAAASMdkgr0:APA91bGq6T5gfe96zeRIfU6up8poWi3wxPefRjWNNtperi0bMrQF_MZa6WIBWuLKNYq09y4G_ljkphotaCQbjqbeT-6rz6Gpmo_fFHCdvlnNT2GB0E-0m4i9h1AygjRLPZjO5SAuBseO',
-    //       },
-    //     }
-    //   );
+    try {
+      const response = await axios.post(
+        'https://fcm.googleapis.com/fcm/send',
+        {
+          to: expoPushToken,
+          priority: 'normal',
+          token: expoPushToken,
+          data: {
+            experienceId: '@boyinbode/payyng',
+            scopeKey: '@boyinbode/payyng',
+            title: "📧 You've got mail",
+            message: 'Hello world! 🌐',
+          },
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'key=AAAASMdkgr0:APA91bGq6T5gfe96zeRIfU6up8poWi3wxPefRjWNNtperi0bMrQF_MZa6WIBWuLKNYq09y4G_ljkphotaCQbjqbeT-6rz6Gpmo_fFHCdvlnNT2GB0E-0m4i9h1AygjRLPZjO5SAuBseO',
+          },
+        }
+      );
   
-    //   return response;
-    // } catch (err) {
-    //   return err;
-    // }
+      return {
+        status: 'success',
+        message: 'Notification sent successfully',
+      }
+    } catch (err) {
+      throw err
+    }
     
 
-    try {
-      const res = await axios.post('https://exp.host/--/api/v2/push/send', {
-        to: expoPushToken,
-        title: title,
-        body: body,
-      })
-      return res.data
+    // try {
+    //   const res = await axios.post('https://exp.host/--/api/v2/push/send', {
+    //     to: expoPushToken,
+    //     title: title,
+    //     body: body,
+    //   })
+    //   return res.data
 
-    } catch (err){
-      return err
-    }
+    // } catch (err){
+    //   return err
+    // }
   }
 
 
