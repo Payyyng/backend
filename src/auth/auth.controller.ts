@@ -27,6 +27,12 @@ export class AuthController {
     return this.authService.loginWithCredentials(req.user);
   }
 
+  @UseGuards(LocalAuthGuard)
+  @Post('admin/login')
+  @ApiBody({ type: loginUserDto })
+  async adminLogin(@Body() loginDetails: loginUserDto) {
+    return this.authService.adminLogin(loginDetails)
+  }
 
   @Post('forget-password')
   @ApiBody({ schema: {

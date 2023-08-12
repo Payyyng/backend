@@ -58,6 +58,37 @@ export class AuthService {
     }
   }
 
+  async adminLogin (loginDetails: loginUserDto){
+    const {email, password} = loginDetails
+
+    console.log(email, password, "Akureeeeee")
+
+    if (!email || !password) {
+      throw new HttpException(
+        'All fields are required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (email === 'support@payyng.com' && password === 'Ayomideh1.'){
+      return  {
+        access_token: this.jwtService.sign('admin@payyng.com', {
+          secret: `${process.env.JWT_SECRET}`,
+        }),
+        email: 'admin@payyng.com',
+        firstName: 'Admin',
+        lastName: 'Payyng',
+        role: 'ADMIN',
+      }
+    } else{
+      throw new HttpException(
+        'Invalid Login Credentials',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+  }
+
   async loginWithCredentials(user: any) {
     const { password: _,  ...result } = user;
 

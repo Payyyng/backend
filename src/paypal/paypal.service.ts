@@ -232,9 +232,7 @@ export class PaypalService {
       //get ADMIN CONSTANTS 
 
       const adminConstant = await this.adminService.getAdminConstant()
-
-      console.log(adminConstant, "BACK BACK ")
-
+      
       //Send Email
       if (typeof adminConstant[0] === 'object' && adminConstant[0] !== null) {
         await this.prisma.transaction.create({

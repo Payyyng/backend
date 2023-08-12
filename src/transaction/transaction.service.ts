@@ -77,7 +77,7 @@ export class TransactionService {
             throw new HttpException('Something went wrong. Please try again', HttpStatus.BAD_REQUEST)
         }
 
-        //Check the balance if he's still haveing enough
+        //Check the balance if he's still having enough
         if (account.NGN < amount) {
             throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
         }
@@ -94,7 +94,7 @@ export class TransactionService {
                 reference: reference,
             }
             const response = await flw.Bills.create_bill(payload);
-
+            
             if (response.status === "success") {
                 const transaction = await this.create({
                     userId: id,
