@@ -20,6 +20,7 @@ import { PayyngTransferDto } from './dto/payyng-transfer.dto';
 import { ExchangeDTO } from './dto/exchange-currency.dto';
 import { SmeDataDTO } from './dto/sme-data.dto';
 import { UpdateTransaction } from './dto/update-transaction.dto';
+import { EducationDTO } from './dto/education-transaction.dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -89,6 +90,11 @@ export class TransactionController {
     @Post('sme-data')
     smeData(@Body() {network_id, phone, plan_id, id, amount}:SmeDataDTO) {
         return this.transactionService.smeData({network_id, phone, plan_id, id, amount}); 
+    }
+
+    @Post('education')
+    educationPin(@Body() educationDto: EducationDTO) {
+        return this.transactionService.educational(educationDto); 
     }
 
     @Put('update')
