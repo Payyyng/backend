@@ -14,7 +14,7 @@ import { AuthService } from './auth.service';
 import { ApiBody,} from '@nestjs/swagger';
 import { LocalAuthGuard } from './local-auth.guard';
 import { ResetPasswordDto } from './dto/reset-password-dto';
-import { loginUserWithPinDto } from './dto/login-user-with-pin.dto';
+import { LoginUserWithPinDto } from './dto/login-user-with-pin.dto';
 
 
 @Controller('auth')
@@ -30,7 +30,7 @@ export class AuthController {
 
   @Post('login/pin')
   @ApiBody({ type: loginUserDto })
-  async loginUserWithPin(@Body() loginUserWithPin: loginUserWithPinDto) {
+  async loginUserWithPin(@Body() loginUserWithPin: LoginUserWithPinDto) {
     return this.authService.loginUserWithPin(loginUserWithPin);
   }
 

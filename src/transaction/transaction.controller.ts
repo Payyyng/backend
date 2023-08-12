@@ -101,5 +101,4 @@ export class TransactionController {
     updateTransaction(@Body() {id, status}:UpdateTransaction) {
         return this.transactionService.updateTransaction({id, status}); 
     }
-
 }

@@ -6,10 +6,11 @@ import {
     IsString,
 } from 'class-validator';
 
-export class loginUserWithPinDto {
+export class LoginUserWithPinDto {
 
     @ApiProperty()
-    @IsEmail() readonly pin: string;
+    @IsNotEmpty()
+    @IsString() readonly pin: string;
 
     @ApiProperty()
     @IsNotEmpty()

@@ -3,7 +3,7 @@ import {
     IsNotEmpty,
 } from 'class-validator';
 
-export class SmeDataDTO {
+export class EducationDTO {
 
     @ApiProperty()
     @IsNotEmpty() readonly id: string;
@@ -16,6 +16,4 @@ export class SmeDataDTO {
 
     @ApiProperty()
     @IsNotEmpty() readonly name_on_card: string;
-
-    
 }

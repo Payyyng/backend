@@ -7,7 +7,7 @@ import { MailService } from 'src/mail/mail.service';
 import randomize from 'randomatic';
 import { hash, compare } from 'bcrypt';
 import { NotificationsService } from '../notifications/notifications.service';
-import { loginUserWithPinDto } from './dto/login-user-with-pin.dto';
+import { LoginUserWithPinDto } from './dto/login-user-with-pin.dto';
 
 
 @Injectable()
@@ -59,7 +59,7 @@ export class AuthService {
     }
   }
 
-  async loginUserWithPin (loginUserWithPinDto: loginUserWithPinDto): Promise <any>{
+  async loginUserWithPin (loginUserWithPinDto: LoginUserWithPinDto): Promise <any>{
     const {pin, id} = loginUserWithPinDto
 
     if (!pin || !id) {
