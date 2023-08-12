@@ -172,7 +172,6 @@ export class NotificationsService {
       });
   
       const responses = await Promise.all(requests);
-      console.log(responses)
       return {
         status: 'success',
         message: 'Notifications sent successfully',

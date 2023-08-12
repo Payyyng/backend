@@ -7,6 +7,7 @@ import { MailService } from 'src/mail/mail.service';
 import randomize from 'randomatic';
 import { hash, compare } from 'bcrypt';
 import { NotificationsService } from '../notifications/notifications.service';
+import { loginUserWithPinDto } from './dto/login-user-with-pin.dto';
 
 
 @Injectable()
@@ -58,10 +59,44 @@ export class AuthService {
     }
   }
 
+  async loginUserWithPin (loginUserWithPinDto: loginUserWithPinDto): Promise <any>{
+    const {pin, id} = loginUserWithPinDto
+
+    if (!pin || !id) {
+      throw new HttpException(
+        'All fields are required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    try {
+      const user = await this.usersService.findUserById(id)
+
+    const ispinValid = await compare(pin, user.pin);
+
+    if (!ispinValid) {
+      throw new HttpException(
+        'Invalid Login Credentials',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    return {
+      access_token: this.jwtService.sign(user.id, {
+        secret: `${process.env.JWT_SECRET}`,
+      }),
+      ...user
+    }
+
+
+
+    } catch (err){
+      throw err
+    }
+
+  }
+
   async adminLogin (loginDetails: loginUserDto){
     const {email, password} = loginDetails
-
-    console.log(email, password, "Akureeeeee")
 
     if (!email || !password) {
       throw new HttpException(
@@ -227,7 +262,6 @@ export class AuthService {
   }
 
   async sendOTP (id:string) {
-    console.log(id, "ID ENTERED")
     
     if (!id) {
       throw new HttpException(

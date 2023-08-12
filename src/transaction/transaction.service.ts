@@ -154,10 +154,8 @@ export class TransactionService {
     */
 
     async verifyTransaction(ref) {
-        console.log(ref, "ENTERED")
         const { reference } = ref
 
-        console.log(reference, "THE REFERENCE")
 
         if (!reference) {
             throw new HttpException('Transaction Reference is required', HttpStatus.UNPROCESSABLE_ENTITY)
@@ -167,8 +165,6 @@ export class TransactionService {
             const payload = ref
 
             const response = await flw.Bills.fetch_status(payload)
-
-            console.log(response, "THE RESPONSE HERE")
             return {
                 status: "success",
                 message: response.message
@@ -325,7 +321,6 @@ export class TransactionService {
             }
 
         } catch (err) {
-            console.log(err, "THE ERROR")
             throw new HttpException("Something Went Wrong. Please try again", HttpStatus.BAD_REQUEST)
         }
     }
@@ -346,8 +341,6 @@ export class TransactionService {
             throw new HttpException('Ensure all transfer information are provided.', HttpStatus.BAD_REQUEST)
         }
 
-        console.log(account_bank, "THE BANK ACCOUNT")
-
         const payload = {
             account_number: account_number,
             account_bank: account_bank
@@ -362,7 +355,7 @@ export class TransactionService {
             return response
 
         } catch (error) {
-            console.log(error)
+            throw error
         }
     }
 

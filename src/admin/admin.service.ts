@@ -164,8 +164,7 @@ export class AdminService {
                 }
             })
         } catch (err) {
-            console.log(err)
-            return err
+            throw err
         }
     }
 
