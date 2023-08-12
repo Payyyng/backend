@@ -264,4 +264,27 @@ export class AdminService {
             throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
         }
     }
+
+    async deactivateUser (id:string, type: string){
+
+        if (!id){
+            throw new HttpException("User Id Is Required", HttpStatus.NOT_FOUND)
+        }
+        const updatedUser = await this.prisma.user.update({
+            where: {
+                id: id
+            },data:{
+                isActive: type === "DEACTIVATE" ? false : true
+            }
+        })
+        
+        if (!updatedUser){
+            throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
+        }
+
+        return {
+            status: 'success',
+            message: 'User Account Deactivated Successfully'
+        }
+    }
 }

@@ -64,4 +64,10 @@ export class AdminController {
     abankTransfers() {
         return this.adminService.getAllBankTransfers();
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('deactivate-activate')
+    deactivateUser( @Body() {type, id}:any) {
+        return this.adminService.deactivateUser(id, type);
+    }
 }

@@ -183,8 +183,6 @@ export class UsersService {
   }
 
   async createUserPin(id: string, pin: number): Promise<any> {
-    console.log(id, pin, "ENTEREd")
-
     if (!pin || !id) {
       throw new HttpException('Pin and ID is required', HttpStatus.BAD_REQUEST);
     }
@@ -291,9 +289,6 @@ export class UsersService {
           address
         }
       })
-
-      console.log("entered, after")
-
       if (!updatedUser) {
         throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
       }
@@ -405,7 +400,6 @@ export class UsersService {
   }
 
   async findUserByUserName(userName:string): Promise <any> {
-console.log(userName, "ENTERED")
     if (!userName) {
       throw new HttpException('Username is required', HttpStatus.BAD_REQUEST);
     }
@@ -506,8 +500,6 @@ console.log(userName, "ENTERED")
       narration: `${user.firstName} ${user.lastName}`
     }
     const response = await flw.VirtualAcct.create(payload)
-    console.log(response);
-
     if (!response) {
       throw new HttpException(
         'Something Went Wrong Creating Account. Please Try Again',
@@ -648,5 +640,6 @@ console.log(userName, "ENTERED")
       throw err
     }
   }
+
 
 }
