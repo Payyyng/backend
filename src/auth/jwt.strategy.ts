@@ -8,7 +8,6 @@ import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 dotenv.config();
 
-// console.log('ENTERED');
 @Injectable()
 
 // }

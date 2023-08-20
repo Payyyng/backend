@@ -48,8 +48,6 @@ export class CardService {
 
         try {
             const response = await flw.VirtualCards.create(payload);
-            console.log(response)
-
             if (response) {
                 const { card_pan, amount, cvv, card_type, expiry, name_on_card, zip_code, state, address, city,  } = response.data
                 const card = await this.prisma.card.create({
