@@ -12,9 +12,6 @@ export class AdminService {
         return 'Hello World!';
     }
 
-    
-
-
     async disableUserAccount(id: string): Promise<any> {
         const user = await this.prisma.user.findUnique({
             where: {
