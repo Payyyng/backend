@@ -142,6 +142,13 @@ try {
 
       //Send Notification to User
 
+      this.notificationService.sendNotification({
+        expoPushToken: user.xpoPushToken,
+        title: 'Account Deposited Successfully',
+        body: `You have successfully deposited ${amount} to your account`,
+      })
+
+
 
       return{
         status: "success",
