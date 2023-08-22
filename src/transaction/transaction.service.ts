@@ -127,11 +127,11 @@ export class TransactionService {
                     content: `Your ${type} of ${amount} was completed sucessfully.`
                 })
 
-                this.notificationService.sendNotification({
-                    expoPushToken: user.notificationKey,
-                    title: "Transaction Successful",
-                    body: `Your ${type} transaction  was successful`,
-                })
+                // this.notificationService.sendNotification({
+                //     expoPushToken: user.notificationKey,
+                //     title: "Transaction Successful",
+                //     body: `Your ${type} transaction  was successful`,
+                // })
 
                 return {
                     status: "success",
