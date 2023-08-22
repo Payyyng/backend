@@ -144,8 +144,8 @@ try {
 
       this.notificationService.sendNotification({
         expoPushToken: user.notificationKey,
-        title: 'Account Deposited Successfully',
-        body: `You have successfully deposited ${amount} to your account`,
+        title: "Deposit Successful",
+        body: `You have successfully deposited ₦ ${amount} to your account`,
       })
 
       return{
