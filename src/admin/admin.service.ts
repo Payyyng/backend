@@ -91,6 +91,8 @@ export class AdminService {
                     createdAt: true,
                     updatedAt: true,
                     phone: true,
+                    notificationKey: true,
+                    promoCode : true
                 }
             })
         } catch (err) {
