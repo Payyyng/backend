@@ -137,18 +137,16 @@ try {
       this.mailService.TransactionsNotificationEmail({
         email: user.email,
         firstName: user.firstName,
-        content: `You have successfully deposited ${amount} to your account`
+        content: `You have successfully deposited ₦ ${amount} to your account`
       })
 
       //Send Notification to User
 
       this.notificationService.sendNotification({
-        expoPushToken: user.xpoPushToken,
+        expoPushToken: user.notificationKey,
         title: 'Account Deposited Successfully',
         body: `You have successfully deposited ${amount} to your account`,
       })
-
-
 
       return{
         status: "success",
