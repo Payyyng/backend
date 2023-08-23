@@ -1026,6 +1026,38 @@ export class TransactionService {
             throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
         }
         try {
+            if (status === 'Refunded'){
+                const transaction = await this.prisma.transaction.findUnique({
+                    where: {
+                        id: id
+                    }
+                })
+
+                if (transaction.status === 'Refunded'){
+                    throw new HttpException('Transaction Already Refunded', HttpStatus.NOT_FOUND)
+                }
+    
+                const account = await this.prisma.account.findFirst({
+                    where: {
+                        userId: transaction.userId
+                    }
+                })
+                if (!account) {
+                    throw new HttpException('Something went wrong. Please Try Again', HttpStatus.NOT_FOUND)
+                }
+
+                await this.prisma.account.update({
+                    where: {
+                        id: account.id
+                    },
+                    data: {
+                        NGN: account.NGN + transaction.amount
+                    }
+                })
+            } 
+
+
+
             const transaction = await this.prisma.transaction.update({
                 where: {
                     id: id
@@ -1035,9 +1067,20 @@ export class TransactionService {
                 }
             })
 
-            if (!transaction) {
-                throw new HttpException('Transaction Not Found', HttpStatus.NOT_FOUND)
+            if (status === 'Refunded'){
+                const user = await this.prisma.user.findUnique({
+                    where: {
+                        id: transaction.userId
+                    }
+                })
+
+                await this.notificationService.sendNotification({
+                    expoPushToken: user.notificationKey,
+                    title: "Transaction Refund",
+                    body: `Your last ${transaction.type} transaction have been refunded.`,
+                })
             }
+
             return {
                 status: 'success',
                 message: 'Transaction Updated Successfully',
