@@ -276,4 +276,74 @@ try {
       transaction: transaction
     }
   }
+
+  async webhookHandler (webhookData: any) {
+    const {data} = webhookData
+
+    if (data.status === "successful" && data.payment_type === 'Bank_transfer'){
+      try {
+        const user = await this.prisma.user.findUnique({
+          where: {
+            email: data.customer.email
+          }
+        })
+  
+        const account = await this.prisma.account.findFirst({
+          where: {
+            userId: user.id
+          }
+        })
+
+        await this.updateAccountBalance(account, data.currency, (data.amount - data.app_fee), 0, 'credit')
+    
+       const trans = await this.prisma.transaction.create({
+          data: {
+            amount: data.amount,
+            type: 'DEPOSIT',
+            userId: user.id,
+            currency: data.currency,
+            status: "Completed",
+            narration:`Account Deposit ${user.firstName + ""+ user.lastName}`,
+            customer: `${user.firstName + " " + user.lastName}`,
+            fee: 0,
+            transactionType: "DEPOSIT",
+            // bankName: "",
+            billerName: "",
+          }
+        })
+  
+        //Send Email to User
+  
+        this.mailService.TransactionsNotificationEmail({
+          email: user.email,
+          firstName: user.firstName,
+          content: `You have successfully deposited ${data.amount} to your account`
+        })
+
+        console.log(trans, 'BACK BACK')
+
+        return {
+          status: "success",
+          message: "Deposit Successful",
+          code: HttpStatus.OK
+        }
+      } catch (err){
+        throw 
+      }
+
+
+
+      //Return
+      return {
+        status: "success",
+        message: "Deposit Successful",
+      }
+    } else{
+      return {
+        status: "success",
+        message: "Deposit Successful",
+        code: HttpStatus.OK
+      }
+    }
+  }
 }

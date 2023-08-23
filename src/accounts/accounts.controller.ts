@@ -35,4 +35,10 @@ export class AccountsController {
   deposit(@Body() deposit: DepositDTO) {
     return this.accountsService.accountDeposit(deposit)
   }
+
+  @Post("webhook")
+  accountWebHook(@Body() data: any) {
+    return this.accountsService.webhookHandler(data)
+  }
+
 }
