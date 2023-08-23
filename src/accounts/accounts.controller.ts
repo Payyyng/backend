@@ -36,7 +36,7 @@ export class AccountsController {
     return this.accountsService.accountDeposit(deposit)
   }
 
-  @Post("webhook")
+  @Get("webhook")
   accountWebHook(@Body() data: any) {
     return this.accountsService.webhookHandler(data)
   }
