@@ -328,7 +328,7 @@ try {
           code: HttpStatus.OK
         }
       } catch (err){
-        throw 
+        throw err
       }
 
 
