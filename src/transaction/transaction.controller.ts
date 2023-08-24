@@ -27,14 +27,14 @@ export class TransactionController {
 
     constructor(private transactionService: TransactionService) { }
 
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post('pay-bill')
     @ApiBody({ type: createBillDto })
     createBill(@Body() billInfo: createBillDto) {
         return this.transactionService.payBills(billInfo);
     }
 
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get('verify/:reference')
     @ApiBody({   type: VerifyBillDTO }
     )
@@ -87,16 +87,19 @@ export class TransactionController {
         return this.transactionService.exchangeCurrency({ id, newAmount, newCurrency, exchangeCurrency, exchangeAmount }); 
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('sme-data')
     smeData(@Body() {network_id, phone, plan_id, id, amount}:SmeDataDTO) {
         return this.transactionService.smeData({network_id, phone, plan_id, id, amount}); 
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('education')
     educationPin(@Body() educationDto: EducationDTO) {
         return this.transactionService.educational(educationDto); 
     }
 
+    @UseGuards(JwtAuthGuard)
     @Put('update')
     updateTransaction(@Body() {id, status}:UpdateTransaction) {
         return this.transactionService.updateTransaction({id, status}); 
