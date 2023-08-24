@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PaypalService } from './paypal.service';
 import { CreatePaypalDto } from './dto/create-paypal.dto';
 import { UpdatePaypalDto } from './dto/update-paypal.dto';
@@ -6,7 +6,6 @@ import { MakePayment } from './dto/make-a-payment.dto';
 import { BuyPaypalDTO } from './dto/buy-paypal-dto';
 import { SellPaypalDTO } from './dto/sell-paypal-dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UseGuards } from '@nestjs/common';
 
 @Controller('paypal')
 export class PaypalController {
@@ -66,5 +65,5 @@ export class PaypalController {
   wiseDeposit(@Body() deposit: MakePayment) {
     return this.paypalService.wiseDeposit(deposit);
   }
-
+  
 }
