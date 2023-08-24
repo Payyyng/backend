@@ -19,7 +19,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('payyng-api', app, document);
 
   // const port = process.env.PORT || 3000;
 
