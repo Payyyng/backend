@@ -937,6 +937,7 @@ export class TransactionService {
 
 
     async smeData({ network_id, phone, plan_id, id, amount }) {
+        throw new HttpException('Something went wrong. Please try again later', HttpStatus.BAD_REQUEST)
 
         if (!network_id || !phone || !plan_id || !id || !amount) {
             throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
