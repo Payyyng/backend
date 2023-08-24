@@ -55,6 +55,9 @@ export class TransactionService {
     async payBills(data: createBillDto): Promise<any> {
         const { id, amount, type, customer, biller_name, fee } = data;
 
+        throw new HttpException('Something went wrong. Please Try Again Later.', HttpStatus.BAD_REQUEST)
+
+
         if (!id || !amount || !type || !customer) {
             throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
         }
