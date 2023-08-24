@@ -59,6 +59,8 @@ export class PaypalService {
 
   async makeApayment (MakePayment: MakePayment) {
 
+    throw new HttpException('Insufficient Balance', HttpStatus.BAD_REQUEST)
+
     const {amount, paymentLink, currency, id, description, fee, tradeAmount } = MakePayment
 
     if (!amount || !paymentLink || !currency || !tradeAmount) {
