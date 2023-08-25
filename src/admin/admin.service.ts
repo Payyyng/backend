@@ -3,13 +3,87 @@ import {
     HttpException,
     HttpStatus
 } from '@nestjs/common';
+import { hash } from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import { SignUpAdminDTO } from './dto/admin-signUp-dto';
 
 @Injectable()
 export class AdminService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private jwtService: JwtService,
+        ) { }
+
+
     getHello(): string {
         return 'Hello World!';
+    }
+
+    async signUp({ email, password, firstName, lastName }: SignUpAdminDTO) {
+        if (!email || !password) {
+            throw new HttpException("Email and Password are required", HttpStatus.BAD_REQUEST)
+        }
+
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        })
+
+        if (user) {
+            throw new HttpException("User already exists", HttpStatus.BAD_REQUEST)
+        }
+
+        const hashedPassword = await hash(password, 10);
+
+
+        const newUser = await this.prisma.user.create({
+            data: <any> {
+                email: email,
+                password: hashedPassword,
+                firstName: firstName,
+                lastName: lastName,
+                role: "ADMIN"
+            }
+        })
+
+        if (!newUser) {
+            throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
+        }
+
+        return {
+            status: 'success',
+            message: 'Admin Created Successfully'
+        }
+    }
+
+    async login ({ email, password}: any){
+        if (!email || !password) {
+            throw new HttpException("Email and Password are required", HttpStatus.BAD_REQUEST)
+        }
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        })
+
+        if (!user) {
+            throw new HttpException("User not found", HttpStatus.NOT_FOUND)
+        }
+
+        const passwordMatch = await hash(password, 10);
+
+        if (passwordMatch !== user.password) {
+            throw new HttpException("Password is incorrect", HttpStatus.BAD_REQUEST)
+        }
+
+        return {
+      access_token: this.jwtService.sign(user.id, {
+        secret: `${process.env.JWT_SECRET}`,
+      }),
+      ...user
+        }
     }
 
     async disableUserAccount(id: string): Promise<any> {
@@ -92,7 +166,7 @@ export class AdminService {
                     updatedAt: true,
                     phone: true,
                     notificationKey: true,
-                    promoCode : true
+                    promoCode: true
                 }
             })
         } catch (err) {
@@ -264,20 +338,20 @@ export class AdminService {
         }
     }
 
-    async deactivateUser (id:string, type: string){
+    async deactivateUser(id: string, type: string) {
 
-        if (!id){
+        if (!id) {
             throw new HttpException("User Id Is Required", HttpStatus.NOT_FOUND)
         }
         const updatedUser = await this.prisma.user.update({
             where: {
                 id: id
-            },data:{
+            }, data: {
                 isActive: type === "DEACTIVATE" ? false : true
             }
         })
-        
-        if (!updatedUser){
+
+        if (!updatedUser) {
             throw new HttpException("Something went wrong. Please try again", HttpStatus.SERVICE_UNAVAILABLE)
         }
 

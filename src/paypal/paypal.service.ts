@@ -59,12 +59,16 @@ export class PaypalService {
 
   async makeApayment (MakePayment: MakePayment) {
 
-    throw new HttpException('Insufficient Balance', HttpStatus.BAD_REQUEST)
+    // throw new HttpException('Insufficient Balance', HttpStatus.BAD_REQUEST)
 
     const {amount, paymentLink, currency, id, description, fee, tradeAmount } = MakePayment
 
     if (!amount || !paymentLink || !currency || !tradeAmount) {
       throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
+    }
+
+    if (amount <= 0 || tradeAmount <= 0) {
+      throw new HttpException('Invalid Transaction Amount', HttpStatus.BAD_REQUEST)
     }
 
     try {
@@ -80,7 +84,21 @@ export class PaypalService {
         }
       })
 
-      await this.accountService.updateAccountBalance(account, currency, tradeAmount, fee, 'debit')
+      if (account.NGN < tradeAmount){
+        throw new HttpException('Insufficient Balance', HttpStatus.BAD_REQUEST)
+      }
+
+      //Update the user Account 
+      const updatedBalance = account.NGN - tradeAmount
+
+      await this.prisma.account.update({
+        where: {
+          id: account.id
+        },
+        data: {
+          NGN: updatedBalance
+        }
+      })
 
       await this.createPaypal({
         amount, 
@@ -88,7 +106,7 @@ export class PaypalService {
         currency, 
         description, 
         fee,
-        tradeAmount: 0,
+        tradeAmount: tradeAmount,
         loginDetails: '',
         userId: id
       })
@@ -96,11 +114,11 @@ export class PaypalService {
       
       const transaction = await this.prisma.transaction.create({
         data: {
-          amount: amount,
+          amount: tradeAmount,
           type: "MAKE A PAYMENT",
           billerName: paymentLink,
           currency: 'USD',
-          bank_name: `PAYPAL - MAKE A PAYMENT REQUEST`,
+          bank_name: `PAYPAL - MAKE A PAYMENT REQUEST  - NGN ${tradeAmount} : USD ${amount}`,
           customer: ` ${user.firstName} ${user.lastName}`,
           reference: reference,
           status: "Pending",

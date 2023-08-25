@@ -31,7 +31,6 @@ export class UsersService {
   ) { }
 
   async createUser({firstName, lastName, email, phone, password}: createUserDto): Promise<any> {
-    
 
     //check if any of the userinfo is not provided
     if (!email || !password || !firstName || !lastName || !phone) {
@@ -41,6 +40,17 @@ export class UsersService {
       );
     }
 
+    //Validate User Email if Valid 
+    const validate = `https://emailapi.onrender.com/api/validate?email=${email}`
+
+    const {data} : any = await axios.get(validate)
+    if (data.disposable === "Disposable"){
+      throw new HttpException(
+        'Invalid Email Address Provided',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    
     // check if email already exists
     const userExists = await this.prisma.user.findUnique({
       where: {

@@ -3,6 +3,7 @@ import { AdminService } from './admin.service';
 import { ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UpdateAdminDTO } from './dto/update-admin.dto';
+import { SignUpAdminDTO } from './dto/admin-signUp-dto';
 @Controller('admin')
 export class AdminController {
     constructor(private adminService: AdminService){}
@@ -20,6 +21,18 @@ export class AdminController {
     @ApiBody({ type: String })
     async enableUserAccount(@Body('id') id: string) {
         return this.adminService.enableUserAccount(id);
+    }
+
+    @Post('sign-up')
+    @ApiBody({ type: String })
+    async signUp(@Body() signup: SignUpAdminDTO) {
+        return this.adminService.signUp(signup);
+    }
+
+    @Post('login')
+    @ApiBody({ type: String })
+    async login(@Body() {email, password}: any) {
+        return this.adminService.login({email, password});
     }
 
     @UseGuards(JwtAuthGuard)

@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Transaction, Prisma, } from '@prisma/client';
 import { createBillDto } from './dto/create-bills.dto';
 import randomize from 'randomatic'
 import Flutterwave from 'flutterwave-node-v3';
@@ -11,14 +10,9 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { UpdateTransaction } from './dto/update-transaction.dto';
 import { createTransactionDTO } from './dto/create-transaction-dto';
 import { UsersService } from 'src/users/users.service';
-import { AccountsService } from 'src/accounts/accounts.service';
 
 
-const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
-
-const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, SECRET_KEY);
-
-const reference = randomize('Aa', 10)
+const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
 
 interface TransferDetails {
     id: any,
@@ -55,39 +49,37 @@ export class TransactionService {
     async payBills(data: createBillDto): Promise<any> {
         const { id, amount, type, customer, biller_name, fee } = data;
 
-        throw new HttpException('Something went wrong. Please Try Again Later.', HttpStatus.BAD_REQUEST)
-
-
-        if (!id || !amount || !type || !customer) {
-            throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
-        }
-
-        if (type == "AIRTIME" && amount > 10000 || type == "AIRTIME" && amount < 10) {
-            throw new HttpException('Airtime Amount cannot be less than 10 or more than 10000', HttpStatus.UNPROCESSABLE_ENTITY)
-        }
-
-        const country = "NG"
-        const reference = randomize('Aa', 10)
-
-        // get what's already in NGN Balance and remount the amount from it 
-        const account = await this.prisma.account.findFirst({
-            where: {
-                userId: id,
-            },
-        });
-
-        if (!account) {
-            throw new HttpException('Something went wrong. Please try again', HttpStatus.BAD_REQUEST)
-        }
-
-        //Check the balance if he's still having enough
-        if (account.NGN < amount) {
-            throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-        }
-
-        const user = await this.userService.findUserById(id)
-
         try {
+            if (!id || !amount || !type || !customer) {
+                throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
+            }
+
+            if (type == "AIRTIME" && amount > 10000 || type == "AIRTIME" && amount < 10) {
+                throw new HttpException('Airtime Amount cannot be less than 10 or more than 10000', HttpStatus.UNPROCESSABLE_ENTITY)
+            }
+
+            const country = "NG"
+            const reference = randomize('Aa', 10)
+
+            // get what's already in NGN Balance and remount the amount from it 
+            const account = await this.prisma.account.findFirst({
+                where: {
+                    userId: id,
+                },
+            });
+
+            if (!account) {
+                throw new HttpException('Something went wrong. Please try again', HttpStatus.BAD_REQUEST)
+            }
+
+            //Check the balance if he's still having enough
+            if (account.NGN < amount) {
+                throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+            }
+
+            const user = await this.userService.findUserById(id)
+
+
             const payload = {
                 country: country,
                 customer: customer,
@@ -97,7 +89,7 @@ export class TransactionService {
                 reference: reference,
             }
             const response = await flw.Bills.create_bill(payload);
-            
+
             if (response.status === "success") {
                 const transaction = await this.create({
                     userId: id,
@@ -130,11 +122,13 @@ export class TransactionService {
                     content: `Your ${type} of ${amount} was completed sucessfully.`
                 })
 
-                // this.notificationService.sendNotification({
-                //     expoPushToken: user.notificationKey,
-                //     title: "Transaction Successful",
-                //     body: `Your ${type} transaction  was successful`,
-                // })
+                if (user.notificationKey) {
+                    this.notificationService.sendNotification({
+                        expoPushToken: user.notificationKey,
+                        title: "Transaction Successful",
+                        body: `Your ${type} transaction  was successful`,
+                    })
+                }
 
                 return {
                     status: "success",
@@ -145,9 +139,10 @@ export class TransactionService {
                 throw new HttpException(response, HttpStatus.EXPECTATION_FAILED);
             }
 
-        } catch (error) {
-            throw error
+        } catch (err) {
+            throw err
         }
+
     }
     /**
     * @param reference
@@ -880,6 +875,7 @@ export class TransactionService {
 
 
             //Save To Transactions In Database
+            const reference = randomize('Aa', 10)
             const transaction = await this.prisma.transaction.create({
                 data: <any>{
                     amount: exchangeAmount,
@@ -937,7 +933,9 @@ export class TransactionService {
 
 
     async smeData({ network_id, phone, plan_id, id, amount }) {
-        throw new HttpException('Something went wrong. Please try again later', HttpStatus.BAD_REQUEST)
+        const reference = randomize('Aa', 10)
+
+        // throw new HttpException('Something went wrong. Please try again later', HttpStatus.BAD_REQUEST)
 
         if (!network_id || !phone || !plan_id || !id || !amount) {
             throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
@@ -948,6 +946,7 @@ export class TransactionService {
                 id
             }
         })
+        console.log(user, 'THE USER')
 
         if (!user) {
             throw new HttpException('User Not Found', HttpStatus.NOT_FOUND)
@@ -962,8 +961,6 @@ export class TransactionService {
         if (!account) {
             throw new HttpException('Something went Wrong. Please Try Again', HttpStatus.NOT_FOUND)
         }
-
-        //Check For User Balance
 
         if (account.NGN < amount) {
             throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
@@ -1030,17 +1027,17 @@ export class TransactionService {
             throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
         }
         try {
-            if (status === 'Refunded'){
+            if (status === 'Refunded') {
                 const transaction = await this.prisma.transaction.findUnique({
                     where: {
                         id: id
                     }
                 })
 
-                if (transaction.status === 'Refunded'){
+                if (transaction.status === 'Refunded') {
                     throw new HttpException('Transaction Already Refunded', HttpStatus.NOT_FOUND)
                 }
-    
+
                 const account = await this.prisma.account.findFirst({
                     where: {
                         userId: transaction.userId
@@ -1058,7 +1055,7 @@ export class TransactionService {
                         NGN: account.NGN + transaction.amount
                     }
                 })
-            } 
+            }
 
 
 
@@ -1071,7 +1068,7 @@ export class TransactionService {
                 }
             })
 
-            if (status === 'Refunded'){
+            if (status === 'Refunded') {
                 const user = await this.prisma.user.findUnique({
                     where: {
                         id: transaction.userId
@@ -1129,65 +1126,65 @@ export class TransactionService {
         }
     }
 
-        /**
+    /**
 * @body Validate Bill
 * @access PUBLIC
 * @description This function is used to Buy Educational Transaction Pin
 * @returns 
 */
 
-async educational (educationalDTO) {
-    const {id, network_id, amount, name_on_card} = educationalDTO
+    async educational(educationalDTO) {
+        const { id, network_id, amount, name_on_card } = educationalDTO
 
-    if (!id || !network_id || !amount || !name_on_card) {
-        throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
-    }
-
-    const user = await this.userService.findUserById(id)
-
-    //get the user account
-
-    const account = await this.prisma.account.findFirst({
-        where: {
-            userId: id
+        if (!id || !network_id || !amount || !name_on_card) {
+            throw new HttpException('Ensure all fields are provided', HttpStatus.BAD_REQUEST)
         }
-    })
 
-    await this.updateAccountBalance(account, "NGN", amount)
+        const user = await this.userService.findUserById(id)
 
-    const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.SME_TOKEN}`
-        }
-    }
+        //get the user account
 
-    const { data } = await axios.post(`${process.env.ELECASTLE_BASE_URL}/buy_pin `, { network_id, amount, name_on_card }, config)
+        const account = await this.prisma.account.findFirst({
+            where: {
+                userId: id
+            }
+        })
 
-const referenceCode = randomize('Aa', 10)
-    const transaction = await this.prisma.transaction.create({
-        data: {
-            amount: amount,
-            type: "Educational",
-            billerName: data?.data?.network || "SME DATA",
-            currency: 'NGN',
-            customer: name_on_card,
-            reference: referenceCode,
-            status: "Completed",
-            transactionType: 'DEBIT',
-            user: {
-                connect: { id: id },
+        await this.updateAccountBalance(account, "NGN", amount)
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${process.env.SME_TOKEN}`
             }
         }
-    })
 
-    if (!transaction){
-        throw new HttpException('Something went wrong. Please Try Again', HttpStatus.NOT_FOUND)
+        const { data } = await axios.post(`${process.env.ELECASTLE_BASE_URL}/buy_pin `, { network_id, amount, name_on_card }, config)
+
+        const referenceCode = randomize('Aa', 10)
+        const transaction = await this.prisma.transaction.create({
+            data: {
+                amount: amount,
+                type: "Educational",
+                billerName: data?.data?.network || "SME DATA",
+                currency: 'NGN',
+                customer: name_on_card,
+                reference: referenceCode,
+                status: "Completed",
+                transactionType: 'DEBIT',
+                user: {
+                    connect: { id: id },
+                }
+            }
+        })
+
+        if (!transaction) {
+            throw new HttpException('Something went wrong. Please Try Again', HttpStatus.NOT_FOUND)
+        }
+        return {
+            status: 'success',
+            message: 'Transaction Successful',
+            transaction: transaction
+        }
     }
-    return {
-        status: 'success',
-        message: 'Transaction Successful',
-        transaction: transaction
-    }
-}
 }
