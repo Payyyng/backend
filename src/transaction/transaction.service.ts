@@ -72,6 +72,11 @@ export class TransactionService {
                 throw new HttpException('Something went wrong. Please try again', HttpStatus.BAD_REQUEST)
             }
 
+            //Check the balance if he's still having enough
+            if (account.NGN < amount) {
+                throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+            }
+
             const newBalance = account.NGN - amount - fee;
 
             await this.prisma.account.update({
@@ -83,10 +88,6 @@ export class TransactionService {
                 },
             });
 
-            //Check the balance if he's still having enough
-            if (account.NGN < amount) {
-                throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
-            }
 
             const user = await this.userService.findUserById(id)
 
