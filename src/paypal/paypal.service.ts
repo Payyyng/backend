@@ -114,7 +114,7 @@ export class PaypalService {
       
       const transaction = await this.prisma.transaction.create({
         data: {
-          amount: tradeAmount,
+          amount: amount,
           type: "MAKE A PAYMENT",
           billerName: paymentLink,
           currency: 'USD',

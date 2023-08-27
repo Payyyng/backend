@@ -17,5 +17,4 @@ export class SignUpAdminDTO {
 
     @ApiProperty()
     @IsNotEmpty() readonly lastName: string;
-
 }

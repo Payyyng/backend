@@ -72,6 +72,17 @@ export class TransactionService {
                 throw new HttpException('Something went wrong. Please try again', HttpStatus.BAD_REQUEST)
             }
 
+            const newBalance = account.NGN - amount - fee;
+
+            await this.prisma.account.update({
+                where: {
+                    id: account.id,
+                },
+                data: {
+                    NGN: newBalance,
+                },
+            });
+
             //Check the balance if he's still having enough
             if (account.NGN < amount) {
                 throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
@@ -104,17 +115,6 @@ export class TransactionService {
                     fee: 0.00,
                     transactionType: type
                 })
-
-                const newBalance = account.NGN - amount - fee;
-
-                await this.prisma.account.update({
-                    where: {
-                        id: account.id,
-                    },
-                    data: {
-                        NGN: newBalance,
-                    },
-                });
 
                 this.mailService.TransactionsNotificationEmail({
                     email: user.email,
