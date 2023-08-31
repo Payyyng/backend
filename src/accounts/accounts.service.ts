@@ -6,6 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/mail/mail.service';
 import { TransactionService } from 'src/transaction/transaction.service';
 import randomize from 'randomatic'
+import FlutterwaveEvents from 'flutterwave-events'
 import { DepositDTO } from './dto/deposit.dto';
 import { NotificationsService } from 'src/notifications/notifications.service';
 
@@ -278,16 +279,27 @@ try {
   }
 
   async webhookHandler (webhookData: any) {
+    // const flutterwaveEvents = new FlutterwaveEvents(process.env.FLW_SECRET_KEY);
+
+    // flutterwaveEvents.on('charge.success', async (data: any) => {
+    //   console.log(data);
+
+
+
+    // });
     const {data} = webhookData
 
-    if (data.status === "successful" && data.payment_type === 'Bank_transfer'){
+    console.log(data, webhookData, "BOTH VALUES " )
+
+
+    if (data.status === 'success' && data.payment_type === 'bank_transfer'){
       try {
         const user = await this.prisma.user.findUnique({
           where: {
             email: data.customer.email
           }
         })
-  
+
         const account = await this.prisma.account.findFirst({
           where: {
             userId: user.id
@@ -330,20 +342,28 @@ try {
       } catch (err){
         throw err
       }
-
-
-
-      //Return
-      return {
-        status: "success",
-        message: "Deposit Successful",
-      }
-    } else{
-      return {
-        status: "success",
-        message: "Deposit Successful",
-        code: HttpStatus.OK
-      }
+    } else {
+      throw new HttpException('Transaction Failed', HttpStatus.BAD_REQUEST)
     }
+
+    // const {data} = webhookData
+
+    // if (data.status === "successful" && data.payment_type === 'Bank_transfer'){
+
+
+
+
+    //   //Return
+    //   return {
+    //     status: "success",
+    //     message: "Deposit Successful",
+    //   }
+    // } else{
+    //   return {
+    //     status: "success",
+    //     message: "Deposit Successful",
+    //     code: HttpStatus.OK
+    //   }
+    // }
   }
 }

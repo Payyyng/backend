@@ -4,6 +4,10 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { DepositDTO } from './dto/deposit.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import FlutterwaveEvents from 'flutterwave-events'
+
+// const flutterwaveEvents = new FlutterwaveEvents(process.env.FLW_SECRET_KEY);
+// const webHook = flutterwaveEvents.webhook()
 
 @Controller('accounts')
 export class AccountsController {
@@ -36,11 +40,9 @@ export class AccountsController {
     return this.accountsService.accountDeposit(deposit)
   }
 
-  @Get("webhook")
-  accountWebHook(@Body() data: any) {
-    return this.accountsService.webhookHandler(data)
+  @Post("webhook")
+  accountWebHook(@Body() webHook: any) {
+    return this.accountsService.webhookHandler(webHook)
   }
-
-  // @Post('refund')
 
 }

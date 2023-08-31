@@ -38,6 +38,7 @@
     "device-detector-js": "^3.0.3",
     "dotenv": "^16.0.3",
     "expo-server-sdk": "^3.7.0",
+    "flutterwave-events": "^0.2.2",
     "flutterwave-node-v3": "^1.1.5",
     "handlebars": "^4.7.7",
     "node-verification-code": "^1.1.3",
