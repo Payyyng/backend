@@ -292,7 +292,7 @@ try {
     console.log(data, webhookData, "BOTH VALUES " )
 
 
-    if (data.status === 'success' && data.payment_type === 'bank_transfer'){
+    if (data.status === 'successful' && data.payment_type === 'bank_transfer'){
       try {
         const user = await this.prisma.user.findUnique({
           where: {
