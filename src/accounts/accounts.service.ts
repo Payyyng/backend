@@ -306,7 +306,10 @@ try {
           }
         })
 
-        await this.updateAccountBalance(account, data.currency, (Number(data.amount) - Number(data.app_fee)), 0, 'credit')
+        const updateAmount = Number(data.amount) - Number(data.app_fee)
+        console.log('AMOUNT TO UPDATE', updateAmount)
+
+        await this.updateAccountBalance(account, data.currency, updateAmount, 0, 'credit')
     
        const trans = await this.prisma.transaction.create({
           data: {
