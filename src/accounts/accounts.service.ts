@@ -334,7 +334,13 @@ try {
           content: `You have successfully deposited ${data.amount} to your account`
         })
 
-        console.log(trans, 'BACK BACK')
+        //Sent Notification To The User Account
+        
+        this.notificationService.sendNotification({
+          expoPushToken: user.notificationKey,
+          title: "Deposit Successful",
+          body: `You have successfully deposited ₦ ${updateAmount} to your account`,
+        })
 
         return {
           status: "success",
