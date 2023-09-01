@@ -306,11 +306,11 @@ try {
           }
         })
 
-        await this.updateAccountBalance(account, data.currency, (data.amount - data.app_fee), 0, 'credit')
+        await this.updateAccountBalance(account, data.currency, (Number(data.amount) - Number(data.app_fee)), 0, 'credit')
     
        const trans = await this.prisma.transaction.create({
           data: {
-            amount: data.amount,
+            amount: Number(data.amount),
             type: 'DEPOSIT',
             userId: user.id,
             currency: data.currency,
@@ -323,9 +323,9 @@ try {
             billerName: "",
           }
         })
-  
+
         //Send Email to User
-  
+
         this.mailService.TransactionsNotificationEmail({
           email: user.email,
           firstName: user.firstName,
