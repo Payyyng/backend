@@ -323,6 +323,7 @@ try {
             fee: 0,
             transactionType: "DEPOSIT",
             billerName: "",
+            reference: data.flw_ref
           }
         })
 
