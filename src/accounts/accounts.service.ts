@@ -313,7 +313,7 @@ try {
     
        const trans = await this.prisma.transaction.create({
           data: {
-            amount: Number(data.amount),
+            amount: updateAmount,
             type: 'DEPOSIT',
             userId: user.id,
             currency: data.currency,
@@ -322,7 +322,6 @@ try {
             customer: `${user.firstName + " " + user.lastName}`,
             fee: 0,
             transactionType: "DEPOSIT",
-            // bankName: "",
             billerName: "",
           }
         })
