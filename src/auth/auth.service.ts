@@ -78,21 +78,19 @@ export class AuthService {
     try {
       const user = await this.usersService.findUserById(id)
 
-    const ispinValid = await compare(pin, user.pin);
-    
-
-
-    if (!ispinValid) {
+      
+    if (user.isActive === false) {
       throw new HttpException(
-        'Invalid Login Credentials',
+        'Account Deactivated. Please contact support for further assistance.',
         HttpStatus.UNAUTHORIZED,
       );
     }
 
+    const ispinValid = await compare(pin, user.pin);
 
-    if (!user.isActive) {
+    if (!ispinValid) {
       throw new HttpException(
-        'Account Deactivated. Please contact support for further assistance.',
+        'Invalid Login Credentials',
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -103,7 +101,7 @@ export class AuthService {
       }),
       ...user
     }
-    
+
     } catch (err){
       throw err
     }
