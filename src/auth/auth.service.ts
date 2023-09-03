@@ -47,6 +47,13 @@ export class AuthService {
       );
     }
 
+    if (!user.isActive) {
+      throw new HttpException(
+        'Account Deactivated. Please contact support for further assistance.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
 
     // await this.mailService.sendLoginNotificationMail(
     //   user.email,
@@ -72,10 +79,20 @@ export class AuthService {
       const user = await this.usersService.findUserById(id)
 
     const ispinValid = await compare(pin, user.pin);
+    
+
 
     if (!ispinValid) {
       throw new HttpException(
         'Invalid Login Credentials',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+
+    if (!user.isActive) {
+      throw new HttpException(
+        'Account Deactivated. Please contact support for further assistance.',
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -86,9 +103,7 @@ export class AuthService {
       }),
       ...user
     }
-
-
-
+    
     } catch (err){
       throw err
     }
