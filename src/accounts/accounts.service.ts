@@ -170,7 +170,7 @@ try {
   
     let newBalance : any;
 
-    if (type === "credit"){
+    if (type === "credit" || type === "CREDIT"){
       newBalance = account[currency] + amount + fee;
     } else {
       newBalance = account[currency] - amount - fee;
