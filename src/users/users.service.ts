@@ -66,7 +66,7 @@ export class UsersService {
     }
 
     //Generate Otp Code
-    const otp = randomize('0', 6);
+    const otp = randomize('0', 4);
     //Generate Promo Code
 
     const promoCode = randomize('A', 8);
