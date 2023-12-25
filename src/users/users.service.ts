@@ -54,7 +54,7 @@ export class UsersService {
     // check if email already exists
     const userExists = await this.prisma.user.findUnique({
       where: {
-        email: email.toLocaleLowerCase(),
+        email: email.toLocaleLowerCase().trim(),
       },
     });
 
@@ -71,7 +71,7 @@ export class UsersService {
 
     const promoCode = randomize('A', 8);
 
-    const userName= `${(firstName+randomize('A', 4)).toLowerCase()}`
+    // const userName= `${(firstName+randomize('A', 4)).toLowerCase()}`
 
     //Generate username from the lastName and add 4 random
 
@@ -80,7 +80,7 @@ export class UsersService {
     // create user
 
     const newUser = await this.prisma.user.create({
-      data: <any>{
+      data: {
         firstName: firstName,
         lastName: lastName,
         email: email.toLowerCase(),
@@ -88,7 +88,7 @@ export class UsersService {
         password: hashedPassword,
         otp: Number(otp),
         promoCode: promoCode,
-        userName: userName
+        // userName: userName,
       },
     });
 

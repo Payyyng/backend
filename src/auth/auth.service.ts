@@ -17,8 +17,8 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private mailService: MailService,
-    private notificationService:  NotificationsService
-  ) {}
+    private notificationService: NotificationsService
+  ) { }
 
   async validateUser(loginInfo: loginUserDto): Promise<any> {
     const { email, password } = loginInfo;
@@ -66,8 +66,8 @@ export class AuthService {
     }
   }
 
-  async loginUserWithPin (loginUserWithPinDto: LoginUserWithPinDto): Promise <any>{
-    const {pin, id} = loginUserWithPinDto
+  async loginUserWithPin(loginUserWithPinDto: LoginUserWithPinDto): Promise<any> {
+    const { pin, id } = loginUserWithPinDto
 
     if (!pin || !id) {
       throw new HttpException(
@@ -78,38 +78,38 @@ export class AuthService {
     try {
       const user = await this.usersService.findUserById(id)
 
-      
-    if (user.isActive === false) {
-      throw new HttpException(
-        'Account Deactivated. Please contact support for further assistance.',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
 
-    const ispinValid = await compare(pin, user.pin);
+      if (user.isActive === false) {
+        throw new HttpException(
+          'Account Deactivated. Please contact support for further assistance.',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
 
-    if (!ispinValid) {
-      throw new HttpException(
-        'Invalid Login Credentials',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
+      const ispinValid = await compare(pin, user.pin);
 
-    return {
-      access_token: this.jwtService.sign(user.id, {
-        secret: `${process.env.JWT_SECRET}`,
-      }),
-      ...user
-    }
+      if (!ispinValid) {
+        throw new HttpException(
+          'Invalid Login Credentials',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
 
-    } catch (err){
+      return {
+        access_token: this.jwtService.sign(user.id, {
+          secret: `${process.env.JWT_SECRET}`,
+        }),
+        ...user
+      }
+
+    } catch (err) {
       throw err
     }
 
   }
 
-  async adminLogin (loginDetails: loginUserDto){
-    const {email, password} = loginDetails
+  async adminLogin(loginDetails: loginUserDto) {
+    const { email, password } = loginDetails
 
     if (!email || !password) {
       throw new HttpException(
@@ -118,8 +118,8 @@ export class AuthService {
       );
     }
 
-    if (email === 'support@payyng.com' && password === 'Ayomideh1.'){
-      return  {
+    if (email === 'support@payyng.com' && password === 'Ayomideh1.') {
+      return {
         access_token: this.jwtService.sign('admin@payyng.com', {
           secret: `${process.env.JWT_SECRET}`,
         }),
@@ -128,7 +128,7 @@ export class AuthService {
         lastName: 'Payyng',
         role: 'ADMIN',
       }
-    } else{
+    } else {
       throw new HttpException(
         'Invalid Login Credentials',
         HttpStatus.UNAUTHORIZED,
@@ -138,7 +138,7 @@ export class AuthService {
   }
 
   async loginWithCredentials(user: any) {
-    const { password: _,  ...result } = user;
+    const { password: _, ...result } = user;
 
     return {
       access_token: this.jwtService.sign(user.id, {
@@ -154,7 +154,7 @@ export class AuthService {
       throw new BadRequestException(
         'Please provide an email address',
       )
-  }
+    }
 
     try {
       const user = await this.usersService.findUserByEmail(email);
@@ -166,19 +166,19 @@ export class AuthService {
       }
 
       // Generate OTP
-    const otp = randomize('0', 6);
+      const otp = randomize('0', 6);
 
-    await this.prisma.user.update({
-      where: {
-        email,
-      },
-      data: {
-        otp: Number(otp),
-      },
-    });
+      await this.prisma.user.update({
+        where: {
+          email,
+        },
+        data: {
+          otp: Number(otp),
+        },
+      });
 
-    // Send the OTP to the user's email
-    await this.mailService.sendPasswordResetMail(email, user.firstName, otp);
+      // Send the OTP to the user's email
+      await this.mailService.sendPasswordResetMail(email, user.firstName, otp);
     } catch (err) {
       throw new BadRequestException(
         err,
@@ -187,7 +187,7 @@ export class AuthService {
 
 
 
-    
+
   }
 
   async verifyForgetOTP(otp: number) {
@@ -205,10 +205,10 @@ export class AuthService {
     }
 
     if (!user) {
-        throw new HttpException(
-            'Invalid Verification Code',
-            HttpStatus.UNAUTHORIZED,
-        );
+      throw new HttpException(
+        'Invalid Verification Code',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     await this.prisma.user.update({
@@ -227,14 +227,14 @@ export class AuthService {
       message: 'Verification Successful',
       user: {
         access_token: this.jwtService.sign(user.id, {
-            secret: `${process.env.JWT_SECRET}`,
-          }),
+          secret: `${process.env.JWT_SECRET}`,
+        }),
         ...user,
       },
     };
   }
 
-  async resetPassword({email, otp, password}:any) {
+  async resetPassword({ email, otp, password }: any) {
     if (!email || !otp || !password) {
       throw new HttpException(
         'All fields are required',
@@ -274,8 +274,8 @@ export class AuthService {
     };
   }
 
-  async sendOTP (id:string) {
-    
+  async sendOTP(id: string) {
+
     if (!id) {
       throw new HttpException(
         'Account ID is required',
@@ -295,7 +295,7 @@ export class AuthService {
 
       // Generate OTP
 
-      const otp = randomize('0', 6);
+      const otp = randomize('0', 4);
 
       // Update the user with the new OTP
 
@@ -307,10 +307,10 @@ export class AuthService {
           otp: Number(otp),
         },
       });
-  
+
       // Send the OTP to the user's email
       await this.mailService.sendVerificationMail(user.email, user.firstName, otp);
-  
+
       return {
         status: 'success',
         message: 'We have sent a verification code to your email. You will received a verification email shortly if the account exist.',
