@@ -112,7 +112,7 @@ export class UsersService {
     }
 
     const bvn = process.env.ADMIN_BVN
-    await this.createBankAccount(email, bvn)
+    await this.createBankAccount(newUser.email, bvn)
     await this.mailService.sendVerificationMail(email, firstName, otp);
 
     return {
