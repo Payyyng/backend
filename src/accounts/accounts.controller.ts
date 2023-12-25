@@ -11,7 +11,7 @@ import FlutterwaveEvents from 'flutterwave-events'
 
 @Controller('accounts')
 export class AccountsController {
-  constructor(private readonly accountsService: AccountsService) {}
+  constructor(private readonly accountsService: AccountsService) { }
 
   @Post()
   create(@Body() createAccountDto: CreateAccountDto) {
@@ -23,10 +23,15 @@ export class AccountsController {
     return this.accountsService.findAll();
   }
 
-  
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.accountsService.findOne(id);
+  }
+
+  @Get('user/:id')
+  findUserAccount(@Param('id') id: string) {
+    return this.accountsService.findAccountByUserId(id);
   }
 
   @Put('update')

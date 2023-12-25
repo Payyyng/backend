@@ -35,8 +35,24 @@ export class AccountsService {
     return `This action returns all accounts`;
   }
 
+  async findAccountByUserId(userId: string): Promise<any> {
+    if (!userId) {
+      throw new HttpException('User ID is Required', HttpStatus.BAD_REQUEST)
+    }
 
-  async findOne(id: string): Promise<any> {
+    const account = await this.prisma.account.findFirst({
+      where: {
+        userId: userId
+      }
+    })
+    if (!account) {
+      throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
+    }
+    return account
+  }
+
+
+  async findOne(id: string): Promise<any> {    
     if (!id) {
       throw new HttpException('Account ID is Required', HttpStatus.BAD_REQUEST)
     }
