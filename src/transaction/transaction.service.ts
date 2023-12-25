@@ -46,6 +46,21 @@ export class TransactionService {
      * @returns 
      */
 
+    async getUserTransactions(id: string) {
+        if(!id){
+            throw new HttpException('User Id is required', HttpStatus.BAD_REQUEST)
+        }
+        try {
+            return await this.prisma.transaction.findMany({
+                where: {
+                    userId: id
+                }
+            })
+        } catch (err) {
+            throw err
+        }
+    }
+
     async payBills(data: createBillDto): Promise<any> {
         const { id, amount, type, customer, biller_name, fee } = data;
 

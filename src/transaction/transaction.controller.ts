@@ -62,6 +62,12 @@ export class TransactionController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('user/:id')
+    getUserTransaction(@Param('id') id: string) {
+        return this.transactionService.getUserTransactions(id);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('verify-account-number')
     @ApiBody({ type: VerifyAccountDTO })
     verifyAccount(@Body() {account_number, account_bank}: any) {

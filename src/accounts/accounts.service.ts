@@ -20,7 +20,7 @@ export class AccountsService {
     private mailService: MailService,
     private userService: UsersService,
     private transactionService: TransactionService,
-    private notificationService: NotificationsService    
+    private notificationService: NotificationsService
   ) { }
 
 
@@ -45,14 +45,16 @@ export class AccountsService {
         userId: userId
       }
     })
+
     if (!account) {
       throw new HttpException('Account not found', HttpStatus.NOT_FOUND)
     }
+
     return account
   }
 
 
-  async findOne(id: string): Promise<any> {    
+  async findOne(id: string): Promise<any> {
     if (!id) {
       throw new HttpException('Account ID is Required', HttpStatus.BAD_REQUEST)
     }
@@ -71,45 +73,45 @@ export class AccountsService {
 
   async update(updateAccountDto: UpdateAccountDto) {
 
-    const {type, id, currency, amount} = updateAccountDto
-    
-try {
-  const account = await this.findOne(id)
+    const { type, id, currency, amount } = updateAccountDto
 
-  if (type !== 'CREDIT'){
-    if(account.NGN < amount) {
-      throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+    try {
+      const account = await this.findOne(id)
+
+      if (type !== 'CREDIT') {
+        if (account.NGN < amount) {
+          throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY)
+        }
+      }
+
+      let newBalance;
+      if (type === 'CREDIT') {
+        newBalance = account.NGN + Number(amount)
+      } else {
+        newBalance = account.NGN - Number(amount)
+      }
+
+      const res = await this.prisma.account.update({
+        where: {
+          id: id
+        },
+        data: {
+          NGN: Number(newBalance)
+        }
+      })
+
+      if (!res) {
+        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
+      }
+
+      return {
+        status: "success",
+        message: "Account Updated Successfully",
+        data: res
+      }
+    } catch (err) {
+      throw err
     }
-  }
-  
-  let newBalance;
-  if (type === 'CREDIT') {
-    newBalance = account.NGN + Number(amount)
-  } else {
-    newBalance = account.NGN - Number(amount)
-  }
-
-  const res = await this.prisma.account.update({
-    where: {
-      id: id
-    },
-    data: {
-      NGN: Number(newBalance)
-    }
-  })
-
-  if (!res){
-    throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR)
-  }
-  
-  return {
-    status: "success",
-    message: "Account Updated Successfully",
-    data: res
-  }
-} catch (err){
-  throw err
-}
   }
 
   remove(id: number) {
@@ -120,7 +122,7 @@ try {
   async accountDeposit(depositData: DepositDTO) {
     const { id, amount, type } = depositData
 
-    if (!id || !amount || !type){
+    if (!id || !amount || !type) {
       throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST)
     }
 
@@ -134,17 +136,17 @@ try {
         userId: id,
         currency: 'NGN',
         status: "Completed",
-        narration:`Account Deposit ${user.firstName + ""+ user.lastName}`,
+        narration: `Account Deposit ${user.firstName + "" + user.lastName}`,
         customer: `${user.firstName + " " + user.lastName}`,
         fee: 0,
         transactionType: "DEPOSIT",
         bankName: "",
         billerName: "",
       })
-  
+
       //Send Email notification to admin
       this.mailService.TransactionsNotificationEmail({
-        email:'support@payyng.com',
+        email: 'support@payyng.com',
         firstName: 'Admin',
         content: `You have a new ${amount} deposited from User with Name ${user.lastName}, with email ${user.email} and the userID is ${user.id} `
       })
@@ -165,7 +167,7 @@ try {
         body: `You have successfully deposited ₦ ${amount} to your account`,
       })
 
-      return{
+      return {
         status: "success",
         message: "Deposit Successful",
       }
@@ -176,51 +178,51 @@ try {
   }
 
   //FUNC TO UPDATE ACCOUNT BALANCE
-  async updateAccountBalance(account:any, currency:string, amount:number, fee:number, type:string) {
+  async updateAccountBalance(account: any, currency: string, amount: number, fee: number, type: string) {
 
-    if (type === 'debit'){
+    if (type === 'debit') {
       if (account[currency] < amount) {
         throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
       }
     }
-  
-    let newBalance : any;
 
-    if (type === "credit" || type === "CREDIT"){
+    let newBalance: any;
+
+    if (type === "credit" || type === "CREDIT") {
       newBalance = account[currency] + amount + fee;
     } else {
       newBalance = account[currency] - amount - fee;
     }
-  
+
     if (newBalance < 0) {
       throw new HttpException('Insufficient Balance', HttpStatus.UNPROCESSABLE_ENTITY);
     }
-  
+
     const updatedAccount = await this.prisma.account.update({
       where: { id: account.id },
       data: { [currency]: newBalance },
     });
-  
+
     if (!updatedAccount) {
       throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
     }
-  
+
     return updatedAccount;
   }
 
-  async adminUpdateUserAccounBalance (updateAccountDto: UpdateAccountDto){
+  async adminUpdateUserAccounBalance(updateAccountDto: UpdateAccountDto) {
     try {
       const account = await this.findOne(updateAccountDto.id)
       const user = await this.userService.findUserById(account.userId)
       await this.update(updateAccountDto)
       const transaction = await this.transactionService.create({
         amount: updateAccountDto.amount,
-        type: updateAccountDto.type,      
+        type: updateAccountDto.type,
         userId: user.id,
         currency: updateAccountDto.currency,
         status: "Completed",
-        narration:`Account Deposit ${user.firstName + " "+ user.lastName}`,
-        customer: `${user.firstName + " "+ user.lastName}`,
+        narration: `Account Deposit ${user.firstName + " " + user.lastName}`,
+        customer: `${user.firstName + " " + user.lastName}`,
         fee: 0.00,
         transactionType: "DEPOSIT",
         bankName: "",
@@ -237,30 +239,30 @@ try {
 
       //Send Email To  Admin
       this.mailService.TransactionsNotificationEmail({
-        email:'support@payyng.com',
+        email: 'support@payyng.com',
         firstName: 'Admin',
         content: `You have a new ${updateAccountDto.amount} deposited from User with Name ${updateAccountDto.id}, with email ${updateAccountDto.id} and the userID is ${updateAccountDto.id} `
       })
 
       return {
         status: 'success',
-        message:'successfully Credited',
-        data:transaction
+        message: 'successfully Credited',
+        data: transaction
       }
 
-    } catch (err){
+    } catch (err) {
       throw err
     }
   }
 
-  async accountTopUp  ({id, currency, amount, fee, type}:any){
+  async accountTopUp({ id, currency, amount, fee, type }: any) {
 
     const user = await this.prisma.user.findUnique({
       where: {
         id: id
       }
     })
-    const account= await this.prisma.account.findFirst({
+    const account = await this.prisma.account.findFirst({
       where: {
         userId: id
       }
@@ -274,14 +276,14 @@ try {
 
     //Create A Transaction Details
 
-  const transaction = await this.prisma.transaction.create({
+    const transaction = await this.prisma.transaction.create({
       data: {
         amount: amount,
         type: type,
         userId: id,
         currency: currency,
         status: "Completed",
-        narration:`Account Deposit ${user.firstName + ""+ user.lastName}`,
+        narration: `Account Deposit ${user.firstName + "" + user.lastName}`,
         customer: `${user.firstName + " " + user.lastName}`,
         fee: fee,
         transactionType: "DEPOSIT"
@@ -294,7 +296,7 @@ try {
     }
   }
 
-  async webhookHandler (webhookData: any) {
+  async webhookHandler(webhookData: any) {
     // const flutterwaveEvents = new FlutterwaveEvents(process.env.FLW_SECRET_KEY);
 
     // flutterwaveEvents.on('charge.success', async (data: any) => {
@@ -303,12 +305,12 @@ try {
 
 
     // });
-    const {data} = webhookData
+    const { data } = webhookData
 
-    console.log(data, webhookData, "BOTH VALUES " )
+    console.log(data, webhookData, "BOTH VALUES ")
 
 
-    if (data.status === 'successful' && data.payment_type === 'bank_transfer'){
+    if (data.status === 'successful' && data.payment_type === 'bank_transfer') {
       try {
         const user = await this.prisma.user.findUnique({
           where: {
@@ -326,15 +328,15 @@ try {
         console.log('AMOUNT TO UPDATE', updateAmount)
 
         await this.updateAccountBalance(account, data.currency, updateAmount, 0, 'credit')
-    
-       const trans = await this.prisma.transaction.create({
+
+        const trans = await this.prisma.transaction.create({
           data: {
             amount: updateAmount,
             type: 'DEPOSIT',
             userId: user.id,
             currency: data.currency,
             status: "Completed",
-            narration:`Account Deposit ${user.firstName + ""+ user.lastName}`,
+            narration: `Account Deposit ${user.firstName + "" + user.lastName}`,
             customer: `${user.firstName + " " + user.lastName}`,
             fee: 0,
             transactionType: "DEPOSIT",
@@ -352,7 +354,7 @@ try {
         })
 
         //Sent Notification To The User Account
-        
+
         this.notificationService.sendNotification({
           expoPushToken: user.notificationKey,
           title: "Deposit Successful",
@@ -364,7 +366,7 @@ try {
           message: "Deposit Successful",
           code: HttpStatus.OK
         }
-      } catch (err){
+      } catch (err) {
         throw err
       }
     } else {

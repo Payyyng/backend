@@ -29,8 +29,9 @@ export class AccountsController {
     return this.accountsService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('user/:id')
-  findUserAccount(@Param('id') id: string) {
+  findUserAccount(@Param('id') id: string) {    
     return this.accountsService.findAccountByUserId(id);
   }
 
