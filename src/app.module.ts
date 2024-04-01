@@ -21,10 +21,9 @@ import { PaypalModule } from './paypal/paypal.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { NotificationsService } from './notifications/notifications.service';
 import { NotificationsController } from './notifications/notifications.controller';
-
+import { PlanModule } from './plan/plan.module';
 
 @Module({
-  
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
@@ -36,13 +35,14 @@ import { NotificationsController } from './notifications/notifications.controlle
     AccountsModule,
     PaypalModule,
     NotificationsModule,
+    PlanModule,
   ],
   controllers: [
     AppController,
     AuthController,
     TransactionController,
     AdminController,
-    NotificationsController
+    NotificationsController,
   ],
   providers: [
     AppService,
@@ -51,9 +51,7 @@ import { NotificationsController } from './notifications/notifications.controlle
     UsersService,
     TransactionService,
     AdminService,
-    NotificationsService
+    NotificationsService,
   ],
-
-
 })
 export class AppModule {}

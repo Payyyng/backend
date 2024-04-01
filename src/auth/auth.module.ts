@@ -1,4 +1,4 @@
-import { Module, } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
@@ -16,24 +16,31 @@ dotenv.config();
 import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Module({
-    imports: [
-        MailModule,
-        UsersModule,
-        PassportModule.register({
-            defaultStrategy: 'jwt',
-        }),
-        JwtModule.register({
-            secret: "Ayomideh1....",
-            signOptions: {
-                expiresIn: '3600s',
-            },
-        }),
-    ],
-    controllers: [AuthController],
-    providers: [AuthService, NotificationsService, LocalStrategy, JwtStrategy, PrismaService, UsersService, JwtService, ConfigService],
-    exports: [AuthService],
+  imports: [
+    MailModule,
+    UsersModule,
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+    }),
+    JwtModule.register({
+      secret: 'Ayomideh1....',
+      signOptions: {
+        expiresIn: '2000s',
+      },
+    }),
+  ],
+  controllers: [AuthController],
+  providers: [
+    AuthService,
+    NotificationsService,
+    LocalStrategy,
+    JwtStrategy,
+    PrismaService,
+    UsersService,
+    JwtService,
+    ConfigService,
+  ],
+  exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}
 export { AuthService };
-
-
