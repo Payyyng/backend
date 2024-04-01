@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import helmet from 'helmet';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
     rawBody: true,
+    bodyParser: true,
   });
 
   const config = new DocumentBuilder()
@@ -20,6 +23,17 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('payyng-api', app, document);
+
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      xContentTypeOptions: false,
+      xPoweredBy: false,
+      frameguard: true,
+    }),
+  );
+
+  // app.use(cookieParser());
 
   // const port = process.env.PORT || 3000;
 

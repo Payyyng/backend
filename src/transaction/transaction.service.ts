@@ -1128,8 +1128,7 @@ export class TransactionService {
 
   async smeData({ network_id, phone, plan_id, id, amount }) {
     const reference = randomize('Aa', 10);
-
-    // throw new HttpException('Something went wrong. Please try again later', HttpStatus.BAD_REQUEST)
+    console.log(network_id, phone, plan_id, id, amount, 'THE DATA');
 
     if (!network_id || !phone || !plan_id || !id || !amount) {
       throw new HttpException(
@@ -1176,48 +1175,69 @@ export class TransactionService {
       },
     };
 
-    const { data } = await axios.post(
-      `${process.env.ELECASTLE_BASE_URL}/data `,
-      { network_id, phone, plan_id },
-      config,
-    );
+    try {
+      const { data } = await axios.post(
+        `${process.env.ELECASTLE_BASE_URL}/data `,
+        { network_id, phone, plan_id },
+        config,
+      );
 
-    await this.updateAccountBalance(account, 'NGN', amount);
+      console.log(data, 'the data backkkk');
 
-    const transaction = await this.prisma.transaction.create({
-      data: {
-        amount: amount,
-        type: 'DATA',
-        billerName: data?.data?.network || 'SME DATA',
-        currency: 'NGN',
-        customer: phone,
-        reference: reference,
-        status: 'Completed',
-        transactionType: 'DEBIT',
-        user: {
-          connect: { id: id },
+      if (data.status === false) {
+        throw new HttpException(
+          "We couldn't complete your purchase. Please try again later" ||
+            data.msg ||
+            'Something Went Wrong, Please Try Again',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      await this.updateAccountBalance(account, 'NGN', amount);
+
+      const transaction = await this.prisma.transaction.create({
+        data: {
+          amount: amount,
+          type: 'DATA',
+          billerName: data?.data?.network || 'SME DATA',
+          currency: 'NGN',
+          customer: phone,
+          reference: reference,
+          status: 'Completed',
+          transactionType: 'DEBIT',
+          user: {
+            connect: { id: id },
+          },
         },
-      },
-    });
+      });
 
-    if (!transaction) {
+      if (!transaction) {
+        throw new HttpException(
+          'Something Went Wrong, Please Try Again',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      this.notificationService.sendNotification({
+        expoPushToken: user.notificationKey,
+        title: 'Transaction Successful',
+        body: `Your Data Purchase was successful`,
+      });
+
+      return {
+        status: 'success',
+        message: 'Data Purchase Successful',
+        transaction: transaction,
+      };
+    } catch (err) {
+      console.log(err.response, 'the real errorrrr');
       throw new HttpException(
-        'Something Went Wrong, Please Try Again',
+        err?.response?.data?.msg ||
+          err?.response ||
+          'Something Went Wrong, Please Try Again',
         HttpStatus.BAD_REQUEST,
       );
     }
-
-    this.notificationService.sendNotification({
-      expoPushToken: user.notificationKey,
-      title: 'Transaction Successful',
-      body: `Your Data Purchase was successful`,
-    });
-
-    return {
-      status: 'success',
-      message: 'Data Purchase Successful',
-      transaction: transaction,
-    };
   }
 
   async verifyTransactions({ id }) {
