@@ -18,8 +18,12 @@ export class PlanService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} plan`;
+  findOne(id: string) {
+    return this.prisma.plans.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
   update(id: string, updatePlanDto: UpdatePlanDto) {
@@ -27,7 +31,7 @@ export class PlanService {
       where: {
         id,
       },
-      data: {
+      data: <any>{
         ...updatePlanDto,
       },
     });

@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('plan')
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
@@ -27,7 +30,7 @@ export class PlanController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.planService.findOne(+id);
+    return this.planService.findOne(id);
   }
 
   @Patch(':id')
