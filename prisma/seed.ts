@@ -457,7 +457,7 @@ async function main() {
       exchangeNGN: 1,
       exchangeUSD: 1200,
       paypalRate: 450,
-      exchangeTransactionFeePercentage: 0.05,
+      exchangeTransactionFeePercentage: 2,
       paypalEmail: 'support@payyng.com',
       userRole: 'ADMIN',
     },
