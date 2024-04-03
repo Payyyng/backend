@@ -679,7 +679,7 @@ export class TransactionService {
     newCurrency,
     exchangeCurrency,
     exchangeAmount,
-  }: ExchangeDTO) {
+  }: any) {
     if (
       !id ||
       !newAmount ||

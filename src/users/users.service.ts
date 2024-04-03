@@ -11,9 +11,7 @@ import { UpdateTransactionPinDto } from './dto/update_user_pin.dto';
 import Flutterwave from 'flutterwave-node-v3';
 import { UpdateAccountDto } from 'src/accounts/dto/update-account.dto';
 
-
-
-const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X'
+const SECRET_KEY = 'FLWSECK-27df351a5a7cf733af09c7bd42a77326-1884b5daf27vt-X';
 
 const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, SECRET_KEY);
 export interface RegistrationStatus {
@@ -28,10 +26,15 @@ export class UsersService {
     private prisma: PrismaService,
     private mailService: MailService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
-  async createUser({firstName, lastName, email, phone, password}: createUserDto): Promise<any> {
-
+  async createUser({
+    firstName,
+    lastName,
+    email,
+    phone,
+    password,
+  }: createUserDto): Promise<any> {
     //check if any of the userinfo is not provided
     if (!email || !password || !firstName || !lastName || !phone) {
       throw new HttpException(
@@ -40,17 +43,17 @@ export class UsersService {
       );
     }
 
-    //Validate User Email if Valid 
-    const validate = `https://emailapi.onrender.com/api/validate?email=${email}`
+    //Validate User Email if Valid
+    const validate = `https://emailapi.onrender.com/api/validate?email=${email}`;
 
-    const {data} : any = await axios.get(validate)
-    if (data.disposable === "Disposable"){
+    const { data }: any = await axios.get(validate);
+    if (data.disposable === 'Disposable') {
       throw new HttpException(
         'Invalid Email Address Provided',
         HttpStatus.BAD_REQUEST,
       );
     }
-    
+
     // check if email already exists
     const userExists = await this.prisma.user.findUnique({
       where: {
@@ -104,38 +107,37 @@ export class UsersService {
         data: {
           user: {
             connect: {
-              id: newUser.id
-            }
-          }
-        }
-      })
+              id: newUser.id,
+            },
+          },
+        },
+      });
     }
 
-    const bvn = process.env.ADMIN_BVN
-    await this.createBankAccount(newUser.email, bvn)
+    const bvn = process.env.ADMIN_BVN;
+    await this.createBankAccount(newUser.email, bvn);
     await this.mailService.sendVerificationMail(email, firstName, otp);
 
     return {
       status: 'success',
       message: 'Account Registered Sucessfully',
-      id: newUser.id, 
-    }
+      id: newUser.id,
+    };
   }
 
-  async findUserDetails (id:string) {
+  async findUserDetails(id: string) {
     const user = await this.prisma.user.findUnique({
       where: {
-        id: id
-      }
-    })
+        id: id,
+      },
+    });
 
     if (!user) {
-      throw new HttpException('User Account Not Found', HttpStatus.NOT_FOUND)
+      throw new HttpException('User Account Not Found', HttpStatus.NOT_FOUND);
     }
-    
-    return user
-  }
 
+    return user;
+  }
 
   async verifyUser(id: string, otp: number): Promise<any> {
     //check if there's no otp
@@ -143,8 +145,8 @@ export class UsersService {
     if (!otp || !id) {
       return {
         status: HttpStatus.BAD_REQUEST,
-        message:'Otp and Id  is required',
-      }
+        message: 'Otp and Id  is required',
+      };
     }
 
     const user = await this.prisma.user.findFirst({
@@ -231,7 +233,7 @@ export class UsersService {
 
     //Delete Password from the response back
     delete updatedUser.password;
-    delete updatedUser.pin
+    delete updatedUser.pin;
 
     if (!updatedUser) {
       throw new HttpException(
@@ -251,7 +253,7 @@ export class UsersService {
   }
 
   async verifyTransactionPin(id: string, pin: number): Promise<any> {
-    if (!pin || !id) {
+    if (!pin) {
       throw new HttpException('Pin and ID is required', HttpStatus.BAD_REQUEST);
     }
 
@@ -284,56 +286,76 @@ export class UsersService {
 
   async updateAddress({ state, city, lga, address, id }: any) {
     if (!state || !city || !lga || !address) {
-      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'All fields are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     try {
       const updatedUser = await this.prisma.user.update({
         where: {
-         id
+          id,
         },
-        data: <any> {
+        data: <any>{
           state,
           lga,
           city,
-          address
-        }
-      })
+          address,
+        },
+      });
       if (!updatedUser) {
-        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          "User Account Doesn't Exist",
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       return {
         status: 'success',
-        message: 'Address Updated Successfully'
-      }
-
+        message: 'Address Updated Successfully',
+      };
     } catch (err) {
-      throw new HttpException("Something went wrong. Please Try Again", HttpStatus.GATEWAY_TIMEOUT);
+      throw new HttpException(
+        'Something went wrong. Please Try Again',
+        HttpStatus.GATEWAY_TIMEOUT,
+      );
     }
   }
 
-  async updateTransactionPin({ id, current_pin, new_pin }: UpdateTransactionPinDto) {
-
+  async updateTransactionPin({
+    id,
+    current_pin,
+    new_pin,
+  }: UpdateTransactionPinDto) {
     if (!current_pin || !new_pin || !id) {
-      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'All fields are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     try {
       const user = await this.prisma.user.findUnique({
         where: {
-          id
-        }
-      })
+          id,
+        },
+      });
 
       if (!user) {
-        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          "User Account Doesn't Exist",
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       const isMatch = await compare(current_pin.toString(), user.pin);
 
       if (!isMatch) {
-        throw new HttpException('Invalid Transaction Pin', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Invalid Transaction Pin',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const convert = new_pin.toString();
@@ -341,28 +363,35 @@ export class UsersService {
 
       const updatedUser = await this.prisma.user.update({
         where: {
-          id
+          id,
         },
         data: <any>{
-          pin: hashedPin
-        }
-      })
+          pin: hashedPin,
+        },
+      });
 
       if (!updatedUser) {
-        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          "User Account Doesn't Exist",
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       return {
         status: 'success',
-        message: 'Transaction Pin Updated Successfully'
-      }
-
+        message: 'Transaction Pin Updated Successfully',
+      };
     } catch (err) {
-      throw err
+      throw err;
     }
   }
 
-  async updateUserAccount({id, lastName, firstName, phone}: any): Promise<any> {
+  async updateUserAccount({
+    id,
+    lastName,
+    firstName,
+    phone,
+  }: any): Promise<any> {
     const user = await this.prisma.user.findUnique({
       where: {
         id,
@@ -370,7 +399,10 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new HttpException('User with the ID not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        'User with the ID not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const updatedUser = await this.prisma.user.update({
@@ -380,8 +412,8 @@ export class UsersService {
       data: {
         firstName,
         lastName,
-        phone
-      }
+        phone,
+      },
     });
 
     if (!updatedUser) {
@@ -402,74 +434,80 @@ export class UsersService {
       return await this.prisma.user.findUnique({
         where: {
           email: email,
-        }
+        },
       });
     } catch (err) {
       return 'Something went wrong. Please try again';
     }
   }
 
-  async findUserByUserName(userName:string): Promise <any> {
+  async findUserByUserName(userName: string): Promise<any> {
     if (!userName) {
       throw new HttpException('Username is required', HttpStatus.BAD_REQUEST);
     }
-    
+
     const user = await this.prisma.user.findFirst({
-      where:{
-        userName: userName.toLowerCase()
-      }
-    })
+      where: {
+        userName: userName.toLowerCase(),
+      },
+    });
 
     if (!user) {
-      throw new HttpException(`User with the Username ${userName} Doesn't Exist`, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        `User with the Username ${userName} Doesn't Exist`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     return {
       status: 'success',
       message: `${user.firstName} ${user.lastName}`,
-      user: user
-    }
+      user: user,
+    };
   }
 
   async findUserById(id: string): Promise<any> {
-      const user = await this.prisma.user.findUnique({
-        where: {
-          id: id,
-        }, 
-        select:  {
-          id : true,
-          email   :    true,
-          firstName :    true,
-          lastName   :   true,
-          userName  :    true,
-          phone    :    true,
-          address   :   true,
-          city      :   true,
-          state     :   true,
-          lga       :   true,
-          promoCode   :  true,
-          otp       :    true,
-          pin        :  true,
-          token  :       true,
-          bvn       :   true,
-          isVerified  : true,  
-          isPaypalVerified: true,
-          isActive   :   true,
-          transactions: {
-            orderBy: {
-              createdAt: 'desc'
-            }
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        userName: true,
+        phone: true,
+        address: true,
+        city: true,
+        state: true,
+        lga: true,
+        promoCode: true,
+        otp: true,
+        pin: true,
+        token: true,
+        bvn: true,
+        isVerified: true,
+        isPaypalVerified: true,
+        isActive: true,
+        transactions: {
+          orderBy: {
+            createdAt: 'desc',
           },
-          bankTransfers: true,
-          accounts    :  true,
-          cards     :    true,
-          Paypal: true,
-        }
-      });
-      if (!user) {
-        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
-      }
-      return user;
+        },
+        bankTransfers: true,
+        accounts: true,
+        cards: true,
+        Paypal: true,
+      },
+    });
+    if (!user) {
+      throw new HttpException(
+        "User Account Doesn't Exist",
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return user;
   }
 
   /**
@@ -478,8 +516,7 @@ export class UsersService {
    * @description This method is used to create bank account for users
    * @returns
    */
-  async createBankAccount(email: string, bvn: string, ) {
-
+  async createBankAccount(email: string, bvn: string) {
     if (!email || !bvn) {
       throw new HttpException(
         'Email And BVN is Required',
@@ -489,15 +526,12 @@ export class UsersService {
 
     const user = await this.prisma.user.findFirst({
       where: {
-        email: email
-      }
-    })
+        email: email,
+      },
+    });
 
     if (!user) {
-      throw new HttpException(
-        'User Account Not Found',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException('User Account Not Found', HttpStatus.NOT_FOUND);
     }
 
     const reference = randomize('aa', 10);
@@ -507,9 +541,9 @@ export class UsersService {
       bvn: bvn,
       is_permanent: true,
       tx_ref: `${reference}`,
-      narration: `${user.firstName} ${user.lastName}`
-    }
-    const response = await flw.VirtualAcct.create(payload)
+      narration: `${user.firstName} ${user.lastName}`,
+    };
+    const response = await flw.VirtualAcct.create(payload);
     if (!response) {
       throw new HttpException(
         'Something Went Wrong Creating Account. Please Try Again',
@@ -517,14 +551,14 @@ export class UsersService {
       );
     }
 
-    if (response ) {
-      //Save the details in Dabavase 
+    if (response) {
+      //Save the details in Dabavase
 
       const account = await this.prisma.account.findFirst({
         where: {
-          userId: user.id
-        }
-      })
+          userId: user.id,
+        },
+      });
 
       if (!account) {
         throw new HttpException(
@@ -533,16 +567,15 @@ export class UsersService {
         );
       }
 
-      
       const updatedAccount = await this.prisma.account.update({
         where: {
-          id: account.id
+          id: account.id,
         },
         data: {
           NGNAccount: response.data.account_number,
           NGNBank: response.data.bank_name,
-        }
-      })
+        },
+      });
 
       if (!updatedAccount) {
         throw new HttpException(
@@ -554,25 +587,30 @@ export class UsersService {
       return {
         status: 'success',
         message: 'Account Created Successfully',
-      }
+      };
     }
   }
 
-
   async updatePassword({ id, password, new_password }: any) {
     if (!password || !new_password || !id) {
-      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'All fields are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     try {
       const user = await this.prisma.user.findUnique({
         where: {
-          id
-        }
-      })
+          id,
+        },
+      });
 
       if (!user) {
-        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          "User Account Doesn't Exist",
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       const isMatch = await compare(password, user.password);
@@ -586,70 +624,82 @@ export class UsersService {
 
       const updatedUser = await this.prisma.user.update({
         where: {
-          id
+          id,
         },
         data: <any>{
-          password: hashedPassword
-        }
-      })
+          password: hashedPassword,
+        },
+      });
 
       if (!updatedUser) {
-        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          "User Account Doesn't Exist",
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       return {
         status: 'success',
-        message: 'Password Updated Successfully'
-      }
-
+        message: 'Password Updated Successfully',
+      };
     } catch (err) {
-      throw new HttpException('Something went wrong. Please try again', HttpStatus.SERVICE_UNAVAILABLE);
+      throw new HttpException(
+        'Something went wrong. Please try again',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
     }
   }
 
-  async verifyUserBvn(id:string, bvn:number ) {
-    
-
+  async verifyUserBvn(id: string, bvn: number) {
     if (!bvn || !id) {
-      throw new HttpException('All fields are required', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'All fields are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     try {
       const user = await this.prisma.user.findUnique({
         where: {
-          id
-        }
-      })
+          id,
+        },
+      });
 
       if (!user) {
-        throw new HttpException("User Account Doesn't Exist", HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          "User Account Doesn't Exist",
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       await this.prisma.user.update({
         where: {
-          id
+          id,
         },
         data: <any>{
-          bvn: Number(bvn)
-        }
-      })
+          bvn: Number(bvn),
+        },
+      });
 
       // //Call the create Account Endpoint
-      const bankAccount = await this.createBankAccount(user.email, bvn.toString())
+      const bankAccount = await this.createBankAccount(
+        user.email,
+        bvn.toString(),
+      );
 
       if (!bankAccount) {
-        throw new HttpException("Something went wrong. Please check your BVN and try again", HttpStatus.SERVICE_UNAVAILABLE);
+        throw new HttpException(
+          'Something went wrong. Please check your BVN and try again',
+          HttpStatus.SERVICE_UNAVAILABLE,
+        );
       }
 
       return {
         status: 'success',
-        message: 'BVN Verified Successfully'
-      }
-
+        message: 'BVN Verified Successfully',
+      };
     } catch (err) {
-      throw err
+      throw err;
     }
   }
-
-
 }

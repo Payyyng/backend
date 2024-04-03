@@ -5,10 +5,7 @@ import {
 } from 'class-validator';
 
 export class ExchangeDTO {
-
-    @ApiProperty()
-    @IsNotEmpty() readonly id: string;
-
+    
     @ApiProperty()
     @IsNotEmpty() readonly newAmount: number;
 

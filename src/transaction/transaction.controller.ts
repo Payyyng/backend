@@ -84,7 +84,9 @@ export class TransactionController {
   @UseGuards(JwtAuthGuard)
   @Post('payyng-transfer')
   transferToPayyngUser(
-    @Body() { id, userName, amount, narration, currency }: PayyngTransferDto,
+    @DecodedTokenDecorator()
+    id: string,
+    @Body() { userName, amount, narration, currency }: PayyngTransferDto,
   ) {
     return this.transactionService.tranferToPayyngAccount({
       id,
@@ -98,9 +100,10 @@ export class TransactionController {
   @UseGuards(JwtAuthGuard)
   @Post('exchange')
   exchangeCurrency(
+    @DecodedTokenDecorator()
+    id: string,
     @Body()
     {
-      id,
       newAmount,
       newCurrency,
       exchangeCurrency,
@@ -135,8 +138,12 @@ export class TransactionController {
 
   @UseGuards(JwtAuthGuard)
   @Post('education')
-  educationPin(@Body() educationDto: EducationDTO) {
-    return this.transactionService.educational(educationDto);
+  educationPin(
+    @DecodedTokenDecorator()
+    id: string,
+    @Body() educationDto: EducationDTO
+    ) {
+    return this.transactionService.educational({...educationDto, id});
   }
 
   @UseGuards(JwtAuthGuard)

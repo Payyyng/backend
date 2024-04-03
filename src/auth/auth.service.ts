@@ -1,4 +1,9 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -8,7 +13,7 @@ import randomize from 'randomatic';
 import { hash, compare } from 'bcrypt';
 import { NotificationsService } from '../notifications/notifications.service';
 import { LoginUserWithPinDto } from './dto/login-user-with-pin.dto';
-
+import { AuthError, AuthErrors } from './auth.error';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +22,8 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private mailService: MailService,
-    private notificationService: NotificationsService
-  ) { }
+    private notificationService: NotificationsService,
+  ) {}
 
   async validateUser(loginInfo: loginUserDto): Promise<any> {
     const { email, password } = loginInfo;
@@ -54,20 +59,21 @@ export class AuthService {
       );
     }
 
-
     // await this.mailService.sendLoginNotificationMail(
     //   user.email,
     //   user.firstName,
     // );
 
-    //Add the transaction and Bank details of user to the response 
+    //Add the transaction and Bank details of user to the response
     return {
       ...user,
-    }
+    };
   }
 
-  async loginUserWithPin(loginUserWithPinDto: LoginUserWithPinDto): Promise<any> {
-    const { pin, id } = loginUserWithPinDto
+  async loginUserWithPin(
+    loginUserWithPinDto: LoginUserWithPinDto,
+  ): Promise<any> {
+    const { pin, id } = loginUserWithPinDto;
 
     if (!pin || !id) {
       throw new HttpException(
@@ -76,8 +82,7 @@ export class AuthService {
       );
     }
     try {
-      const user = await this.usersService.findUserById(id)
-
+      const user = await this.usersService.findUserById(id);
 
       if (user.isActive === false) {
         throw new HttpException(
@@ -99,17 +104,15 @@ export class AuthService {
         access_token: this.jwtService.sign(user.id, {
           secret: `${process.env.JWT_SECRET}`,
         }),
-        ...user
-      }
-
+        ...user,
+      };
     } catch (err) {
-      throw err
+      throw err;
     }
-
   }
 
   async adminLogin(loginDetails: loginUserDto) {
-    const { email, password } = loginDetails
+    const { email, password } = loginDetails;
 
     if (!email || !password) {
       throw new HttpException(
@@ -127,14 +130,13 @@ export class AuthService {
         firstName: 'Admin',
         lastName: 'Payyng',
         role: 'ADMIN',
-      }
+      };
     } else {
       throw new HttpException(
         'Invalid Login Credentials',
         HttpStatus.UNAUTHORIZED,
       );
     }
-
   }
 
   async loginWithCredentials(user: any) {
@@ -144,16 +146,13 @@ export class AuthService {
       access_token: this.jwtService.sign(user.id, {
         secret: `${process.env.JWT_SECRET}`,
       }),
-      ...result
+      ...result,
     };
   }
 
   async forgotPassword(email: string) {
-
     if (!email) {
-      throw new BadRequestException(
-        'Please provide an email address',
-      )
+      throw new BadRequestException('Please provide an email address');
     }
 
     try {
@@ -161,7 +160,7 @@ export class AuthService {
       if (!user) {
         throw new HttpException(
           "User Doesn't Exist",
-          HttpStatus.UNPROCESSABLE_ENTITY
+          HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
 
@@ -180,20 +179,14 @@ export class AuthService {
       // Send the OTP to the user's email
       await this.mailService.sendPasswordResetMail(email, user.firstName, otp);
     } catch (err) {
-      throw new BadRequestException(
-        err,
-      )
+      throw new BadRequestException(err);
     }
-
-
-
-
   }
 
   async verifyForgetOTP(otp: number) {
     const user = await this.prisma.user.findFirst({
       where: {
-        otp
+        otp,
       },
     });
 
@@ -220,7 +213,7 @@ export class AuthService {
       },
     });
 
-    //Sign the User Login Authentication 
+    //Sign the User Login Authentication
 
     return {
       status: 'success',
@@ -242,7 +235,7 @@ export class AuthService {
       );
     }
 
-    const user = await this.usersService.findUserByEmail(email)
+    const user = await this.usersService.findUserByEmail(email);
 
     if (!user) {
       throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
@@ -264,7 +257,7 @@ export class AuthService {
       },
       data: {
         password: hashedPassword,
-        otp: null
+        otp: null,
       },
     });
 
@@ -275,12 +268,8 @@ export class AuthService {
   }
 
   async sendOTP(id: string) {
-
     if (!id) {
-      throw new HttpException(
-        'Account ID is required',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Account ID is required', HttpStatus.BAD_REQUEST);
     }
 
     try {
@@ -289,7 +278,7 @@ export class AuthService {
       if (!user) {
         throw new HttpException(
           "User Doesn't Exist",
-          HttpStatus.UNPROCESSABLE_ENTITY
+          HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
 
@@ -309,15 +298,36 @@ export class AuthService {
       });
 
       // Send the OTP to the user's email
-      await this.mailService.sendVerificationMail(user.email, user.firstName, otp);
+      await this.mailService.sendVerificationMail(
+        user.email,
+        user.firstName,
+        otp,
+      );
 
       return {
         status: 'success',
-        message: 'We have sent a verification code to your email. You will received a verification email shortly if the account exist.',
+        message:
+          'We have sent a verification code to your email. You will received a verification email shortly if the account exist.',
       };
     } catch (err) {
-      throw err
+      throw err;
     }
+  }
 
+  async verifyToken(token: string) {
+    try {
+      const decodedToken = this.jwtService.verify(token, {
+        secret: `${process.env.JWT_SECRET}`,
+      });
+
+      return decodedToken;
+    } catch (err) {
+      throw new AuthError(
+        AuthErrors.UNAUTHORIZED,
+        'Unauthorized To Perform This Action. Token Invalid or Expired',
+        HttpStatus.UNAUTHORIZED,
+        `The User is not authorized for this action `,
+      );
+    }
   }
 }

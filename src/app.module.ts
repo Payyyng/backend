@@ -22,10 +22,34 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { NotificationsService } from './notifications/notifications.service';
 import { NotificationsController } from './notifications/notifications.controller';
 import { PlanModule } from './plan/plan.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './auth/auth-roles.guard';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'medium',
+        ttl: 10000,
+        limit: 20,
+      },
+      {
+        name: 'long',
+        ttl: 60000,
+        limit: 50,
+      },
+    ]),
+    ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     PrismaModule,
     UsersModule,
     AuthModule,
@@ -52,6 +76,17 @@ import { PlanModule } from './plan/plan.module';
     TransactionService,
     AdminService,
     NotificationsService,
+
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+
+    ThrottlerGuard,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
