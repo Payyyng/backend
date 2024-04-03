@@ -134,6 +134,7 @@ model Admin {
   liveMode                         Boolean  @default(true)
   apiUrl                           String? @default("https://payyng-bg.onrender.com")
   userRole                         String?  @default("ADMIN")
+  dataProfit                       Float    @default(12.5)
   createdAt                        DateTime @default(now())
   updatedAt                        DateTime @updatedAt
 }
@@ -199,5 +200,4 @@ enum Role {
   ADMIN
   USER
   SUPER_ADMIN
-
 }
