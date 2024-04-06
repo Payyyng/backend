@@ -60,6 +60,7 @@
     "swagger-ui-express": "^4.6.0"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.4",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
