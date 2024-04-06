@@ -183,14 +183,14 @@ async function main() {
       {
         network: 'AIRTEL',
         type: 'SME',
-        bundle: '100mb',
+        bundle: '100 GB',
         dataId: '313',
         amount: 8000.0,
       },
       {
         network: 'AIRTEL',
         type: 'SME',
-        bundle: '300mb',
+        bundle: '300 GB',
         dataId: '314',
         amount: 17000.0,
       },

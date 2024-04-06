@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { PaypalService } from './paypal.service';
 import { CreatePaypalDto } from './dto/create-paypal.dto';
 import { UpdatePaypalDto } from './dto/update-paypal.dto';
@@ -6,6 +15,7 @@ import { MakePayment } from './dto/make-a-payment.dto';
 import { BuyPaypalDTO } from './dto/buy-paypal-dto';
 import { SellPaypalDTO } from './dto/sell-paypal-dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { DecodedTokenDecorator } from 'src/auth/decoded-token.decorator';
 
 @Controller('paypal')
 export class PaypalController {
@@ -42,28 +52,29 @@ export class PaypalController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("make-a-payment")
+  @Post('make-a-payment')
   MakeAPayment(@Body() makeAPayment: MakePayment) {
     return this.paypalService.makeApayment(makeAPayment);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("buy-paypal")
+  @Post('buy-paypal')
   BuyPaypal(@Body() buyPaypal: BuyPaypalDTO) {
     return this.paypalService.buyPaypal(buyPaypal);
   }
 
-
   @UseGuards(JwtAuthGuard)
-  @Post("sell-paypal")
-  SellPaypal(@Body() sellPaypal: SellPaypalDTO) {
-    return this.paypalService.sellPaypal(sellPaypal);
+  @Post('sell-paypal')
+  SellPaypal(
+    @DecodedTokenDecorator() id: any,
+    @Body() sellPaypal: SellPaypalDTO,
+  ) {
+    return this.paypalService.sellPaypal({ ...sellPaypal, id });
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("sell-wise")
+  @Post('sell-wise')
   wiseDeposit(@Body() deposit: MakePayment) {
     return this.paypalService.wiseDeposit(deposit);
   }
-  
 }

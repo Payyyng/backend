@@ -1,23 +1,15 @@
-import {
-    IsNotEmpty,
-    IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-
 export class SellPaypalDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  readonly amount: number;
 
-    @ApiProperty()
-    @IsString()
-    readonly id: string;
+  @ApiProperty()
+  @IsString()
+  readonly currency: string;
 
-    @ApiProperty()
-    @IsNotEmpty() readonly amount: number;
-
-    @ApiProperty()
-    @IsString()
-    readonly currency: string;
-
-    @ApiProperty()
-    readonly tradeAmount: number
+  @ApiProperty()
+  readonly tradeAmount: number;
 }

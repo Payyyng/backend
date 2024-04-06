@@ -9,15 +9,14 @@ import { join } from 'path';
 @Module({
   imports: [
     MailerModule.forRootAsync({
-
       useFactory: async (config: ConfigService) => ({
         transport: {
-          host: config.get("MAIL_HOST"),
+          host: config.get('MAIL_HOST'),
           port: 465,
           secure: true,
           auth: {
-            user: config.get("MAIL_USER"),
-            pass: config.get("MAIL_USER_PASSWORD"),
+            user: config.get('MAIL_USER'),
+            pass: config.get('MAIL_USER_PASSWORD'),
           },
         },
         defaults: {
@@ -25,7 +24,7 @@ import { join } from 'path';
         },
         template: {
           dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+          adapter: new HandlebarsAdapter(), // or new PugAter() or new EjsAapter()
           options: {
             strict: false,
           },
@@ -37,5 +36,4 @@ import { join } from 'path';
   providers: [MailService],
   exports: [MailService],
 })
-
-export class MailModule { }
+export class MailModule {}
